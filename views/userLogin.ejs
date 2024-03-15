@@ -34,6 +34,11 @@
                           <%= locals.logout %>
                         </div>
                         <% } %>
+                        <% if (locals.otpalert) { %>
+                            <div class="alert alert-success text-center m-3" id="error">
+                              <%= locals.otpalert %>
+                            </div>
+                            <% } %>
                     <form action="/login" method="post">
                         <div class="mb-3">
                             <input class="form-control" placeholder="Enter your email" type="email" name="email">

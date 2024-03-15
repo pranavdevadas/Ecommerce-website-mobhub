@@ -21,13 +21,11 @@ passport.serializeUser((user, done) => {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:'http://localhost:3000/auth/google/callback',
+    callbackURL: process.env.GOOGLE_URL,
 
   }, async (accessToken, refreshToken, profile, done) => {
     try {
-      const existingUser = await googleAuthUsers.findOne({ googleId: profile.id });
-
-      console.log(profile)
+      const existingUser = await googleAuthUsers.findOne({ googleId: profile.id })
   
       if (existingUser) {
         return done(null, existingUser);
@@ -55,7 +53,7 @@ passport.serializeUser((user, done) => {
   
     googleAuthCallback: passport.authenticate('google', {
         failureRedirect: '/',
-        successRedirect: '/', // Redirect to your dashboard or home page
+        successRedirect: '/dashboard', // Redirect to your dashboard or home page
       }),
     
   };
@@ -63,26 +61,4 @@ passport.serializeUser((user, done) => {
 module.exports = authController;
 
 
-
-// const isAuth =()=>{
-
-//  passport.use(new GoogleStrategy({
-//     clientID: process.env.GOOGLE_CLIENT_ID,
-//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     callbackURL: "http://localhost:3000/auth/google/callback"
-//   },
-//   function(accessToken, refreshToken, profile, done) {
-//     done(null,profile)
-//   }
-// ));
-
-// passport.serializeUser((user,done)=>{
-//     done (null,user)
-// })
-// passport.deserializeUser((user,done)=>{
-//     done(null,user)
-// })
-// }
-
-// module.exports = isAuth
 

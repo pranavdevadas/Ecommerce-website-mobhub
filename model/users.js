@@ -21,8 +21,14 @@ const userScema= mongoose.Schema({
         type:Boolean,
         default:false
     },
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
     otp:{
-        type: String 
+        type: String,
+        expires: 60,
+        default: Date.now
         },
     otpExpiration:{
         type: Date 

@@ -12,6 +12,7 @@ const authController = require('../middlewares/auth')
 
 
 router.get('/',userController.userHome)
+router.get('/dashboard',isUser,userController.userHome)
 
 router.get('/login',userController.getuserLogin)
 router.post('/login',userController.postuserLogin)
@@ -19,19 +20,19 @@ router.get('/register',userController.getuserRegister)
 router.post('/register',userController.postuserRegister)
 router.get('/logout',userController.getlogout)
 
-router.get('/productdetials/:Id',userController.getProductDetials)
+router.get('/productdetials/:Id',isUser,userController.getProductDetials)
 
 // router.get('/sendOtp',userController.getotp)
 router.post('/sendOtp',userController.postsendotp)
 router.post('/verifyOtp',userController.postverifyotp)
 router.post('/resendOtp',userController.resendotp)
 
+
 router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
 
-router.get('/shop',userController.getshop)
+router.get('/shop',isUser,userController.getshop)
 
-// router.get('*',userController.error)
 
 
 

@@ -51,10 +51,6 @@ const adminController = {
             next(err)
         }
     },
-    // 404  error
-    error:(req,res)=>{
-        res.render('error404')
-    },
 //logout
 getlogout: (req, res, next) => {
         try {
@@ -66,6 +62,10 @@ getlogout: (req, res, next) => {
         } catch (err) {
             next(err);
         }
+    },
+    
+    error:(req,res)=>{
+        res.render('error404')
     }
 
 

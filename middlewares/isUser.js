@@ -1,9 +1,11 @@
+const passport = require('passport')
+
 const isUser = (req,res,next)=>{
-    if(!req.session.user) {
-        return res.redirect('/login')
+    if(req.session.user||req.user) {
+        next()
     }
     else {
-        next()
+        res.redirect('/login')
     }
 }
 

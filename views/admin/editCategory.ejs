@@ -139,6 +139,11 @@
                         <div class="col-lg-9">
                             <section class="content-body p-xl-4">
                                 <form action="/update/<%= data._id %>" method="post" name="categoryForm" onsubmit="return validateCategoryForm()">
+                                <% if (locals.alert) { %>
+                                    <div class="alert alert-danger text-center m-3" id="error">
+                                <%= locals.alert %>
+                                    </div>
+                                <% } %> 
                                     <div class="row mb-4">
                                         <label class="col-lg-3 col-form-label">Category name*</label>
                                         <div class="col-lg-9">

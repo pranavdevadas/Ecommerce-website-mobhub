@@ -65,8 +65,11 @@
                     <div class="col-xl-3 col-lg-4">
                         <div class="header-info header-info-right">
                             <ul>
-                                <li><i class="fi-rs-user"></i><a href="/login">Log In</a></li>
+                                <% if(user){ %>
                                 <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                                <% }else{ %>
+                                    <li><i class="fi-rs-user"></i><a href="/login">Log In</a></li>
+                                <% } %>
                             </ul>
                         </div>
                     </div>
@@ -203,7 +206,7 @@
                     <!-- mobile menu start -->
                     <nav>
                         <ul class="mobile-menu">
-                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="index.html">Home</a>
+                            <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/dashboard">Home</a>
                             </li>
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/shop">shop</a></li>
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="blog-category-fullwidth.html">Blog</a></li>

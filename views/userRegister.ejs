@@ -106,7 +106,7 @@
                 return false;
             } else {
                 nameError.innerHTML = "Valid";
-                nameError.style.color = 'green'
+                nameError.style.color = 'green';
             }
     
             // Email validation
@@ -120,13 +120,29 @@
                 return false;
             } else {
                 emailError.innerHTML = "Valid";
-                emailError.style.color = 'green'
+                emailError.style.color = 'green';
             }
     
             // Phone validation
             var phoneInput = document.forms["registrationForm"]["phone"];
             var phoneError = document.getElementById("phone-error");
             var phoneRegex = /^[0-9]{10}$/;
+            var consecutiveCount = 0;
+            var lastDigit = null;
+    
+            for (var i = 0; i < phoneInput.value.length; i++) {
+                if (phoneInput.value[i] === lastDigit) {
+                    consecutiveCount++;
+                    if (consecutiveCount > 6) {
+                        phoneError.innerHTML = "Enter a valid 10-digit phone number";
+                        phoneError.style.color = "red";
+                        return false;
+                    }
+                } else {
+                    consecutiveCount = 1;
+                }
+                lastDigit = phoneInput.value[i];
+            }
     
             if (!phoneRegex.test(phoneInput.value.trim())) {
                 phoneError.innerHTML = "Enter a valid 10-digit phone number";
@@ -134,7 +150,7 @@
                 return false;
             } else {
                 phoneError.innerHTML = "Valid";
-                phoneError.style.color = 'green'
+                phoneError.style.color = 'green';
             }
     
             // Password validation
@@ -148,12 +164,13 @@
                 return false;
             } else {
                 passwordError.innerHTML = "Valid";
-                passwordError.style.color = 'green'
+                passwordError.style.color = 'green';
             }
     
             return true;
         }
     </script>
+    
     
 
     <!-- Main Script -->

@@ -7,12 +7,13 @@
     const brandController = require('../controller/brandController')
     const isAdmin = require('../middlewares/isAdmin')
     const nocache = require('nocache')
+    const userController = require('../controller/userController')
 
 
 
     router.get('/admin',isAdmin,adminController.adminHome)
 
-    router.get('/adminlogin',isAdmin,adminController.getadminLogin)
+    router.get('/adminlogin',adminController.getadminLogin)
     router.post('/submit',adminController.postadminLogin)
     router.get('/adminlogout',adminController.getlogout)
 
@@ -44,7 +45,7 @@
     router.get('/publishedd/:Id',isAdmin,brandController.publishbrand)
     router.get('/unpublishedd/:Id',brandController.unpublishbrand)
 
-    // router.get('*',adminController.error)
+    router.get('*',adminController.error)
 
 
 

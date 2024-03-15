@@ -139,7 +139,7 @@ const productController ={
                 }
 
                 const images = req.files.map((file)=>`/product_images/${file.filename}`)
-            const Id = req.params.Id
+                const Id = req.params.Id
 
                    const result =  await Products.findByIdAndUpdate(Id,{
                         productname:req.body.productname,
