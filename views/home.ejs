@@ -17,7 +17,30 @@
     <link rel="shortcut icon" type="image/x-icon" href="/static/logo/mainlogo.png">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gravitas+One&family=Micro+5&display=swap" rel="stylesheet">
     <style>
+ 
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Barcode+128&family=Six+Caps&family=Xanh+Mono:ital@0;1&display=swap');
+        </style>
+
+    <style>
+        
+
+        .micro-5-regular {
+        font-family: "Micro 5", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        }
+        .libre-barcode  {
+        font-family: "Libre Barcode 128", system-ui;
+        font-weight: 400;
+        font-style: normal;
+        }
+
+
         .product-cart-wrap {
             height: 100%; /* Set a fixed height for the product box */
             display: flex;
@@ -37,7 +60,7 @@
     
         .product-content-wrap {
             padding: 15px; /* Add padding to the content for spacing */
-            text-align: center; /* Center the content */
+            text-align: left; /* Center the content */
         }
     
         .product-price {
@@ -79,8 +102,11 @@
         <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
             <div class="container">
                 <div class="header-wrap">
-                    <div class="logo logo-width-1">
+                    <div class="logo logo-width-6">
+                        <div class="logo logo-width-6" style="WIDTH: 141px;font-size: 33px; margin-left: -60px;">
                         <a href="index.html"><img src="/static/logo/mainlogo.png" alt="logo" style="min-width: 74px;"></a>
+                        <!-- <span class="micro-5-regular" style="letter-spacing: 2px;">Mobile Hub</span> -->
+                    </div>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
@@ -181,7 +207,7 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a href="index.html"><img src="/static/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    <a href="/dashboard"><img src="/static/assets/imgs/theme/logo.svg" alt="logo"></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -361,9 +387,6 @@
                                             <div class="product-category">
                                                 <span><%= row.brand.brand %></span>
                                             </div>
-                                            <!-- <div class="product-category">
-                                                <a href="shop-grid-right.html"><%= row.category.category %></a>
-                                            </div> -->
                                             <h2><a href="/productdetials/<%= row._id %>">  <%= row.productname %></a></h2>
                                             <div class="rating-result" title="90%">
                                                 <span>
@@ -375,8 +398,13 @@
                                                 <span class="old-price"> ₹ <%= row.oldprice %></span>
                                             </div>
                                         </div>
+                                        <div class="product_sort_info font-xs mb-30">
+                                            <% if(row.stock==0){ %>
+                                                <span class="mb-10 ml-20 text-danger text-center">Out of Stock</span>
+                                            <% } %>
+                                        </div>
                                         <div class="product-action-1 show">
-                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="/cart"><i class="fi-rs-shopping-bag-add"></i></a>
+                                            <a aria-label="Add To Cart" class="action-btn hover-up" href="/addtocart/<%= row._id %>" ><i class="fi-rs-shopping-bag-add"></i></a>
                                         </div>
                                     </div>
                                 </div>
@@ -506,6 +534,64 @@
         </div>
     </div>
     <!-- Vendor JS-->
+
+    <script>
+        function addcart(_id) {
+           event.preventDefault();
+           $.ajax({
+               url: `/checkstock/${_id}`,
+               type: "GET",
+               success: function(response) {
+                   console.log(response);
+                   if (response.success) {
+                       Swal.fire({
+                           icon: "success",
+                           title: "Added to cart successfully!",
+                           showConfirmButton: true,
+                       }).then((result) => {
+                           if (result.isConfirmed) {
+                               $.ajax({
+                                   url: `/addtocart/${_id}`,
+                                   type: "GET",
+                                   success: function(response) {
+                                       console.log("Item added to cart:", response);
+                                   },
+                                   error: function() {
+                                       console.error("Failed to add item to cart");
+                                   },
+                               });
+                           }
+                       });
+                   } else {
+                       if (response.message === "Please log in to add items to your cart.") {
+                           Swal.fire({
+                               icon: "error",
+                               title: "Login Required",
+                               text: "Please login to add items to your cart.",
+                               showConfirmButton: true,
+                           })
+                       } else {
+                           Swal.fire({
+                               icon: "error",
+                               title: "Product is out of stock",
+                               showConfirmButton: true,
+                           });
+                       }
+                   }
+               },
+               error: function() {
+                   Swal.fire({
+                       icon: "error",
+                       title: "Error occurred",
+                       text: "Failed to check stock availability",
+                       showConfirmButton: true,
+                   });
+               },
+           });
+       }
+       
+       
+       </script>
     <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="/static/assets/js/vendor/jquery-3.6.0.min.js"></script>
     <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>

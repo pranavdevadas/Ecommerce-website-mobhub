@@ -9,13 +9,18 @@ const nocache = require('nocache')
 const adminRouter = require('./routes/adminRoutes')
 const bodyParser = require('body-parser');
 const passport = require('passport')
-
-
+const MongoDBStore = require('connect-mongodb-session')(session);
 
 
 const PORT= process.env.PORT||3000
 
 app.use(nocache())
+
+const store = new MongoDBStore({
+    uri: 'mongodb://localhost:27017/session-store', // MongoDB connection URI
+    collection: 'sessions' // Collection to store sessions
+});
+
 
 
 //middleware to handle sesssion
@@ -23,6 +28,7 @@ app.use(session({
     secret: uuidv4(),
     resave: false,
     saveUninitialized: false,
+    store: store,
 }));
 
 app.use((req, res, next) => {

@@ -5,7 +5,7 @@ const customerController = {
 //get customer
     getcustomer:async (req,res,next)=>{
         try{
-            const users = await User.find().exec()
+            const users = await User.find()
             res.render('admin/customer',{
                 title :'Customers List',
                 users : users

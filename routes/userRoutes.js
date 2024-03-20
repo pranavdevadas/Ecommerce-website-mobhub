@@ -8,6 +8,7 @@ const Category = require('../model/catogory')
 const isUser = require('../middlewares/isUser')
 const isAuth = require('../middlewares/auth')
 const authController = require('../middlewares/auth')
+const cartController = require('../controller/cartController')
 
 
 
@@ -32,6 +33,12 @@ router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
 
 router.get('/shop',isUser,userController.getshop)
+
+router.get('/check-stock/:Id',isUser,cartController.checkstock)
+router.get('/addtocart/:Id',isUser,cartController.addtocart)
+router.get('/cart',isUser,cartController.getcart)
+router.post('/update-cart',cartController.updatecart)
+router.delete('/remove-from-cart/:Id',isUser,cartController.deleteCart)
 
 
 
