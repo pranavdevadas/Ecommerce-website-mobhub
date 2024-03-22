@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 
-
 <head>
     <meta charset="utf-8">
-    <title><%= locals.title|| 'Dashboard' %> </title>
+    <title><%= locals.title   %></title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,16 +11,15 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-
-    <link rel="shortcut icon" type="image/x-icon" href="/static/logo/mainlogo.png">
-    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/static/assets/imgs/theme/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="/static/assets/css/main.css">
 </head>
 
-<body id="product-list">
-    
+<body>
     <header class="header-area header-style-1 header-height-2">
         <div class="header-top header-top-ptb-1 d-none d-lg-block">
             <div class="container">
@@ -104,7 +102,7 @@
                                 <ul>
                                     <li><a href="/">Home</i></a>
                                     <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
-                                    <li class="position-static"><a href="/profile">My profile</i></a></li>
+                                    <li class="position-static"><a href="/profile">My Profile</i></a></li>
                                     <li><a href="#">Brands</a></li>
                                 </ul>
                             </nav>
@@ -113,6 +111,7 @@
                     <div class="hotline d-none d-lg-block">
                         <p><i class="fi-rs-headset"></i><span>Contact</span> 1900 - 888 </p>
                     </div>
+                    <p class="mobile-promotion">Happy <span class="text-brand">Mother's Day</span>. Big Sale Up to 40%</p>
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
                             <a href="/login">
@@ -148,95 +147,144 @@
             </div>
         </div>
     </header>
-    <div class="page-header breadcrumb-wrap">
-        <div class="container">
-            <div class="breadcrumb">
-                <a href="/dashboard" rel="nofollow">Home</a>
-                <span></span> Your Cart
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/dashboard" rel="nofollow">Home</a>
+                    <span></span> YourCart
+                    <span></span> Checkout
+                </div>
             </div>
         </div>
-    </div>
-
-    <section class="mt-50 mb-50">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="table-responsive">
-                            <table class="table shopping-summery text-center clean">
-                                <thead>
-                                    <tr class="main-heading">
-                                        <th scope="col">Image</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Subtotal</th>
-                                        <th scope="col">Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% userCart.items.forEach((row)=>{ %>
-                                        <tr>
-                                            <td class="image"><img src="static/<%= row.product.images[0] %>" alt="#"></td>
-                                            <td class="product-des">
-                                                <h5 class="product-name"><a href="/productdetials/<%= row.product._id %>"><%= row.product.productname %></a></h5>
-                                            </td>
-                                            <td class="price" data-title="Price"><span>₹ <%= row.product.newprice %></span></td>
-                                            <td class="text-center" data-title="Stock">
-                                                <div class="detail-qty border radius  m-auto">
-                                                    <a class="qty-down" data-id="<%= row.product._id %>" ><i class="fi-rs-angle-small-down"></i></a>
-                                                    <span class="qty-val" data-id="<%= row.product._id %>" ><%= row.quantity %></span>  
-                                                    <a class="qty-up" action="increment" data-id="<%= row.product._id %>" ><i class="fi-rs-angle-small-up" action="increment"></i></a>
-                                                </div>
-                                            </td>
-                                            <td class="text-right" data-title="Cart">
-                                                <span class="cart__price" data-id="<%= row.product._id %>">₹ <%= row.product.newprice * row.quantity %> </span>
-                                            </td>
-                                            <td class="action"  >
-                                                <form>
-                                                    <a type="button"  class="text-muted" data-id="<%= row.product._id %>" onclick="remove('<%= row.product._id %>')" ><i class="fi-rs-trash"></i></a></td>
-                                                </form>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
-                    </div>
-                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
-                    <div class="row mb-50">
-                        <div class="col-lg-6 col-md-12">
-                            <div class="border p-md-4 p-30 border-radius cart-totals">
-                                <div class="heading_s1 mb-3">
-                                    <h4>Cart Totals</h4>
-                                </div>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <tbody>
-                                            <tr>
-                                                <td class="cart_total_label">Cart Subtotal</td>
-                                                <td class="cart_total_amount"><span class="font-lg fw-900 text-brand"> ₹ <%= userCart.totalprice %> </span></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="cart_total_label">Shipping</td>
-                                                <% if(userCart  && userCart.items.length > 0){ %>
-                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>
-                                                <% }else{ %>
-                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> ₹ 0 </td>
-                                                <% } %>
-                                            </tr>
-                                            <tr>
-                                                <td class="cart_total_label">Total</td>
-                                                <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">₹ <%= userCart.totalprice %> </span></strong></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <a href="/checkout" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="toggle_info">
+                            <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to enter your code</a></span>
+                        </div>
+                        <div class="panel-collapse collapse coupon_form " id="coupon">
+                            <div class="panel-body">
+                                <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="Enter Coupon Code...">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="divider mt-50 mb-50"></div>
+                    </div>
+                </div>
+                <form action="/placeorder" method="POST">
+                    <div class="row">
+                        <div class="col">
+                            <div class="col-md-12">
+                                <a href="/addaddress"><button type="submit" class="btn btn-fill-out submit" name="submit" value="Submit">Add New Address</button></a> <br><br>   
+                            </div>
+                            <div class="row">
+                                <% if (addresses && addresses.length > 0) { %>
+                                    <% addresses.forEach((address, index) => { %>
+                                        <div class="col-lg-6">
+                                            <input class="form-check-input" required="" type="radio" name="addressId" value="<%= address._id %>" >
+                                            <div class="card mb-3 mb-lg-0" style="width: 80%;">
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">Address <%= index+1 %> </h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <address>
+                                                        <%= address.buildingname %><br>
+                                                        <%= address.city %>,<br>
+                                                        <%= address.state %><br>
+                                                        <%= address.pincode %>, 
+                                                    </address>
+                                                    <p><%= address.country %></p>
+                                                    <br>
+                                                    <a href="/address/edit/<%= address._id %>" class="btn-small">Edit Address</a><br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p>No addresses found.</p>
+                                <% } %>
+                            </div>
+                        </div>    
+                            <div class="col-md-6">
+                                <div class="order_review">
+                                    <div class="mb-20">
+                                        <h4>Your Orders</h4>
+                                    </div>
+                                    <div class="table-responsive order_table text-center">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2">Product</th>
+                                                    <th>Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% userCart.items.forEach((row)=>{ %>
+                                                <tr>
+                                                    <td class="image product-thumbnail"><img src="static/<%= row.product.images[0] %>" alt="#"></td>
+                                                    <td>
+                                                        <h5><a href="/productdetials/<%= row.product._id %>"><%= row.product.productname %></a></h5> <span class="product-qty">x <%= row.quantity %></span>
+                                                    </td>
+                                                    <td>₹ <%= row.product.newprice * row.quantity %> </td>
+                                                </tr>
+                                                <% }) %>
+                                                <tr>
+                                                    <th>SubTotal</th>
+                                                    <td class="product-subtotal" colspan="2" >₹ <%= userCart.totalprice %> </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Shipping</th>
+                                                    <td colspan="2"><em>Free Shipping</em></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Total</th>
+                                                    <td colspan="2" class="product-subtotal"  ><span class="font-xl text-brand fw-900" >₹ <%= userCart.totalprice %> </span></td>
+                                                    <input type="hidden" name="totalprice" value="<%= userCart.totalprice %>">
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                    <div class="payment_method">
+                                        <div class="mb-25">
+                                            <h5>Payment</h5>
+                                        </div>
+                                        <div class="payment_option">
+                                            <div class="custome-radio">
+                                                <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios3" value="CashOnDelevery" checked>
+                                                <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer" value="CashoffDelevery">Cash On Delivery</label>
+                                                <div class="form-group collapse in" id="bankTranfer">
+                                                </div>
+                                            </div>
+                                            <div class="custome-radio">
+                                                <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios5" value="paypal">
+                                                <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" value="paypal" aria-controls="paypal">Paypal</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="cartItem" value="<%= userCart.items %>">
+                    </form>
+                </div>
+            </section>
+        </main>
     <footer class="main">
         <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
             <div class="container">
@@ -252,7 +300,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="widget-about font-md mb-md-5 mb-lg-0">
                             <div class="logo logo-width-1 wow fadeIn animated">
-                                <a href="index.html"><img src="/static/logo/mainlogo.png" alt="logo"></a>
+                                <a href="/dashboard"><img src="/static/logo/mainlogo.png" alt="logo"></a>
                             </div>
                             <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
                             <p class="wow fadeIn animated">
@@ -331,146 +379,44 @@
             </div>
         </div>
     </footer>
-        <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js' "></script>
-        <script src="/static/assets/js/vendor/jquery-3.6.0.min.js' "></script>
-        <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js'"></script>
-        <script src="/static/assets/js/vendor/bootstrap.bundle.min.js'"></script>
-        <script src="/static/assets/js/plugins/slick.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.syotimer.min.js'"></script>
-        <script src="/static/assets/js/plugins/wow.js'"></script>
-        <script src="/static/assets/js/plugins/jquery-ui.js'"></script>
-        <script src="/static/assets/js/plugins/perfect-scrollbar.js'"></script>
-        <script src="/static/assets/js/plugins/magnific-popup.js'"></script>
-        <script src="/static/assets/js/plugins/select2.min.js'"></script>
-        <script src="/static/assets/js/plugins/waypoints.js'"></script>
-        <script src="/static/assets/js/plugins/counterup.js'"></script>
-
-        <script src="/static/assets/js/plugins/images-loaded.js'"></script>
-        <script src="/static/assets/js/plugins/isotope.js'"></script>
-        <script src="/static/assets/js/plugins/scrollup.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.vticker-min.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.theia.sticky.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.elevatezoom.js' "></script>
-
-        <script src="/static/assets/js/main.js'"></script>
-        <script src="/static/assets/js/shop.js'"></script>
-          
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        
-
-        <script>
-            function remove(productId) {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to remove this item from your cart.",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, remove it!",
-                cancelButtonText: "Cancel",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/remove-from-cart/${productId}`,
-                        type: "DELETE",
-                        success: function (data) {
-                            if (data.success) {
-                                Swal.fire({
-                                    title: "Removed!",
-                                    text: "The item has been successfully removed from your cart.",
-                                    icon: "success",
-                                    showConfirmButton: false,
-                                    
-                                });
-                                setTimeout(() => {
-                                    location.reload() 
-                                    }, 2000);
-                                $(".cart-item[data-id='" + productId + "']").remove();
-                                $(".cart__total span").text("Rs " + data.totalPrice);
-                            } else {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to remove the item. Please try again later.",
-                                    icon: "error"
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                title: "Error!",
-                                text: "An unexpected error occurred. Please try again later.",
-                                icon: "error"
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
-        
-
-            
-        $(document).ready(function () {
-            $(".qty-down, .qty-up").on("click", function (e) {
-                e.preventDefault();
-                var $button = $(this);
-                var productId = $button.data("id");
-                var action = $button.hasClass("qty-down") ? "decrement" : "increment";
-
-                var currentQuantity = parseInt($(".qty-val[data-id='" + productId + "']").text());
-
-                if (action === "increment" && currentQuantity === 4) {
-                    Swal.fire({
-                        title: "Maximum Quantity Reached",
-                        icon: "warning"
-                    });
-                    return;
-                }
-                
-                else if(action === 'decrement' && currentQuantity === 1){
-                    return
-                }
-
-                $.ajax({
-                    url: "/update-cart",
-                    type: "POST",
-                    data: { productId: productId, action: action },
-                    success: function (data) {
-                        console.log("Server response:", data);
-                        if (data.success) {
-                            var cartItem = data.cartItem;
-                            var $quantitySpan = $(".qty-val[data-id='" + productId + "']");
-                            var $cartPriceSpan = $(".cart__price[data-id='" + productId + "']");
-                            var $totalPriceSpan = $(".cart__total span[data-id='" + productId + "']");
-
-                            $quantitySpan.text(cartItem.quantity);
-
-                            $cartPriceSpan.text("Rs " + (cartItem.price * cartItem.quantity));
-                            $totalPriceSpan.text("Rs " + data.totalPrice);
-                        } else {
-                            if (data.message === "Maximum quantity reached for this product") {
-                                Swal.fire({
-                                    title: "Maximum Quantity Reached",
-                                    icon: "warning"
-                                });
-                            }
-                        }
-                    },
-                    error: function () {
-                        alert("Error in AJAX request.");
-                    },
-                });
-            });
-        });
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <h5 class="mb-5">Now Loading</h5>
+                    <div class="loader">
+                        <div class="bar bar1"></div>
+                        <div class="bar bar2"></div>
+                        <div class="bar bar3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Vendor JS-->
+    <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/static/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/static/assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/static/assets/js/plugins/slick.js"></script>
+    <script src="/static/assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/static/assets/js/plugins/wow.js"></script>
+    <script src="/static/assets/js/plugins/jquery-ui.js"></script>
+    <script src="/static/assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/static/assets/js/plugins/magnific-popup.js"></script>
+    <script src="/static/assets/js/plugins/select2.min.js"></script>
+    <script src="/static/assets/js/plugins/waypoints.js"></script>
+    <script src="/static/assets/js/plugins/counterup.js"></script>
+    <script src="/static/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/static/assets/js/plugins/images-loaded.js"></script>
+    <script src="/static/assets/js/plugins/isotope.js"></script>
+    <script src="/static/assets/js/plugins/scrollup.js"></script>
+    <script src="/static/assets/js/plugins/jquery.vticker-min.js"></script>
+    <!-- Template  JS -->
+    <script src="/static/assets/js/main.js"></script>
+    <script src="/static/assets/js/shop.js"></script>
+</body>
 
 
-
-    </script>
-
-    </body>
-        
-    
 </html>

@@ -2,9 +2,10 @@
 <html class="no-js" lang="en">
 
 
+<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/page-account.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:27:15 GMT -->
 <head>
     <meta charset="utf-8">
-    <title><%= locals.title|| 'Shop' %> </title>
+    <title><%= locals.title %> </title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,15 +13,13 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-
-    <link rel="shortcut icon" type="image/x-icon" href="/static/logo/mainlogo.png">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/static/assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
     <link rel="stylesheet" href="/static/assets/css/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 </head>
 
-<body id="product-list">
-    
+<body>
     <header class="header-area header-style-1 header-height-2">
         <div class="header-top header-top-ptb-1 d-none d-lg-block">
             <div class="container">
@@ -47,11 +46,15 @@
                 </div>
             </div>
         </div>
+
         <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
             <div class="container">
                 <div class="header-wrap">
-                    <div class="logo logo-width-1">
+                    <div class="logo logo-width-6">
+                        <div class="logo logo-width-6" style="WIDTH: 141px;font-size: 33px; margin-left: -60px;">
                         <a href="index.html"><img src="/static/logo/mainlogo.png" alt="logo" style="min-width: 74px;"></a>
+                        <!-- <span class="micro-5-regular" style="letter-spacing: 2px;">Mobile Hub</span> -->
+                    </div>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
@@ -101,9 +104,9 @@
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
                             <nav>
                                 <ul>
-                                    <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
-                                    <li class="position-static"><a href="/profile">My Profile</i></a></li>
+                                    <li><a  href="/">Home</i></a>
+                                    <li><a href="/shop">Shop</i></a></li>
+                                    <li class="position-static"><a class="active" href="/profile">My profile</i></a></li>
                                     <li><a href="#">Brands</a></li>
                                 </ul>
                             </nav>
@@ -148,123 +151,48 @@
             </div>
         </div>
     </header>
-    <div>
-        <img src="/static/banner/banner5.jpg" width="100%">
-    </div>
-    <main class="main">
-            <section class="mt-50 mb-50">
-                <div class="container">
+    <section class="pt-150 pb-150">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 m-auto">
                     <div class="row">
-                        <div class="col-lg-9">
-                            <div class="shop-product-fillter style-2">
-                                <div class="sort-by-product-area">
-                                    <div class="sort-by-cover">
-                                        <div class="sort-by-product-wrap">
-                                            <div class="sort-by">
-                                                <span><i class="fi-rs-apps-sort"></i>Sort by:</span>
+                            <div class="tab-content dashboard-content">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Edit Profile</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form action="/edituser/<%= users._id %>" method="post" onsubmit="return validateForm()" name="registrationForm">
+                                            <div class="mb-3">
+                                                <label class="form-label">Enter your name</label>
+                                                <input class="form-control" placeholder="Your name" type="text" value="<%= users.name %>" name="name" >
+                                                <span id="name-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
                                             </div>
-                                            <div class="sort-by-dropdown-wrap">
-                                                <span> High to Low <i class="fi-rs-angle-small-down"></i></span>
+                                            <div class="mb-3">
+                                                <label class="form-label">Email</label>
+                                                <input class="form-control" placeholder="Your email" value="<%= users.email %>" type="email" name="email" >
+                                                <span id="email-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
+                                            </div> 
+                                            <div class="mb-3">
+                                                <label class="form-label">Phone</label>
+                                                <div class="row gx-2">
+                                                    <input class="form-control" placeholder="Enter your number" value="<%= users.phone %>" type="text" name="phone" >
+                                                    <span id="phone-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="sort-by-dropdown">
-                                            <select name="sort_by" id="sort">
-                                                <option value="low_to_high">Price: Low to High</option>
-                                                <option value="high_to_low">Price: High to Low</option>
-                                                <option value="a_to_z">A-Z</option>
-                                                <option value="z_to_a">Z-A</option>
-                                            </select>
-                                        </div>
+                                            <div class="mb-4">
+                                                <button type="submit" class="btn btn-primary w-100"> Edit </button>
+                                            </div> 
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                            <div class="product-list mb-50" >
-                                <% products.forEach((row,index)=>{ %>
-                                <div class="product-cart-wrap">
-                                    <div id="popup-messages">
-                                        <% if (typeof successMessage !== 'undefined') { %>
-                                            <div class="alert alert-success" role="alert">
-                                                <%= successMessage %>
-                                            </div>
-                                        <% } %>
-                                        
-                                        <% if (typeof alertMessage !== 'undefined') { %>
-                                            <div class="alert alert-danger" role="alert">
-                                                <%= alertMessage %>
-                                            </div>
-                                        <% } %>
-                                    </div>
-                                    <div class="product-img-action-wrap">
-                                        <div class="product-img product-img-zoom">
-                                            <a href="<%= row._Id %>">
-                                                <img class="default-img"  src="/static/<%= row.images[2] %>" alt="">
-                                                <img class="hover-img"  src="/static/<%= row.images[1] %>" alt="">
-                                            </a>
-                                        </div>
-                                        <div class="product-action-1">
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/addtowishlist/:Id"><i class="fi-rs-heart"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="product-content-wrap">
-                                        <h2><a href="/productdetials/<%= row._id %>"><%= row.productname%></a></h2>
-                                        <div class="rating-result" title="90%">
-                                            <span>
-                                                <span>90%</span>
-                                            </span>
-                                        </div>
-                                        <div class="product-price">
-                                            <span> ₹ <%= row.oldprice %></span>
-                                            <span class="old-price"> ₹ <%= row.newprice %></span>
-                                        </div>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Ram : <%= row.ram %>GB </li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Storage : <%= row.storage %>GB</li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Color: <%= row.colour %></li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Category: <%= row.category.category %></li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Brand: <%= row.brand.brand %></li>
-                                        <% if(row.stock==0){ %>
-                                        <div class="product_sort_info font-xs mb-30">
-                                                <span class="mb-10 ml-20 text-danger text-center"><b>Out of Stock</b></span>
-                                        </div>
-                                        <% } else { %>
-                                        <div class="product-action-1 show">
-                                            <a aria-label="Now" class="action-btn addtocart" onclick="addcart('<%= row._id %>')"  ><i class="fi-rs-shopping-bag-add"></i>Add to Cart</a>
-                                        </div>
-                                        <% } %>
-                                    </div>
-                                </div>
-                                    <% }) %>
-                            </div>
-                            <!--pagination-->
-                        </div>
-                        <div class="col-lg-3 primary-sidebar sticky-sidebar">
-                            <!-- Product sidebar Widget -->
-                            <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">
-                                <div class="widget-header position-relative mb-20 pb-10">
-                                    <h5 class="widget-title mb-10">New products</h5>
-                                    <div class="bt-1 border-color-1"></div>
-                                </div>
-                                <% products.forEach((row,index)=>{ %>
-                                <div class="single-post clearfix">
-                                    <!-- <a  href="/productdetials/<%= row._id %>"> -->
-                                        <div class="image">
-                                            <img src="/static/<%= row.images[2] %>" alt="#">
-                                        </div>
-                                    <!-- </a> -->
-                                    <div class="content pt-10">
-                                        <h5><a href="/productdetials/<%= row._id %>"><%= row.productname %></a></h5>
-                                        <p class="price mb-0 mt-5"> ₹ <%= row.newprice%></p>
-                                        <div class="product-rate">
-                                            <div class="product-rating" style="width:90%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }) %>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+    </section>
+</main>
 <footer class="main">
     <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
         <div class="container">
@@ -280,7 +208,7 @@
                 <div class="col-lg-4 col-md-6">
                     <div class="widget-about font-md mb-md-5 mb-lg-0">
                         <div class="logo logo-width-1 wow fadeIn animated">
-                            <a href="/"><img src="/static/logo/mainlogo.png" alt="logo"></a>
+                            <a href="/dashboard"><img src="/static/logo/mainlogo.png" alt="logo"></a>
                         </div>
                         <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
                         <p class="wow fadeIn animated">
@@ -359,91 +287,123 @@
         </div>
     </div>
 </footer>
-    <!-- Vendor JS-->
-    <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js' "></script>
-    <script src="/static/assets/js/vendor/jquery-3.6.0.min.js' "></script>
-    <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js'"></script>
-    <script src="/static/assets/js/vendor/bootstrap.bundle.min.js'"></script>
-    <script src="/static/assets/js/plugins/slick.js'"></script>
-    <script src="/static/assets/js/plugins/jquery.syotimer.min.js'"></script>
-    <script src="/static/assets/js/plugins/wow.js'"></script>
-    <script src="/static/assets/js/plugins/jquery-ui.js'"></script>
-    <script src="/static/assets/js/plugins/perfect-scrollbar.js'"></script>
-    <script src="/static/assets/js/plugins/magnific-popup.js'"></script>
-    <script src="/static/assets/js/plugins/select2.min.js'"></script>
-    <script src="/static/assets/js/plugins/waypoints.js'"></script>
-    <script src="/static/assets/js/plugins/counterup.js'"></script>
-    <!-- <script src="/static/assets/js/plugins/jquery.countdown.min.js'"></script> -->
-    <script src="/static/assets/js/plugins/images-loaded.js'"></script>
-    <script src="/static/assets/js/plugins/isotope.js'"></script>
-    <script src="/static/assets/js/plugins/scrollup.js'"></script>
-    <script src="/static/assets/js/plugins/jquery.vticker-min.js'"></script>
-    <script src="/static/assets/js/plugins/jquery.theia.sticky.js'"></script>
-    <script src="/static/assets/js/plugins/jquery.elevatezoom.js' "></script>
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="text-center">
+                <h5 class="mb-5">Now Loading</h5>
+                <div class="loader">
+                    <div class="bar bar1"></div>
+                    <div class="bar bar2"></div>
+                    <div class="bar bar3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  
+<script src="/static/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/static/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/static/assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/static/assets/js/plugins/slick.js"></script>
+    <script src="/static/assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/static/assets/js/plugins/wow.js"></script>
+    <script src="/static/assets/js/plugins/jquery-ui.js"></script>
+    <script src="/static/assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/static/assets/js/plugins/magnific-popup.js"></script>
+    <script src="/static/assets/js/plugins/select2.min.js"></script>
+    <script src="/static/assets/js/plugins/waypoints.js"></script>
+    <script src="/static/assets/js/plugins/counterup.js"></script>
+    <script src="/static/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/static/assets/js/plugins/images-loaded.js"></script>
+    <script src="/static/assets/js/plugins/isotope.js"></script>
+    <script src="/static/assets/js/plugins/scrollup.js"></script>
+    <script src="/static/assets/js/plugins/jquery.vticker-min.js"></script>
+    <script src="/static/assets/js/plugins/jquery.theia.sticky.js"></script>
     <!-- Template  JS -->
-    <script src="/static/assets/js/main.js'"></script>
-    <script src="/static/assets/js/shop.js'"></script>
-
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <script>
-            function addcart(_id) {
-            event.preventDefault();
-            $.ajax({
-                url: `/check-stock/${_id}`,
-                type: "GET",
-                success: function(response) {
-                    console.log("Check stock response:", response);
-                    if (response.success) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Added to cart successfully!",
-                            showConfirmButton: true,
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: `/addtocart/${_id}`,
-                                    type: "GET",
-                                    success: function(response) {
-                                        console.log("Item added to cart:", response);
-                                    },
-                                    error: function() {
-                                        console.error("Failed to add item to cart");
-                                    },
-                                });
-                            }
-                        });
-                    } else {
-                        if (response.message === "Please log in to add items to your cart.") {
-                            Swal.fire({
-                                icon: "error",
-                                title: "Login Required",
-                                text: "Please login to add items to your cart.",
-                                showConfirmButton: true,
-                            })
-                        } else {
-                            console.error("Error:", response.message);
-                            Swal.fire({
-                                icon: "error",
-                                title: "Product is out of stock",
-                                showConfirmButton: true,
-                            });
+    <script src="/static/assets/js/main.js"></script>
+    <script>
+        setTimeout(() => {
+        document.getElementById("error").style.display = "none";
+        }, 4000)
+    </script> 
+        <script>
+            function validateForm() {
+                // Name validation
+                var nameInput = document.forms["registrationForm"]["name"];
+                var nameError = document.getElementById("name-error");
+                var nameRegex = /^[a-zA-Z ]+$/;
+        
+                if (!nameRegex.test(nameInput.value.trim())) {
+                    nameError.innerHTML = "Name should only contain letters and spaces";
+                    nameError.style.color = "red";
+                    return false;
+                } else {
+                    nameError.innerHTML = "Valid";
+                    nameError.style.color = 'green';
+                }
+        
+                // Email validation
+                var emailInput = document.forms["registrationForm"]["email"];
+                var emailError = document.getElementById("email-error");
+                var emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+        
+                if (!emailRegex.test(emailInput.value.trim())) {
+                    emailError.innerHTML = "Enter a valid Gmail address";
+                    emailError.style.color = "red";
+                    return false;
+                } else {
+                    emailError.innerHTML = "Valid";
+                    emailError.style.color = 'green';
+                }
+        
+                // Phone validation
+                var phoneInput = document.forms["registrationForm"]["phone"];
+                var phoneError = document.getElementById("phone-error");
+                var phoneRegex = /^[0-9]{10}$/;
+                var consecutiveCount = 0;
+                var lastDigit = null;
+        
+                for (var i = 0; i < phoneInput.value.length; i++) {
+                    if (phoneInput.value[i] === lastDigit) {
+                        consecutiveCount++;
+                        if (consecutiveCount > 6) {
+                            phoneError.innerHTML = "Enter a valid 10-digit phone number";
+                            phoneError.style.color = "red";
+                            return false;
                         }
+                    } else {
+                        consecutiveCount = 1;
                     }
-                },
-                error: function(err) {
-                    console.log('error');
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error occurred",
-                        text: "Failed to check stock availability",
-                        showConfirmButton: true,
-                    });
-                },
-            });
-        }
-     </script>
-
+                    lastDigit = phoneInput.value[i];
+                }
+        
+                if (!phoneRegex.test(phoneInput.value.trim())) {
+                    phoneError.innerHTML = "Enter a valid 10-digit phone number";
+                    phoneError.style.color = "red";
+                    return false;
+                } else {
+                    phoneError.innerHTML = "Valid";
+                    phoneError.style.color = 'green';
+                }
+        
+                // Password validation
+                var passwordInput = document.forms["registrationForm"]["password"];
+                var passwordError = document.getElementById("password-error");
+                var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,12}$/;
+        
+                if (!passwordRegex.test(passwordInput.value)) {
+                    passwordError.innerHTML = "Password must be 6-12 characters with at least one uppercase, one lowercase, one digit, and one special character";
+                    passwordError.style.color = "red";
+                    return false;
+                } else {
+                    passwordError.innerHTML = "Valid";
+                    passwordError.style.color = 'green';
+                }
+        
+                return true;
+            }
+        </script>
 
 </body>
 

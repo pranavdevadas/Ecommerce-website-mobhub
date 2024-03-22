@@ -16,7 +16,7 @@ const cartController = {
             const productId = req.params.Id
             const quantity = 1
 
-            const product = await Products.findById(productId);
+            const product = await Products.findById(productId)
             
             if (!product || product.stock === 0) {
                 return res.status(400).json({ success: false, message: "Product is out of stock." });
@@ -25,7 +25,7 @@ const cartController = {
             let usercart = await Cart.findOne({ userId: userId })
 
             if (!usercart) {
-                console.log('dfdf');
+
                 const newcart = new Cart({
                     userId: userId,
                     items: [{
@@ -37,11 +37,12 @@ const cartController = {
                 });
 
                 await newcart.save();
+                
             } else {
-                console.log('4433');
+
                 const existingProduct = usercart.items.find(
                     (item) => item.product.toString() === productId.toString()
-                );
+                )
 
                 if (existingProduct) {
                     existingProduct.quantity += quantity;
@@ -116,7 +117,7 @@ const cartController = {
     getcart : async (req,res,next)=>{
         try{
 
-            const userId = req.session.userID
+            const userId = req.session.userID 
             const userCart = await Cart.findOne({userId : userId}).populate({path:'items.product', model: 'product' })
 
 
@@ -203,11 +204,12 @@ const cartController = {
             const userCart = await Cart.findOne({ userId: userId })
 
             if (userCart) {
-                const cartProductIndex = userCart.items.findIndex(item => item.product.toString() === productId); // Use findIndex instead of find
+                const cartProductIndex = userCart.items.findIndex(item => item.product.toString() === productId);
     
                 if (cartProductIndex !== -1) {
                     userCart.items.splice(cartProductIndex, 1);
-                    userCart.totalprice = userCart.items.reduce((total, item) => total + item.price * item.quantity, 0);
+                    userCart.totalprice = userCart.items.reduce((total, item) => total + item.price * item.quantity, 0)
+                    
                     await userCart.save();
     
                     res.json({ success: true });
