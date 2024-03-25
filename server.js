@@ -17,8 +17,8 @@ const PORT= process.env.PORT||3000
 app.use(nocache())
 
 const store = new MongoDBStore({
-    uri: 'mongodb://localhost:27017/session-store', // MongoDB connection URI
-    collection: 'sessions' // Collection to store sessions
+    uri: process.env.MONGODB_STORE_URI,
+    collection: process.env.MONGODB_STORE_COLLECTION
 });
 
 
@@ -53,6 +53,13 @@ app.use(express.urlencoded({extended:false}))
 app.use(passport.initialize())
 app.use(passport.session())
 
+
+//middleware for error handling
+app.use((err, req, res, next) => {
+    console.error(err.stack); 
+    res.status(500).send('Something went wrong!'); 
+  });
+  
 
 
 //set template engine 

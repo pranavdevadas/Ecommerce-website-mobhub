@@ -206,7 +206,9 @@
             <div class="container">
                 <div class="breadcrumb">
                     <a href="/profile" rel="nofollow">My Profile</a> 
-                    <span></span> Orders
+                    <span></span> orders
+                    <span></span> Order Detail
+
                 </div>
             </div>
         </div>
@@ -241,50 +243,123 @@
                                 <div class="col-md-8">
                                     <div class="tab-content dashboard-content">
                                         <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h5 class="mb-0">Your Orders</h5>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="table-responsive">
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Date</th>
-                                                                    <th>Tracking ID</th>
-                                                                    <th>Product</th>
-                                                                    <th>Total</th>
-                                                                    <th>Status</th>
-                                                                    <th>Actions</th>
-                                                                    <th></th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <% order.forEach(order => { %>
-                                                                    <% order.items.forEach(item => { %>
-                                                                        <tr>
-                                                                            <td><%= order.orderDate %></td>
-                                                                            <td><%= order.trackingId %></td>
-                                                                            <td><%= item.product.productname %></td>
-                                                                            <td>Rs. <%= order.totalprice %></td>
-                                                                            <td><%= order.status %></td>
-                                                                            <% if (order.status === 'Delivered') { %>
-                                                                                <td><a href="/returnorder/<%= order._id %>" class="btn-small d-block" style="color: red;">Return Order</a></td>
-                                                                            <% } else if (order.status === 'Cancelled'|| order.status === 'Returned' ) { %>
-                                                                                <td><span style="color: red;">N/A</span></td>
-                                                                            <% } else { %>
-                                                                                <td><a href="/cancelorder/<%= order._id %>" class="btn-small d-block" style="color: red;">Cancel Order</a></td>
-                                                                            <% } %>
-                                                                            <th><a href="/orders/detais/<%= order._id %>" class="btn-small d-block" style="color: darkgreen;">More Info</a></th>
-                                                                        </tr>
-                                                                    <% }) %>
-                                                                <% }) %>
-                                                            </tbody>
-                                                        </table>
-                                                        
+                                            <section class="content-main">
+                                                <div class="content-header">
+                                                    <div>
+                                                        <h2 class="content-title card-title">Order detail</h2>
+                                                        <p>Details for Tracking ID: <%= order.trackingId %></p>
                                                     </div>
                                                 </div>
-                                            </div>
+                                                <div class="card">
+                                                    <header class="card-header">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                                                                <span>
+                                                                    <i class="material-icons md-calendar_today"></i> <b><%= order.orderDate %></b>
+                                                                </span> <br>
+                                                                <small class="text-muted">Tracking ID: <%= order.trackingId %></small>
+                                                            </div>
+                                                        </div>
+                                                    </header>
+                                                    <div class="card-body">
+                                                        <div class="row mb-50 mt-20 order-info-wrap">
+                                                            <div class="col-md-4">
+                                                                <article class="icontext align-items-start">
+                                                                    <span class="icon icon-sm rounded-circle bg-primary-light">
+                                                                        <i class="text-primary material-icons md-person"></i>
+                                                                    </span>
+                                                                    <div class="text">
+                                                                        <h6 class="mb-1">Customer</h6>
+                                                                        <p class="mb-1">
+                                                                            <%= users.billingdetails.name %> <br><%= users.billingdetails.email %> <br>+91 <%= users.billingdetails.phone %>
+                                                                        </p>
+                                                                    </div>
+                                                                </article>
+                                                            </div> <!-- col// -->
+                                                            <div class="col-md-4">
+                                                                <article class="icontext align-items-start">
+                                                                    <span class="icon icon-sm rounded-circle bg-primary-light">
+                                                                        <i class="text-primary material-icons md-local_shipping"></i>
+                                                                    </span>
+                                                                    <div class="text">
+                                                                        <h6 class="mb-1">Order info</h6>
+                                                                        <p class="mb-1">
+                                                                            Shipping: Fargo express <br> Pay method: <%= order.paymentMethod %> <br> Status: <%= order.status %> 
+                                                                        </p>
+                                                                    </div>
+                                                                </article>
+                                                            </div> <!-- col// -->
+                                                            <div class="col-md-4">
+                                                                <article class="icontext align-items-start">
+                                                                    <span class="icon icon-sm rounded-circle bg-primary-light">
+                                                                        <i class="text-primary material-icons md-place"></i>
+                                                                    </span>
+                                                                    <div class="text">
+                                                                        <h6 class="mb-1">Deliver to</h6>
+                                                                        <p class="mb-1">
+                                                                            City: <%= users.billingdetails.city %>  <br><%= users.billingdetails.buildingname %>,<br> <%= users.billingdetails.country %>, <br> <%= order.trackingId %>
+                                                                        </p>
+                                                                    </div>
+                                                                </article>
+                                                            </div> <!-- col// -->
+                                                        </div> <!-- row // -->
+                                                        <div class="row">
+                                                            <div class="col-lg-7">
+                                                                <div class="table-responsive">
+                                                                    <table class="table">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th width="40%">Product</th>
+                                                                                <th width="20%">Unit Price</th>
+                                                                                <th width="20%">Quantity</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <% order.items.forEach((row) => { %>
+                                                                            <tr>
+                                                                                <td>
+                                                                                    <a class="itemside" href="#">
+                                                                                        <div class="info"> <%= row.product.productname %>, </div>
+                                                                                    </a>
+                                                                                    
+                                                                                </td>
+                                                                                <td> <%= row.price %> </td>
+                                                                                <td> <%= row.quantity %> </td>
+                                                                            </tr>
+                                                                            <% }) %>
+                                                                          </tbody>
+                                                                    </table>
+                                                                </div> <!-- table-responsive// -->
+                                                            </div> <!-- col// -->
+                                                            <div class="col-lg-1"></div>
+                                                            <div class="col-lg-4">
+                                                                <div class="box shadow-sm bg-light">
+                                                                    <h6 class="mb-15">Payment info</h6>
+                                                                    <p>
+                                                                        <%= order.paymentMethod %> 
+                                                                        <br>
+                                                                    </p>
+                                                                </div>
+
+                                                                <article style="width: 189px; margin-top: 19%;">
+                                                                    <dl class="dlist">
+                                                                        <dt>Subtotal:</dt>
+                                                                        <dd style="margin-left: 54%;">Rs. <%= order.totalprice %></dd>
+                                                                    </dl>
+                                                                    <dl class="dlist">
+                                                                        <dt>Shipping cost:</dt>
+                                                                        <dd style="margin-left: 54%;">Free Shipping</dd>
+                                                                    </dl>
+                                                                    <dl class="dlist">
+                                                                        <dt>Grand total:</dt>
+                                                                        <dd> <b class="h5" style="margin-left: 36%;">Rs. <%= order.totalprice %></b> </dd>
+                                                                    </dl>
+                                                                </article>
+                                                            </div>
+                                                        </div>
+                                                    </div> 
+                                                </div> 
+                                            </section>
                                         </div>
                                     </div>
                                 </div>
@@ -423,6 +498,7 @@
     <script src="/static/assets/js/plugins/scrollup.js"></script>
     <script src="/static/assets/js/plugins/jquery.vticker-min.js"></script>
     <script src="/static/assets/js/plugins/jquery.theia.sticky.js"></script>
+    
     <!-- Template  JS -->
     <script src="/static/assets/js/main.js"></script>
     <script>

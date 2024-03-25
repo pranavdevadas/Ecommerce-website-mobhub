@@ -159,6 +159,7 @@
 
     <section class="mt-50 mb-50">
         <div class="container">
+            <% if(userCart && userCart.items.length > 0) { %>
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
@@ -196,7 +197,7 @@
                                                     <a type="button"  class="text-muted" data-id="<%= row.product._id %>" onclick="remove('<%= row.product._id %>')" ><i class="fi-rs-trash"></i></a></td>
                                                 </form>
                                         </tr>
-                                    <% }) %>
+                                    
                                 </tbody>
                             </table>
                     </div>
@@ -211,21 +212,17 @@
                                     <table class="table">
                                         <tbody>
                                             <tr>
-                                                <td class="cart_total_label">Cart Subtotal</td>
-                                                <td class="cart_total_amount"><span class="font-lg fw-900 text-brand"> ₹ <%= userCart.totalprice %> </span></td>
-                                            </tr>
+                                                <td class="cart_total_label">Cart Subtotal</td>      
+                                                <td><span class="cart__price" class="font-lg fw-900 text-brand" data-id="<%= row.product._id %>">Rs <%= row.product.newprice * row.quantity %> </span></td>
                                             <tr>
                                                 <td class="cart_total_label">Shipping</td>
-                                                <% if(userCart  && userCart.items.length > 0){ %>
-                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>
-                                                <% }else{ %>
-                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> ₹ 0 </td>
-                                                <% } %>
+                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>                                               
                                             </tr>
                                             <tr>
                                                 <td class="cart_total_label">Total</td>
-                                                <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">₹ <%= userCart.totalprice %> </span></strong></td>
+                                                <td><span class="cart__price" class="font-lg fw-900 text-brand" data-id="<%= row.product._id %>">Rs <%= row.product.newprice * row.quantity %> </span></td>
                                             </tr>
+                                            <% }) %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -235,6 +232,13 @@
                     </div>
                 </div>
             </div>
+            <% } else { %>
+                <div class="row">
+                    <div class="col-12">
+                        <p>Your cart is empty.</p>
+                    </div>
+                </div>
+            <% } %>
         </div>
     </section>
     <footer class="main">
@@ -444,7 +448,7 @@
                             var cartItem = data.cartItem;
                             var $quantitySpan = $(".qty-val[data-id='" + productId + "']");
                             var $cartPriceSpan = $(".cart__price[data-id='" + productId + "']");
-                            var $totalPriceSpan = $(".cart__total span[data-id='" + productId + "']");
+                            var $totalPriceSpan = $(".cart__total[data-id='" + productId + "']");
 
                             $quantitySpan.text(cartItem.quantity);
 

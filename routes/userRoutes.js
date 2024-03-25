@@ -32,6 +32,7 @@ router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
 
 router.get('/shop',isUser,userController.getshop)
+router.get('/priceFilter/:category?', userController.getshop);
 
 router.get('/check-stock/:Id',isUser,cartController.checkstock)
 router.get('/addtocart/:Id',isUser,cartController.addtocart)
@@ -44,11 +45,12 @@ router.post('/placeorder',isUser,userController.postcheckout)
 
 router.get('/profile',isUser,userController.myprofie)
 
+router.get('/myaddress',isUser,userController.getmyaddress)
 router.get('/addaddress',isUser,userController.addaddress)
 router.post('/address-add',isUser,userController.postaddaddress)
 router.get('/address/edit/:Id',isUser,userController.geteditaddress)
 router.post('/address-edit/:Id',userController.posteditaddress)
-router.get('/address/delete/:Id',userController.deleteAddress)
+router.get('/address/delete/:Id',isUser,userController.deleteAddress)
 
 router.get('/editprofile/:Id',isUser,userController.geteditprofile)
 router.post('/edituser/:Id',isUser,userController.posteditprofile)
@@ -58,9 +60,9 @@ router.post('/reset/:Id',userController.postresetpassword)
 
 
 router.get('/orders',isUser,userController.getorders)
-router.get('/myaddress',isUser,userController.getmyaddress)
-router.get('/cancelorder/:Id',userController.cancelorder)
-router.post('/returnorder/:Id',userController.refundorder)
+router.get('/orders/detais/:Id',isUser,userController.orderdetail)
+router.get('/cancelorder/:Id',isUser,userController.cancelorder)
+router.get('/returnorder/:Id',isUser,userController.refundorder)
 
 router.get('/account-info',isUser,userController.getaccontdetials)
 

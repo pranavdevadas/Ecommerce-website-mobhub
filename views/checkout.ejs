@@ -184,40 +184,41 @@
                         <div class="divider mt-50 mb-50"></div>
                     </div>
                 </div>
+                <div class="col-md-12">
+                    <a href="/addaddress"><button  class="btn btn-fill-out submit" >Add New Address</button></a> <br><br>   
+                </div>
                 <form action="/placeorder" method="POST">
                     <div class="row">
                         <div class="col">
-                            <div class="col-md-12">
-                                <a href="/addaddress"><button type="submit" class="btn btn-fill-out submit" name="submit" value="Submit">Add New Address</button></a> <br><br>   
-                            </div>
-                            <div class="row">
-                                <% if (addresses && addresses.length > 0) { %>
-                                    <% addresses.forEach((address, index) => { %>
-                                        <div class="col-lg-6">
-                                            <input class="form-check-input" required="" type="radio" name="addressId" value="<%= address._id %>" >
-                                            <div class="card mb-3 mb-lg-0" style="width: 80%;">
-                                                <div class="card-header">
-                                                    <h5 class="mb-0">Address <%= index+1 %> </h5>
-                                                </div>
-                                                <div class="card-body">
-                                                    <address>
-                                                        <%= address.buildingname %><br>
-                                                        <%= address.city %>,<br>
-                                                        <%= address.state %><br>
-                                                        <%= address.pincode %>, 
-                                                    </address>
-                                                    <p><%= address.country %></p>
-                                                    <br>
-                                                    <a href="/address/edit/<%= address._id %>" class="btn-small">Edit Address</a><br>
-                                                </div>
+                            
+                        <div class="row">
+                            <% if (addresses && addresses.length > 0) { %>
+                                <% addresses.forEach((address, index) => { %>
+                                    <div class="col-lg-6">
+                                        <input class="form-check-input" required="" type="radio" name="addressId" value="<%= address._id %>" <% if (index === 0) { %>checked<% } %>>
+                                        <div class="card mb-3 mb-lg-0" style="width: 80%;">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Address <%= index+1 %> </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <address>
+                                                    <%= address.buildingname %><br>
+                                                    <%= address.city %>,<br>
+                                                    <%= address.state %><br>
+                                                    <%= address.pincode %>, 
+                                                </address>
+                                                <p><%= address.country %></p>
+                                                <br>
+                                                <a href="/address/edit/<%= address._id %>" class="btn-small">Edit Address</a><br>
                                             </div>
                                         </div>
-                                        <br>
-                                    <% }); %>
-                                <% } else { %>
-                                    <p>No addresses found.</p>
-                                <% } %>
-                            </div>
+                                    </div>
+                                    <br>
+                                <% }); %>
+                            <% } else { %>
+                                <p>No addresses found.</p>
+                            <% } %>
+                        </div>
                         </div>    
                             <div class="col-md-6">
                                 <div class="order_review">
@@ -280,8 +281,8 @@
                                 </div>
                             </div>
                         </div>
-                        <input type="hidden" name="cartItem" value="<%= userCart.items %>">
-                    </form>
+                        <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
+                </form> 
                 </div>
             </section>
         </main>

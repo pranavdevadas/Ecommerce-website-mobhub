@@ -8,6 +8,7 @@
     const isAdmin = require('../middlewares/isAdmin')
     const nocache = require('nocache')
     const userController = require('../controller/userController')
+const orderController = require('../controller/orderController')
 
 
 
@@ -44,6 +45,10 @@
     router.post('/updates/:Id',brandController.postEditbrand)
     router.get('/publishedd/:Id',isAdmin,brandController.publishbrand)
     router.get('/unpublishedd/:Id',brandController.unpublishbrand)
+
+    router.get('/admin/orders',orderController.getorder)
+    router.get('/admin/orderdetails/:Id',orderController.orderdetails)
+    router.post('/updatestatus',orderController.updatestatus)
 
     router.get('*',adminController.error)
 

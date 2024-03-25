@@ -330,16 +330,22 @@
                                             </ul>
                                         </div>
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                        <% if(row.stock==0){ %>
                                         <div class="detail-extralink">
-                                            
                                             <div class="product-extra-link2">
-                                                <button type="submit" class="button button-add-to-cart"> Add to cart</button>
-                                                <button type="submit" class="button button-add-to-cart"> Buy Now</button>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/wishlist"><i class="fi-rs-heart"></i></a>
+                                                <span class="mb-10 ml-20 text-danger text-center"><b>Out of Stock</b></span>
                                             </div>
                                         </div>
+                                        <% } else { %>
+                                        <div class="detail-extralink">
+                                            <div class="product-extra-link2">
+                                                <button type="submit" class="button button-add-to-cart" onclick="addcart('<%= row._id %>')"> Add to cart</button>
+                                                <!-- <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/wishlist"><i class="fi-rs-heart"></i></a> -->
+                                            </div>
+                                        </div>
+                                        <% } %>
                                     </div>
-                                    <!-- Detail Info -->
+                                    
                                 </div>
                             </div>
                             <div class="row">
@@ -633,6 +639,65 @@
     <!-- Template  JS -->
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/shop.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function addcart(_id) {
+        event.preventDefault();
+        $.ajax({
+            url: `/check-stock/${_id}`,
+            type: "GET",
+            success: function(response) {
+                console.log("Check stock response:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to cart successfully!",
+                        showConfirmButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/addtocart/${_id}`,
+                                type: "GET",
+                                success: function(response) {
+                                    console.log("Item added to cart:", response);
+                                },
+                                error: function() {
+                                    console.error("Failed to add item to cart");
+                                },
+                            });
+                        }
+                    });
+                } else {
+                    if (response.message === "Please log in to add items to your cart.") {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Required",
+                            text: "Please login to add items to your cart.",
+                            showConfirmButton: true,
+                        })
+                    } else {
+                        console.error("Error:", response.message);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Product is out of stock",
+                            showConfirmButton: true,
+                        });
+                    }
+                }
+            },
+            error: function(err) {
+                console.log('error');
+                Swal.fire({
+                    icon: "error",
+                    title: "Error occurred",
+                    text: "Failed to check stock availability",
+                    showConfirmButton: true,
+                });
+            },
+        });
+    }
+ </script>
 </body>
 
 

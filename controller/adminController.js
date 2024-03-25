@@ -1,12 +1,14 @@
 const session = require('express-session')
 const User  = require('../model/users')
 const isAdmin = require('../middlewares/isAdmin')
+require('dotenv').config()
+const AdminCridentials = require('../model/admincridentials')
 
 
 
 const cridentials = {
-    email:'admin@gmail.com',
-    password:'12345'
+    email: process.env.ADMIN_EMAIL,
+    password: process.env.ADMIN_PASS
 }
 
 const adminController = {
@@ -31,9 +33,12 @@ const adminController = {
         }
     },
 //admin login post
-    postadminLogin:(req,res,next)=>{
+    postadminLogin:async (req,res,next)=>{
         try{
-            if(req.body.email===cridentials.email&&req.body.password===cridentials.password){
+
+            
+
+            if(req.body.email===cridentials.email && cridentials.password){
                 const admin = true
                     req.session.admin = req.body.email,
                     req.session.isAdmin = true,

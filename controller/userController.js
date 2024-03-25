@@ -9,6 +9,8 @@ require('dotenv').config()
 const Cart = require('../model/cart')
 const Address = require('../model/address')
 const Order = require('../model/orders')
+const crypto = require('crypto');
+const moment = require('moment')
 
 
 
@@ -122,8 +124,10 @@ const userController = {
                 })
             }
             else{
+                
                 const hashedpassword = await bcrypt.hash(req.body.password,saltpassword)
-                const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false, specialChars: false })
+
+                const otp = Math.floor(100000 + Math.random() * 900000)
 
                 const user = new User ({
                     name: req.body.name,
@@ -227,11 +231,9 @@ const userController = {
         try{
             req.session.tempEmail = req.body.email
             const userEmail = req.session.tempEmail
-            console.log(userEmail);
             
 
             const user = await User.findOne({email:userEmail})
-            console.log(user);
 
             const newOTP = otpGenerator.generate(6, { digits: true, alphabets: true, upperCase: true, specialChars: false })
 
@@ -263,11 +265,44 @@ const userController = {
 //shop 
     getshop:async(req,res,next)=>{
         try{
-            const product =await Products.find({ispublished:true}).populate('brand').populate('category')
+            const category = req.params.category || undefined
+            let prod =await Products.find({ispublished:true}).populate('brand').populate('category')
+            const sort = req.query.sort
+        
+
+            let query = { ispublished: true };
+
+
+            if (sort === 'lowToHigh') {
+                console.log('abc')
+                prod = await Products.find(query).sort({ oldprice : 1 });
+                console.log(1222, prod)
+            } else if (sort === 'highToLow') {
+                prod = await Products.find(query).sort({ oldprice : -1 });
+                console.log(1333, prod)
+            } else if (sort === 'A-Z') {
+                prod = await Products.find(query).sort({ productname : 1 });
+                console.log(1333, prod)
+            } else if (sort === 'Z-A') {
+                prod = await Products.find(query).sort({ productname : -1 });
+                console.log(1333, prod)
+            } else if (sort === 'newarrivals') {
+                prod = await Products.find(query).sort({ created : -1 });
+                console.log(1333, prod)
+            } else {
+                console.log(1444, prod)
+                prod = await Products.find(query);
+            }
+            
+            
+
+
             res.render('shop',{
                 title:'Shop',
-                products: product,
-                user: req.session.user||req.user
+                products: prod,
+                user: req.session.user||req.user,
+                sort: sort,
+                text: category,
             })
         }
         catch(err){
@@ -279,24 +314,24 @@ const userController = {
         res.render('error404')
     },  
 //get product list 
-getproductlist:async (req,res,next)=>{
-    try{
-        const user = await User.find({isBlocked : false})
-        const products = await Products.find({ispublished:true})
-        const brand = await Brand.find({isListed:true})
-        const category = await Category.find({isListed:true})
-        res.render('home',{
-            title : 'Home',
-            category : category,
-            products : products,
-            brand : brand,
-            user : user
-        })
-        
-    }
-    catch(err){
-        next(err)
-    }
+    getproductlist:async (req,res,next)=>{
+        try{
+            const user = await User.find({isBlocked : false})
+            const products = await Products.find({ispublished:true})
+            const brand = await Brand.find({isListed:true})
+            const category = await Category.find({isListed:true})
+            res.render('home',{
+                title : 'Home',
+                category : category,
+                products : products,
+                brand : brand,
+                user : user
+            })
+            
+        }
+        catch(err){
+            next(err)
+        }
 },
 //get product detials
     getProductDetials: async(req,res,next)=>{
@@ -342,26 +377,27 @@ getproductlist:async (req,res,next)=>{
         try{
             const { addressId, paymentMethod, totalprice } = req.body
             const user = await User.findById(req.session.userID)
-            const cartItems = req.body.cartItem
-            const address = await Address.findOne({ "addresses._id": addressId })
+            const cartItems = JSON.parse(req.body.cartItem);
+            let userAddress = await Address.findOne({ 'addresses._id': addressId });
+
+            const address = userAddress.addresses.find(
+                (addr) => addr._id.toString() === addressId
+            )
+            console.log(12345,address.pincode);
             const items = [];
 
-            for (const key in cartItems) {
-                if (Object.hasOwnProperty.call(cartItems, key)) {
-                    const item = cartItems[key];
 
-                    if (item.quantity) {
-                        items.push({
-                            product: item.product,
-                            price: item.price,
-                            quantity: item.quantity,
-                        });
-                    } else {
-                        console.error(`Quantity missing for item ${key}`);
-                    }
+            for (const item of cartItems) { 
+                if (item.quantity) { 
+                    items.push({
+                        product: item.product,
+                        price: item.price,
+                        quantity: item.quantity,
+                    });
+                } else {
+                    console.error(`Quantity missing for item ${item._id}`)
                 }
             }
-
             const order = new Order ({
                 userId : user._id,
                 items: items,
@@ -372,7 +408,7 @@ getproductlist:async (req,res,next)=>{
                     city: address.city,
                     state: address.state,
                     country: address.country,
-                    postalcode: address.postalcode,
+                    postalCode: address.pincode,
                     phone: user.phone,
                     email: user.email,
                 },
@@ -380,7 +416,6 @@ getproductlist:async (req,res,next)=>{
                 paymentMethod,
 
             })
-            console.log(122,order)
 
             await order.save()
 
@@ -390,7 +425,7 @@ getproductlist:async (req,res,next)=>{
             )
 
             for(const item of order.items){
-                await Product.findByIdAndUpdate(
+                await Products.findByIdAndUpdate(
                     item.product,
                     { $inc: { stock : -item.quantity } },
                     { new: true }
@@ -437,13 +472,31 @@ getproductlist:async (req,res,next)=>{
 //get my addres
     getmyaddress: async (req,res,next) => {
         try{
-            const userId = req.session.userID;
-            const addressDocument = await Address.findOne({ userId: userId });
-            res.render('myAddress',{
-                user: req.session,
-                addresses: addressDocument.addresses,
+            // const userId = req.session.userID;
+            // const addressDocument = await Address.findOne({ userId: userId });
+            // console.log(addressDocument);
+            // res.render('myAddress',{
+            //     user: req.session,
+            //     addresses:  addressDocument.addresses
 
-            })
+            // })
+            const userId = req.session.userID;
+        const addressDocument = await Address.findOne({ userId: userId });
+
+        if (!addressDocument || !addressDocument.addresses || addressDocument.addresses.length === 0) {
+            // No addresses found, render a message
+            return res.render('myAddress', {
+                user: req.session,
+                addresses: [],
+                message: "No addresses found. Please add an address.",
+                addAddressLink: "/addaddress" // Provide a link to add a new address
+            });
+        }
+
+        res.render('myAddress', {
+            user: req.session,
+            addresses: addressDocument.addresses
+        });
         }
         catch(err){
             next(err)
@@ -538,7 +591,6 @@ getproductlist:async (req,res,next)=>{
             });
         }
         catch(err){
-            console.log(err)
             next(err)
         }
     },
@@ -676,7 +728,6 @@ getproductlist:async (req,res,next)=>{
             // const users = await User.findById(userId)
 
             if(passwordMatch){
-                console.log('uuu');
                 await User.findByIdAndUpdate(userId,{
                     pass : hashedpassword
                 })
@@ -706,24 +757,42 @@ getproductlist:async (req,res,next)=>{
     getorders: async (req,res,next) =>{
         try{
             
-            const orders = await Order.find()
-            const items = await Order.findOne({userId : req.session.userID})
-            console.log(items)
+            const orders = await Order.find().populate('items.product').sort({ orderDate : -1 })
 
-            res.render('myorders',{
+            
+            res.render('myorders', {
                 title: 'My orders',
                 user: req.session,
                 order: orders,
-                items: items
+            });
+        }
+        catch(err){
+            next(err)
+        }
+    },
+//order details page
+    orderdetail: async (req,res,next) => {
+        try{
+            
+            const orderId = req.params.Id
+            const userId = req.session.userID
+            const orders = await Order.findOne({ _id : orderId}).populate('items.product')
+            const user = await Order.findOne({ userId : userId })
+            
+        
+            res.render('orderDetial',{
+                title: 'Order Detials',
+                user: req.session,
+                order: orders,
+                users: user,
             })
         }
         catch(err){
             next(err)
         }
     },
-// cancel/refund order
+// cancel order
     cancelorder: async (req,res,next) => {
-        console.log('dfdfd');
         try{
             const orderId = req.params.Id
             const order = await Order.findByIdAndUpdate(orderId, { status : 'Cancelled' })
@@ -731,7 +800,7 @@ getproductlist:async (req,res,next)=>{
 
 
             for(const item of order.items){
-                await Product.findByIdAndUpdate(
+              let update =   await Products.findByIdAndUpdate(
                     item.product,
                     { $inc: { stock : +item.quantity } },
                     { new: true }
@@ -748,29 +817,29 @@ getproductlist:async (req,res,next)=>{
             next(err)
         }
     },
-// cancel/refund order
-    refundorder: async (req,res,next) => {
-        try{
-            const userId = req.session.ID
-            const orderId = req.params.Id
-            await Order.findByIdAndUpdate(orderId, { status : 'Cancelled' })
-            const orders = await Address.findOne({ userId: userId });
 
+// refund order
+    refundorder: async (req,res,next) => {
+        console.log('retn page');
+        try{
+            const orderId = req.params.Id
+            const order = await Order.findByIdAndUpdate(orderId, { status : 'Returned' })
+            const orders = await Order.find()
 
 
             for(const item of order.items){
-                await Product.findByIdAndUpdate(
+               let update= await Products.findByIdAndUpdate(
                     item.product,
                     { $inc: { stock : +item.quantity } },
                     { new: true }
                 )
             }
+            
             res.render('myorders',{
                 title: 'My Orders',
-                message: 'Requested Sented Successfully',
+                message: 'Item Returned Successfully',
                 user: req.session,
                 order: orders
-
             })
         }
         catch(err){

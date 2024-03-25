@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const moment = require('moment')  
 const orderScema = mongoose.Schema({
 
     trackingId:{
@@ -49,7 +50,7 @@ const orderScema = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+        enum: ["Pending", "Shipped", "Delivered", "Cancelled", "Returned"],
         default: "Pending",
     },
     paymentMethod: {
@@ -59,8 +60,13 @@ const orderScema = mongoose.Schema({
     orderDate: {
         type: Date,
         default: Date.now,
+        get: function(val){
+            return moment(val).format('DD-MM-YYYY')
+        }
     },
 
 })
+
+
 
 module.exports= mongoose.model('Order',orderScema)

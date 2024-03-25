@@ -18,6 +18,52 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
+<style>
+    /* Dropdown container */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+  
+    /* Dropdown button */
+    .dropdown-button {
+      background-color: grey;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 45px;
+    }
+  
+    /* Dropdown content (hidden by default) */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 5px;
+    }
+  
+    /* Links inside the dropdown */
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+  
+    /* Change color of dropdown links on hover */
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+  
+    /* Show the dropdown menu on hover */
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+  </style>
 
 <body id="product-list">
     
@@ -151,31 +197,28 @@
     <div>
         <img src="/static/banner/banner5.jpg" width="100%">
     </div>
+
     <main class="main">
             <section class="mt-50 mb-50">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-9">
-                            <div class="shop-product-fillter style-2">
-                                <div class="sort-by-product-area">
-                                    <div class="sort-by-cover">
-                                        <div class="sort-by-product-wrap">
-                                            <div class="sort-by">
-                                                <span><i class="fi-rs-apps-sort"></i>Sort by:</span>
-                                            </div>
-                                            <div class="sort-by-dropdown-wrap">
-                                                <span> High to Low <i class="fi-rs-angle-small-down"></i></span>
-                                            </div>
-                                        </div>
-                                        <div class="sort-by-dropdown">
-                                            <select name="sort_by" id="sort">
-                                                <option value="low_to_high">Price: Low to High</option>
-                                                <option value="high_to_low">Price: High to Low</option>
-                                                <option value="a_to_z">A-Z</option>
-                                                <option value="z_to_a">Z-A</option>
-                                            </select>
-                                        </div>
+                            <div class="sort-by-cover">
+                                <div class="sort-by-product-wrap">
+                                    <div class="sort-by">
+                                        <span></i></span>
                                     </div>
+                                    <div class="dropdown">
+                                        <button class="dropdown-button"><i class="fi-rs-apps-sort"></i> Sort by:</button>
+                                        <div class="dropdown-content">
+                                            <a href="/priceFilter/<%= text %>?sort=lowToHigh">Price: Low to High</a>
+                                            <a href="/priceFilter/<%= text %>?sort=highToLow">Price: High to Low</a>
+                                            <a href="/priceFilter/<%= text %>?sort=A-Z">aA - zZ </a>
+                                            <a href="/priceFilter/<%= text %>?sort=Z-A">zZ - aA </a>
+                                            <a href="/priceFilter/<%= text %>?sort=newarrivals">New Arrivals</a>
+                                            <a href="/priceFilter/<%= text %>?sort=all">All Products</a>
+                                        </div>
+                                      </div>
                                 </div>
                             </div>
                             <div class="product-list mb-50" >
@@ -386,6 +429,8 @@
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
+
       <script>
             function addcart(_id) {
             event.preventDefault();
