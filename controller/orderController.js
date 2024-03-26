@@ -38,13 +38,13 @@ const orderController = {
 
     updatestatus: async (req,res,next) => {
         try{
-            const { orderId, selectedStatus } = req.body
+            // const { orderId, selectedStatus } = req.body
 
 
-            const updatedOrder = await Order.findByIdAndUpdate(orderId,
-                { $set: { status: selectedStatus } },
-                { new :true }
-                )
+            // const updatedOrder = await Order.findByIdAndUpdate(orderId,
+            //     { $set: { status: selectedStatus } },
+            //     { new :true }
+            //     )
 
 
             // if(updatedOrder){
@@ -53,7 +53,24 @@ const orderController = {
             // else{
             //     return res.status(404).json({ success: false, message: 'Order not found' });
             // }
-            return res.redirect('back')
+            // return res.redirect('back')
+
+            const { orderId, selectedStatus } = req.body;
+
+            const updatedOrder = await Order.findByIdAndUpdate(
+                orderId,
+                { $set: { status: selectedStatus } },
+                { new: true }
+            );
+
+
+            if (updatedOrder) {
+                console.log(updatedOrder.status);
+                return res.json({ success: true, updatedOrder });
+                
+            } else {
+                return res.status(404).json({ success: false, message: 'Order not found' });
+            }
 
 
 

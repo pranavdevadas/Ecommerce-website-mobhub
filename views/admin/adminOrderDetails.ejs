@@ -21,6 +21,7 @@
 </head>
 
 <body>
+    
     <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
@@ -147,12 +148,12 @@
                             <small class="text-muted">Order ID: <%= order.trackingId %></small>
                         </div>
                         <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" id="statusSelect">
-                                <option value="Pending" <%= order.status === 'Pending' ? 'Selected' : '' %>>Pending</option>
-                                <option value="Shipped" <%= order.status === 'Shipped' ? 'Selected' : '' %>>Shipped</option>
-                                <option value="Delivered" <%= order.status === 'Delivered' ? 'Selected' : '' %>>Delivered</option>
-                                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'Selected' : '' %>>Cancelled</option>
-                                <option value="Returned" <%= order.status === 'Returned' ? 'Selected' : '' %>>Returned</option>
+                            <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200" id="statusSelect" >
+                                <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                <option value="Returned" <%= order.status === 'Returned' ? 'selected' : '' %>>Returned</option>
                             </select>
                         </div>
                     </div>
@@ -223,11 +224,7 @@
                                                 </a>
                                             </td>
                                             <td><%= row.quantity %> </td>
-                                            <% if(!order.status== 'Cancelled'){ %>
-                                            <td><span id=<%= row._id  %> class="badge rounded-pill alert-danger text-danger"><%= order.status %></span></td>
-                                            <% } else { %>
-                                                <td><span class="badge rounded-pill alert-success text-success"><%= order.status %></span></td>
-                                                <% } %>
+                                                <td><span class="badge rounded-pill  text-dark" id="stocks"><%= order.status %></span></td>
                                             <td class="text-end">Rs.  <%= row.price %> </td>
                                         </tr>
                                         <% }) %>
@@ -298,40 +295,82 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Main Script -->
     <script src="/static/assets1/js/main.js" type="text/javascript"></script>
-    <script>
+    <!-- <script>
         document.getElementById('statusSelect').addEventListener('change', function() {
-            
-            const selectedStatus = this.value;
-           
-            const orderId = '<%= order._id %>';
-            window.location.reload();
-            fetch('/updateStatus', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ orderId, selectedStatus })
-            })
-            .then(response => {
-                if (!response.success) {
-                    throw new Error('Failed to update status');
-                }
-                console.log(response.updatedOrder)
-                return response.json();
-               
-            })
-            .then(data => {
-                
-                console.log('Status updated successfully:', data);
-                const orderStatusElement = document.getElementById(data.updatedOrder._id);
-                if (orderStatusElement) {
+        const selectedStatus = this.value;
+        const orderId = '<%= order._id %>';
+
+        fetch('/updateStatus', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderId, selectedStatus })
+        })
+        .then(data => {
+            console.log('111111111');
+            console.log('Status updated successfully:', data);
+        if (data && data.updatedOrder) {
+            const orderStatusElement = document.getElementById(data.updatedOrder._id);
+            if (orderStatusElement) {
                 orderStatusElement.textContent = data.updatedOrder.status;
-                }
-               
-            })
-            .catch(error => {
-                
-                console.error('Error updating status:', error);
+            }
+        } else {
+            console.log('Error: Updated order data is missing or invalid');
+        }
+        })
+        
+        .then(response => {
+            console.log('222222222');
+            if (!response.ok) {
+                throw new Error('Failed to update status');
+            }
+            return response.json();
+        })
+        .catch(error => {
+            console.log('333333333');
+            console.error('Error updating status:', error);
+        });
+    });
+    </script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('statusSelect').addEventListener('change', function() {
+                const selectedStatus = this.value;
+                const orderId = '<%= order._id %>';
+        
+                fetch('/updateStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId, selectedStatus })
+                })
+                .then(response => {
+                    console.log('1111');
+                    if (!response.ok) {
+                        throw new Error('Failed to update status');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Status updated successfully:', data);
+                    console.log(12222222222,data.updatedOrder._id);
+                    if (data && data.updatedOrder) {
+                        const orderStatusElement = document.getElementById('stocks')
+                        console.log(orderStatusElement)
+                        if (orderStatusElement) {
+                            orderStatusElement.textContent = data.updatedOrder.status;
+                        }
+                    } else {
+                        console.error('Error: Updated order data is missing or invalid');
+                    }
+                })
+                .catch(error => {
+                    console.log('44444444');
+                    console.error('Error updating status:', error);
+                });
             });
         });
     </script>
@@ -339,5 +378,4 @@
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-reviews.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:34 GMT -->
 </html>

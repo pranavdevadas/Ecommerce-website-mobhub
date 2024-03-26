@@ -46,6 +46,7 @@ passport.serializeUser((user, done) => {
   }));
 
   const authController = {
+    
     googleAuth: passport.authenticate('google', {
       scope: ['profile', 'email'],
       

@@ -46,9 +46,9 @@ const orderController = require('../controller/orderController')
     router.get('/publishedd/:Id',isAdmin,brandController.publishbrand)
     router.get('/unpublishedd/:Id',brandController.unpublishbrand)
 
-    router.get('/admin/orders',orderController.getorder)
-    router.get('/admin/orderdetails/:Id',orderController.orderdetails)
-    router.post('/updatestatus',orderController.updatestatus)
+    router.get('/admin/orders',isAdmin,orderController.getorder)
+    router.get('/admin/orderdetails/:Id',isAdmin,orderController.orderdetails)
+    router.post('/updatestatus',isAdmin,orderController.updatestatus)
 
     router.get('*',adminController.error)
 
