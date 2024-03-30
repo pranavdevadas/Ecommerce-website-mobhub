@@ -1,6 +1,6 @@
 const mongoose= require('mongoose')
 
-const userScema= mongoose.Schema({
+const userScema = mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -27,11 +27,7 @@ const userScema= mongoose.Schema({
     },
     otp:{
         type: String,
-        expires: 60,
-        default: Date.now
-        },
-    otpExpiration:{
-        type: Date 
+        default: null
     },
     created:{
         type:Date,
@@ -39,5 +35,8 @@ const userScema= mongoose.Schema({
         default:Date.now
     }
 })
+
+
+
 
 module.exports= mongoose.model('User',userScema)

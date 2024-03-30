@@ -56,8 +56,8 @@
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <input type="text" placeholder="Search for items...">
+                            <form action="/search">
+                                <input type="text" placeholder="Search for items..." name="q" >
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -103,7 +103,7 @@
                             <nav>
                                 <ul>
                                     <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
+                                    <li><a class="active"  href="/">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My profile</i></a></li>
                                     <li><a href="#">Brands</a></li>
                                 </ul>
@@ -130,7 +130,7 @@
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="shop-cart.html">
+                                <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/static/assets/imgs/theme/icons/icon-cart.svg">
                                     <span class="pro-count white">2</span>
                                 </a>
@@ -151,15 +151,14 @@
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
-                <a href="/dashboard" rel="nofollow">Home</a>
-                <span></span> Your Cart
+                <a href="/cart" rel="nofollow">Your Cart</a>
             </div>
         </div>
     </div>
 
     <section class="mt-50 mb-50">
+        <% if(userCart  && userCart.items.length > 0){ %>            
         <div class="container">
-            <% if(userCart && userCart.items.length > 0) { %>
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
@@ -197,7 +196,7 @@
                                                     <a type="button"  class="text-muted" data-id="<%= row.product._id %>" onclick="remove('<%= row.product._id %>')" ><i class="fi-rs-trash"></i></a></td>
                                                 </form>
                                         </tr>
-                                    
+                                    <% }) %>
                                 </tbody>
                             </table>
                     </div>
@@ -210,36 +209,31 @@
                                 </div>
                                 <div class="table-responsive">
                                     <table class="table">
+                                        
                                         <tbody>
                                             <tr>
-                                                <td class="cart_total_label">Cart Subtotal</td>      
-                                                <td><span class="cart__price" class="font-lg fw-900 text-brand" data-id="<%= row.product._id %>">Rs <%= row.product.newprice * row.quantity %> </span></td>
-                                            <tr>
                                                 <td class="cart_total_label">Shipping</td>
-                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>                                               
+                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>
                                             </tr>
                                             <tr>
                                                 <td class="cart_total_label">Total</td>
-                                                <td><span class="cart__price" class="font-lg fw-900 text-brand" data-id="<%= row.product._id %>">Rs <%= row.product.newprice * row.quantity %> </span></td>
+
+                                                <td class="cart_total"><strong><span class="font-xl fw-900 text-brand " id="totalPrice" >₹ <%= userCart.totalprice %> </span></strong></td>
                                             </tr>
-                                            <% }) %>
                                         </tbody>
                                     </table>
                                 </div>
-                                <a href="/checkout" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
+                                <div><a href="/checkout" class="btn"> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a></div>
+                                
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <% } else { %>
-                <div class="row">
-                    <div class="col-12">
-                        <p>Your cart is empty.</p>
-                    </div>
-                </div>
-            <% } %>
         </div>
+        <% } else { %>
+            <span style="color: grey;">Please add Items to your cart. </span>
+            <% } %>`
     </section>
     <footer class="main">
         <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
@@ -363,7 +357,37 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded',function() {
+            document.getElementById('totalPrice').addEventListener('change', function() {
+                const totalPrice = this.value
+                const cartId = userCart._id
 
+                fetch('/update-cart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ totalPrice, cartId })
+                })
+                .then(response => {
+                    if(!response.ok){
+                        throw new Error('Failed to Update Total')
+                    }
+                    return response.json()
+                })
+                .then(data => {
+                    console.log('total updated ',data)
+                    if(data && data.updatedCartTotal){
+                        const totalElement = document.getElementById('totalPrice')
+                    }
+                })
+            })
+        })
+    </script> -->
+
+      
+        
         <script>
             function remove(productId) {
             Swal.fire({
@@ -393,7 +417,7 @@
                                     location.reload() 
                                     }, 2000);
                                 $(".cart-item[data-id='" + productId + "']").remove();
-                                $(".cart__total span").text("Rs " + data.totalPrice);
+                                $(".cart_total span").text("Rs " + data.totalPrice);
                             } else {
                                 Swal.fire({
                                     title: "Error!",
@@ -448,12 +472,14 @@
                             var cartItem = data.cartItem;
                             var $quantitySpan = $(".qty-val[data-id='" + productId + "']");
                             var $cartPriceSpan = $(".cart__price[data-id='" + productId + "']");
-                            var $totalPriceSpan = $(".cart__total[data-id='" + productId + "']");
+                            var $totalPriceSpan = $(".cart_total span");
 
                             $quantitySpan.text(cartItem.quantity);
 
                             $cartPriceSpan.text("Rs " + (cartItem.price * cartItem.quantity));
-                            $totalPriceSpan.text("Rs " + data.totalPrice);
+                            $totalPriceSpan.text("Rs " + (data.totalprice));
+                            
+
                         } else {
                             if (data.message === "Maximum quantity reached for this product") {
                                 Swal.fire({

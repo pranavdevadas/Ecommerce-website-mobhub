@@ -17,7 +17,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="/static/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/static/assets/css/main.css">
-</head>
+    </head>
 
 <body>
     <header class="header-area header-style-1 header-height-2">
@@ -57,8 +57,8 @@
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <input type="text" placeholder="Search for items...">
+                            <form action="/search">
+                                <input type="text" placeholder="Search for items..." name="q" >
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -284,7 +284,7 @@
                                                                     <div class="text">
                                                                         <h6 class="mb-1">Order info</h6>
                                                                         <p class="mb-1">
-                                                                            Shipping: Fargo express <br> Pay method: <%= order.paymentMethod %> <br> Status: <%= order.status %> 
+                                                                            Shipping: Fargo express <br> Pay method: <%= order.paymentMethod %>
                                                                         </p>
                                                                     </div>
                                                                 </article>
@@ -311,7 +311,9 @@
                                                                             <tr>
                                                                                 <th width="40%">Product</th>
                                                                                 <th width="20%">Unit Price</th>
-                                                                                <th width="20%">Quantity</th>
+                                                                                <th width="12%">Quantity</th>
+                                                                                <th width="20%">Status</th>
+                                                                                <th width="20%">Action</th>
                                                                             </tr>
                                                                         </thead>
                                                                         <tbody>
@@ -325,10 +327,18 @@
                                                                                 </td>
                                                                                 <td> <%= row.price %> </td>
                                                                                 <td> <%= row.quantity %> </td>
+                                                                                <td> <%= row.status %> </td>
+                                                                                <% if (row.status === 'Delivered') { %>
+                                                                                    <td><a href="#" class="btn-small d-block" onclick="returnOrderIndividually('<%= order._id %>','<%= row.product._id %>')" style="color: red;">Return Order</a></td>
+                                                                                <% } else if (row.status === 'Cancelled'|| row.status === 'Returned' ) { %>
+                                                                                    <td><span style="color: red;">N/A</span></td>
+                                                                                <% } else { %>
+                                                                                    <td><a href="#" class="btn-small d-block" onclick="cancelOrderIndividually('<%= order._id %>','<%= row.product._id %>')" style="color: red;">Cancel Order</a></td>
+                                                                                <% } %>
                                                                             </tr>
                                                                             <% }) %>
                                                                           </tbody>
-                                                                    </table>
+                                                                    </table> 
                                                                 </div> <!-- table-responsive// -->
                                                             </div> <!-- col// -->
                                                             <div class="col-lg-1"></div>
@@ -498,6 +508,8 @@
     <script src="/static/assets/js/plugins/scrollup.js"></script>
     <script src="/static/assets/js/plugins/jquery.vticker-min.js"></script>
     <script src="/static/assets/js/plugins/jquery.theia.sticky.js"></script>
+
+
     
     <!-- Template  JS -->
     <script src="/static/assets/js/main.js"></script>
@@ -506,6 +518,97 @@
         document.getElementById("error").style.display = "none";
         }, 4000)
     </script> 
+    <script>
+        setTimeout(() => {
+            var errorElement = document.getElementById("error");
+            if (errorElement) {
+                errorElement.style.display = "none";
+            }
+        }, 4000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- cancel order -->
+    <script>
+        async function cancelOrderIndividually(orderId, productId) {
+            try {
+                const response = await fetch('/cancelorder', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId, productId })
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to cancel order');
+                }
+    
+                const data = await response.json();
+    
+                // Assuming successful response indicates order cancellation
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Item Cancelled Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                    });
+    
+                // Reload page after a brief delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Something went wrong',
+                });
+            }
+        }
+    </script>    
+    <!-- return order -->
+    <script>
+        async function returnOrderIndividually(orderId, productId) {
+            try {
+                const response = await fetch('/returnorder', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ orderId, productId })
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to return order');
+                }
+    
+                const data = await response.json();
+    
+                // Assuming successful response indicates order cancellation
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Item Returned Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                    });
+    
+                // Reload page after a brief delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message || 'Something went wrong',
+                });
+            }
+        }
+    </script>   
+
+
         <script>
             function validateForm() {
                 // Name validation

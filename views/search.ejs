@@ -104,7 +104,6 @@
                             <form action="/search">
                                 <input type="text" placeholder="Search for items..." name="q" >
                             </form>
-                        </div>
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
@@ -147,8 +146,8 @@
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
                             <nav>
                                 <ul>
-                                    <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
+                                    <li><a class="active" href="/">Home</i></a>
+                                    <li><a   href="/shop">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My Profile</i></a></li>
                                     <li><a href="#">Brands</a></li>
                                 </ul>
@@ -194,9 +193,7 @@
             </div>
         </div>
     </header>
-    <div>
-        <img src="/static/banner/banner5.jpg" width="100%">
-    </div>
+
 
     <main class="main">
             <section class="mt-50 mb-50">
@@ -208,20 +205,10 @@
                                     <div class="sort-by">
                                         <span></i></span>
                                     </div>
-                                    <div class="dropdown">
-                                        <button class="dropdown-button"><i class="fi-rs-apps-sort"></i> Sort by:</button>
-                                        <div class="dropdown-content">
-                                            <a href="/priceFilter/<%= text %>?sort=lowToHigh">Price: Low to High</a>
-                                            <a href="/priceFilter/<%= text %>?sort=highToLow">Price: High to Low</a>
-                                            <a href="/priceFilter/<%= text %>?sort=A-Z">aA - zZ </a>
-                                            <a href="/priceFilter/<%= text %>?sort=Z-A">zZ - aA </a>
-                                            <a href="/priceFilter/<%= text %>?sort=newarrivals">New Arrivals</a>
-                                            <a href="/priceFilter/<%= text %>?sort=all">All Products</a>
-                                        </div>
-                                      </div>
                                 </div>
                             </div>
                             <div class="product-list mb-50" >
+                                <% if(products.length > 0) { %>
                                 <% products.forEach((row,index)=>{ %>
                                 <div class="product-cart-wrap">
                                     <div id="popup-messages">
@@ -276,33 +263,11 @@
                                     </div>
                                 </div>
                                     <% }) %>
+                                <% } else { %>
+                                    <span class="text-center">No Items Found</span>
+                                    <% } %>
                             </div>
                             <!--pagination-->
-                        </div>
-                        <div class="col-lg-3 primary-sidebar sticky-sidebar">
-                            <!-- Product sidebar Widget -->
-                            <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">
-                                <div class="widget-header position-relative mb-20 pb-10">
-                                    <h5 class="widget-title mb-10">New products</h5>
-                                    <div class="bt-1 border-color-1"></div>
-                                </div>
-                                <% products.forEach((row,index)=>{ %>
-                                <div class="single-post clearfix">
-                                    <!-- <a  href="/productdetials/<%= row._id %>"> -->
-                                        <div class="image">
-                                            <img src="/static/<%= row.images[2] %>" alt="#">
-                                        </div>
-                                    <!-- </a> -->
-                                    <div class="content pt-10">
-                                        <h5><a href="/productdetials/<%= row._id %>"><%= row.productname %></a></h5>
-                                        <p class="price mb-0 mt-5"> ₹ <%= row.newprice%></p>
-                                        <div class="product-rate">
-                                            <div class="product-rating" style="width:90%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }) %>
-                            </div>
                         </div>
                     </div>
                 </div>

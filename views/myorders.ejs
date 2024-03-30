@@ -57,8 +57,8 @@
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
-                            <form action="#">
-                                <input type="text" placeholder="Search for items...">
+                            <form action="/search">
+                                <input type="text" placeholder="Search for items..." name="q" >
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -254,7 +254,6 @@
                                                                     <th>Tracking ID</th>
                                                                     <th>Product</th>
                                                                     <th>Total</th>
-                                                                    <th>Status</th>
                                                                     <th>Actions</th>
                                                                     <th></th>
                                                                 </tr>
@@ -266,15 +265,7 @@
                                                                             <td><%= order.orderDate %></td>
                                                                             <td><%= order.trackingId %></td>
                                                                             <td><%= item.product.productname %></td>
-                                                                            <td>Rs. <%= order.totalprice %></td>
-                                                                            <td><%= order.status %></td>
-                                                                            <% if (order.status === 'Delivered') { %>
-                                                                                <td><a href="/returnorder/<%= order._id %>" class="btn-small d-block" style="color: red;">Return Order</a></td>
-                                                                            <% } else if (order.status === 'Cancelled'|| order.status === 'Returned' ) { %>
-                                                                                <td><span style="color: red;">N/A</span></td>
-                                                                            <% } else { %>
-                                                                                <td><a href="/cancelorder/<%= order._id %>" class="btn-small d-block" style="color: red;">Cancel Order</a></td>
-                                                                            <% } %>
+                                                                            <td>Rs. <%= item.price %></td>
                                                                             <th><a href="/orders/detais/<%= order._id %>" class="btn-small d-block" style="color: darkgreen;">More Info</a></th>
                                                                         </tr>
                                                                     <% }) %>

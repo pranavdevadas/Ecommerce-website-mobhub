@@ -185,17 +185,19 @@ const cartController = {
 
             await userCart.save();
 
+            console.log(123333,userCart.totalprice);
             return res.json({
                 success: true,
                 cartItem: cartItem,
                 totalprice: userCart.totalprice
             });
-
+            
         }
         catch(err){
             next(err)
         }
     },
+
     deleteCart: async (req, res, next) => {
         try {
             const userId = req.session.userID;

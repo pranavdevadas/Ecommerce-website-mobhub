@@ -129,6 +129,8 @@ const userController = {
 
                 const otp = Math.floor(100000 + Math.random() * 900000)
 
+                
+
                 const user = new User ({
                     name: req.body.name,
                     email: req.body.email,
@@ -154,6 +156,7 @@ const userController = {
                     email: req.session.tempEmail,
                   })
             }
+
             res.render('otp',{
                 title:'OTP',
                 email:req.session.tempEmail
@@ -235,7 +238,7 @@ const userController = {
 
             const user = await User.findOne({email:userEmail})
 
-            const newOTP = otpGenerator.generate(6, { digits: true, alphabets: true, upperCase: true, specialChars: false })
+            const newOTP = Math.floor(100000 + Math.random() * 900000)
 
             user.otp = newOTP
             await user.save()
@@ -256,6 +259,29 @@ const userController = {
               })
               res.redirect('/login')
 
+        }
+        catch(err){
+            next(err)
+        }
+    },
+
+//search
+    search: async (req, res, next) => {
+        try{
+            const searchTerm = req.query.q
+
+            const searchResult = await Products.find({ 
+                $or: [
+                    { productname: { $regex: searchTerm, $options: 'i' } },
+                    { description: { $regex: searchTerm, $options: 'i' } },
+                ]
+            })
+
+            res.render('search',{
+                products: searchResult,
+                title: 'Dashboard',
+                user: req.session
+            })
         }
         catch(err){
             next(err)
@@ -360,12 +386,19 @@ const userController = {
             const userId = req.session.userID
             const userCart = await Cart.findOne({userId : userId}).populate({path:'items.product', model: 'product' })
             const addressDocument = await Address.findOne({ userId: userId });
+            console.log(addressDocument);
+
+            let addresses = []
+
+            if (addressDocument) {
+                addresses = addressDocument.addresses || []
+            }
 
             res.render('checkout', {
                 title: 'Checkout',
-                user: req.session.user||req.user,
+                user: req.session ||req.user,
                 userCart,
-                addresses:  addressDocument.addresses
+                addresses: addresses
             })
         }
         catch(err){
@@ -507,7 +540,7 @@ const userController = {
         try{
             res.render('addaddress',{
                 title: 'My Address',
-                user: req.session.user
+                user: req.session
             })
         }
         catch(err){
@@ -557,7 +590,9 @@ const userController = {
 
             await userAddress.save()
 
-            res.render('myAddress',{
+            const previousPage = req.header('Referer') || '/'
+
+            res.render(previousPage,{
                 title: 'My Address',
                 message: 'Successfully Address Updated',
                 user: req.session.userID,
@@ -794,24 +829,32 @@ const userController = {
 // cancel order
     cancelorder: async (req,res,next) => {
         try{
-            const orderId = req.params.Id
-            const order = await Order.findByIdAndUpdate(orderId, { status : 'Cancelled' })
-            const orders = await Order.find()
 
+            const { orderId, productId } = req.body;
 
-            for(const item of order.items){
-              let update =   await Products.findByIdAndUpdate(
-                    item.product,
-                    { $inc: { stock : +item.quantity } },
-                    { new: true }
-                )
+            const order = await Order.findById(orderId);
+
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
             }
-            res.render('myorders',{
-                title: 'My Orders',
-                message: 'Order Cancelled Successfully',
-                user: req.session,
-                order: orders
-            })
+
+            const cancelProduct = order.items.find(item => item.product.toString() === productId)
+            console.log(cancelProduct);
+
+            if (!cancelProduct) {
+                return res.status(404).json({ message: 'Product not found in order' });
+            }
+
+            // Update product stock
+            await Products.findByIdAndUpdate(cancelProduct.product, { $inc: { stock: cancelProduct.quantity } });
+            
+
+            // Update product status in order
+            cancelProduct.status = 'Cancelled';
+            await order.save();
+
+            res.status(200).json({ message: 'Product Cancelled Successfully', cancelProduct });
+            
         }
         catch(err){
             next(err)
@@ -819,28 +862,34 @@ const userController = {
     },
 
 // refund order
-    refundorder: async (req,res,next) => {
+    returnorder: async (req,res,next) => {
         console.log('retn page');
         try{
-            const orderId = req.params.Id
-            const order = await Order.findByIdAndUpdate(orderId, { status : 'Returned' })
-            const orders = await Order.find()
+            const { orderId, productId } = req.body;
 
+            const order = await Order.findById(orderId);
 
-            for(const item of order.items){
-               let update= await Products.findByIdAndUpdate(
-                    item.product,
-                    { $inc: { stock : +item.quantity } },
-                    { new: true }
-                )
+            if (!order) {
+                return res.status(404).json({ message: 'Order not found' });
             }
+
+            const cancelProduct = order.items.find(item => item.product.toString() === productId)
+            console.log(cancelProduct);
+
+            if (!cancelProduct) {
+                return res.status(404).json({ message: 'Product not found in order' });
+            }
+
+            // Update product stock
+            await Products.findByIdAndUpdate(cancelProduct.product, { $inc: { stock: cancelProduct.quantity } });
             
-            res.render('myorders',{
-                title: 'My Orders',
-                message: 'Item Returned Successfully',
-                user: req.session,
-                order: orders
-            })
+
+            // Update product status in order
+            cancelProduct.status = 'Returned';
+            await order.save();
+
+            res.status(200).json({ message: 'Product Cancelled Successfully', cancelProduct });
+            
         }
         catch(err){
             next(err)

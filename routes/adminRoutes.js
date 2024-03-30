@@ -48,7 +48,7 @@ const orderController = require('../controller/orderController')
 
     router.get('/admin/orders',isAdmin,orderController.getorder)
     router.get('/admin/orderdetails/:Id',isAdmin,orderController.orderdetails)
-    router.post('/updatestatus',isAdmin,orderController.updatestatus)
+    router.patch('/updatestatus',isAdmin,orderController.updatestatus)
 
     router.get('*',adminController.error)
 

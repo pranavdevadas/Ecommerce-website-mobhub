@@ -20,6 +20,8 @@ router.get('/register',userController.getuserRegister)
 router.post('/register',userController.postuserRegister)
 router.get('/logout',userController.getlogout)
 
+router.get('/search',userController.search)
+
 router.get('/productdetials/:Id',isUser,userController.getProductDetials)
 
 // router.get('/sendOtp',userController.getotp)
@@ -61,8 +63,8 @@ router.post('/reset/:Id',userController.postresetpassword)
 
 router.get('/orders',isUser,userController.getorders)
 router.get('/orders/detais/:Id',isUser,userController.orderdetail)
-router.get('/cancelorder/:Id',isUser,userController.cancelorder)
-router.get('/returnorder/:Id',isUser,userController.refundorder)
+router.patch('/cancelorder',isUser,userController.cancelorder)
+router.patch('/returnorder',isUser,userController.returnorder)
 
 router.get('/account-info',isUser,userController.getaccontdetials)
 
