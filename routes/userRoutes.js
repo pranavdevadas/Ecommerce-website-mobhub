@@ -42,6 +42,11 @@ router.get('/cart',isUser,cartController.getcart)
 router.post('/update-cart',cartController.updatecart)
 router.delete('/remove-from-cart/:Id',isUser,cartController.deleteCart)
 
+router.get('/wishlist',isUser,userController.getwishlist)
+router.get('/addtowishlist/:Id',isUser,userController.addtowishlist)
+router.delete('/remove-from-wishlist/:Id',isUser,userController.deleteWishlist)
+
+
 router.get('/checkout',isUser,userController.checkout)
 router.post('/placeorder',isUser,userController.postcheckout)
 
@@ -67,6 +72,11 @@ router.patch('/cancelorder',isUser,userController.cancelorder)
 router.patch('/returnorder',isUser,userController.returnorder)
 
 router.get('/account-info',isUser,userController.getaccontdetials)
+
+router.get('/wallet',isUser,userController.wallet)
+router.post('/walletdeposite',isUser,userController.postAddAmount)    
+router.get('/transaction-history', isUser, userController.getTransactionHistory);
+
 
 
 

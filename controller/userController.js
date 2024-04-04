@@ -11,6 +11,10 @@ const Address = require('../model/address')
 const Order = require('../model/orders')
 const crypto = require('crypto');
 const moment = require('moment')
+const Razorpay = require('razorpay')
+const Wishlist = require('../model/wishlist')
+const Wallet = require('../model/wallet')
+const Transaction = require('../model/transaction')
 
 
 
@@ -25,6 +29,11 @@ const transporter = nodemailer.createTransport({
       pass: process.env.NODEMAILER_PASS,
     },
   })
+
+  var instance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
 
 const userController = {
 
@@ -77,6 +86,7 @@ const userController = {
                     const user = true
                     req.session.user = req.body.email,
                     req.session.isUser = true,
+                    req.session.userData = data
 
                     req.session.isLogged = true;
                     req.session.userID = data._id;
@@ -398,7 +408,8 @@ const userController = {
                 title: 'Checkout',
                 user: req.session ||req.user,
                 userCart,
-                addresses: addresses
+                addresses: addresses,
+                userData : req.session.userData
             })
         }
         catch(err){
@@ -416,7 +427,6 @@ const userController = {
             const address = userAddress.addresses.find(
                 (addr) => addr._id.toString() === addressId
             )
-            console.log(12345,address.pincode);
             const items = [];
 
 
@@ -505,14 +515,7 @@ const userController = {
 //get my addres
     getmyaddress: async (req,res,next) => {
         try{
-            // const userId = req.session.userID;
-            // const addressDocument = await Address.findOne({ userId: userId });
-            // console.log(addressDocument);
-            // res.render('myAddress',{
-            //     user: req.session,
-            //     addresses:  addressDocument.addresses
-
-            // })
+            
             const userId = req.session.userID;
         const addressDocument = await Address.findOne({ userId: userId });
 
@@ -895,8 +898,170 @@ const userController = {
             next(err)
         }
     },
+//wishlist
+    getwishlist: async (req,res,next) => {
+        try{
+
+            const userId = req.session.userID 
+            const userWishlist = await Wishlist.findOne({ userId : userId }).populate({ path : 'items.product', model : 'product' })
 
 
+            res.render('wishlist',{
+                title: 'Wishlist',
+                user: req.session,
+                userWishlist
+            })
+        }
+        catch(err){
+            next(err)
+        }
+    },
+// add to wishlist
+    addtowishlist: async (req,res,next) => {
+        try{
+            const userId = req.session.userID || req.user._id;
+            const productId = req.params.Id
+            const quantity = 1
+
+            const product = await Products.findById(productId)
+            
+            if (!product || product.stock === 0) {
+                return res.status(400).json({ success: false, message: "Product is out of stock." });
+            }
+
+            let userWishlist = await Wishlist.findOne({ userId: userId })
+
+            if (!userWishlist) {
+
+                const newwishlist = new Wishlist({
+                    userId: userId,
+                    items: [{
+                        product: productId,
+                        price: product.newprice,
+                        quantity: quantity
+                    }]
+                });
+
+                await newwishlist.save();
+                
+            } else {
+
+                const existingProduct = userWishlist.items.find(
+                    (item) => item.product.toString() === productId.toString()
+                )
+
+                if (existingProduct) {
+                    // existingProduct.quantity += quantity;
+                    return true
+                } else {
+                    userWishlist.items.push({
+                        product: productId,
+                        price: product.newprice,
+                        quantity: quantity
+                    });
+                }
+
+                await userWishlist.save();
+            }
+
+            // return res.status(200).json({ success: true, message: "Item added to cart successfully" });
+            return res.redirect('back')
+        }
+        catch(err){
+            next(err)
+        }
+    },
+// remove from wishlist
+    deleteWishlist: async (req, res, next) => {
+        try {
+            const userId = req.session.userID;
+            const productId = req.params.Id;
+
+            const userWishlist = await Wishlist.findOne({ userId: userId })
+
+            if (userWishlist) {
+                const wishlistProductIndex = userWishlist.items.findIndex(item => item.product.toString() === productId);
+    
+                if (wishlistProductIndex !== -1) {
+                    userWishlist.items.splice(wishlistProductIndex, 1);
+                    
+                    await userWishlist.save();
+    
+                    res.json({ success: true });
+                } else {
+                    res.json({ success: false, message: 'Product not found in the wishlist' });
+                }
+            } else {
+                res.json({ success: false, message: 'Wishlist not found' });
+            }
+        } catch (err) {
+            next(err);
+        }
+    },
+// wallet 
+    wallet: async (req, res, next) => {
+        try {
+            const userId = req.session.userID 
+            const userWallet = await Wallet.findOne({userId : userId})
+            const transactions = await Transaction.find({ userId: req.session.userID }).sort({ date: -1 });
+
+            res.render('wallet',{
+                title: 'Wallet',
+                user: req.session,
+                userData : req.session.userData,
+                userWallet,
+                transactions
+            })
+        } catch (err) {
+            next(err);
+        }
+    },
+//add amout to wallet
+    postAddAmount:async (req,res,next)=>{
+        try{
+            const userId = req.session.userID;
+            const amount = parseFloat(req.body.amount);
+
+            let userWallet = await Wallet.findOne({ userId: userId });
+            if (!userWallet) {
+                userWallet = new Wallet({
+                    userId: userId,
+                    balance: amount
+                });
+
+            } else {
+                userWallet.balance += amount;
+            }
+
+            await userWallet.save();
+
+            const transaction = new Transaction({
+                userId: userId,
+                amount: amount,
+                type: 'Credit', 
+                status: 'Success',
+                date: new Date() 
+            });
+
+            await transaction.save();
+
+            res.status(200).json({ success: true });
+
+        }
+        catch(err){
+            next(err)
+        }
+    },
+//transaction
+    getTransactionHistory: async (req, res, next) => {
+        try {
+            const userId = req.session.userID;
+            const transactions = await Transaction.find({ userId }).sort({ date: -1 });
+            res.json(transactions);
+        } catch (err) {
+            next(err);
+        }
+    },
 
 
 

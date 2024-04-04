@@ -187,7 +187,7 @@
                 <div class="col-md-12">
                     <a href="/addaddress"><button  class="btn btn-fill-out submit" >Add New Address</button></a> <br><br>   
                 </div>
-                <form action="/placeorder" method="POST">
+                <form action="/placeorder" method="POST" id="orderForm" >
                     <div class="row">
                         <div class="col">
                             
@@ -253,18 +253,44 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal"  ><span class="font-xl text-brand fw-900" >₹ <%= userCart.totalprice %> </span></td>
-                                                    <input type="hidden" name="totalprice" value="<%= userCart.totalprice %>">
+                                                    <td colspan="2" class="product-subtotal"   ><span class="font-xl text-brand fw-900" >₹ <%= userCart.totalprice %> </span></td>
+                                                    <input type="hidden" name="totalprice" id="subtotal" value="<%= userCart.totalprice %>">
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                     <div class="payment_method">
-                                        <div class="mb-25">
+                                        <div class="mb-25"> 
                                             <h5>Payment</h5>
                                         </div>
                                         <div class="payment_option">
+                                    
+                                            <div class="checkout_input_checkbox">
+                                                <label for="payment-cod">
+                                                  COD
+                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-cod" name="paymentMethod" value="COD" />
+                                                  <span class="checkmark"></span>
+                                                </label>
+                                              </div>
+                                            <div class="checkout_input_checkbox">
+                                                <label for="payment-razorpay">
+                                                  Razorpay
+                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-razorpay" name="paymentMethod" value="Razorpay" />
+                                                  <span class="checkmark"></span>
+                                                  <span id="check-error" style="font-size: 14px; margin-top: -5px"></span>
+                                                </label>
+                                              </div>
+                              
+                                              <div class="checkout_input_checkbox">
+                                                <label for="payment-wallet">
+                                                  Wallet
+                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-wallet" name="paymentMethod" value="Wallet" />
+                                                  <span class="checkmark"></span>
+                                                </label>
+                                              </div>
+                                        </div>
+                                        <!-- <div class="payment_option">
                                             <div class="custome-radio">
                                                 <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios3" value="CashOnDelevery" checked>
                                                 <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer" value="CashoffDelevery">Cash On Delivery</label>
@@ -273,15 +299,17 @@
                                             </div>
                                             <div class="custome-radio">
                                                 <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios5" value="paypal">
-                                                <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" value="paypal" aria-controls="paypal">Paypal</label>
+                                                <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" value="paypal" aria-controls="paypal">Razorpay</label>
                                             </div>
-                                        </div>
+                                        </div> -->
+
                                     </div>
                                     <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
                                 </div>
                             </div>
                         </div>
                         <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
+                        <input type="hidden" id="paymentStatus">
                 </form> 
                 </div>
             </section>
@@ -417,6 +445,181 @@
     <!-- Template  JS -->
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/shop.js"></script>
+
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="/static/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var checkError = document.getElementById("check-error");
+      
+        function validateForm() {
+        const paymentCODCheckbox = document.getElementById("payment-cod");
+        const paymentRazorpayCheckbox = document.getElementById("payment-razorpay");
+        const paymentWalletCheckbox = document.getElementById("payment-wallet");
+        const paymentStatusInput = document.getElementById("paymentStatus");
+        const checkedCount = [paymentCODCheckbox, paymentRazorpayCheckbox, paymentWalletCheckbox].filter(checkbox => checkbox.checked).length;
+      
+        const totalPriceInput = document.getElementById("subtotal");
+              const totalPrice = parseInt(totalPriceInput.innerText);
+        console.log(totalPrice);
+        if (checkedCount !== 1) {
+          checkError.style.display = "block";
+          checkError.innerHTML = "Please select only one payment method";
+          checkError.style.color = "red";
+          setTimeout(function () {
+            checkError.style.display = "none";
+          }, 3000);
+          return false;
+        }
+        else if (totalPrice > 1000 && paymentCODCheckbox.checked) {
+          paymentStatusInput.value = "Pending";
+          checkError.style.display = "block";
+          checkError.innerHTML = "COD is not available for orders above Rs 1000.";
+          checkError.style.color = "red";
+          setTimeout(function () {
+            checkError.style.display = "none";
+          }, 3000);
+          return false;
+        }
+         else if (!paymentCODCheckbox.checked && !paymentRazorpayCheckbox.checked && !paymentWalletCheckbox.checked) {
+          checkError.style.display = "block";
+          checkError.innerHTML = "Please select a payment method";
+          checkError.style.color = "red";
+          setTimeout(function () {
+            checkError.style.display = "none";
+          }, 3000);
+          return false;
+        }  else if (paymentRazorpayCheckbox.checked) {
+          initiateRazorpayPayment();
+          return false;
+          } else if (paymentCODCheckbox.checked) {
+            paymentStatusInput.value = "Pending";
+            Swal.fire({
+              title: "Are you sure?",
+              text: "Do you want to place the order?",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, place order",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                console.log("Order placed");
+                document.getElementById("orderForm").submit();
+              }
+            });
+            return false;
+          }else  if (paymentWalletCheckbox.checked) {
+              fetch('/check-wallet-balance')
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          const walletBalance = data.balance;
+                          if (totalPrice <= walletBalance) {
+                              document.getElementById('paymentStatus').value = 'Paid';
+                              Swal.fire({
+                              title: "Are you sure?",
+                              text: "Do you want to place the order?",
+                              icon: "question",
+                              showCancelButton: true,
+                              confirmButtonColor: "#3085d6",
+                              cancelButtonColor: "#d33",
+                              confirmButtonText: "Yes, place order",
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                console.log("Order placed");
+                                document.getElementById("orderForm").submit();
+                              }
+                            });
+                          } else {
+                              Swal.fire({
+                                  icon: 'error',
+                                  title: 'Insufficient Wallet Balance',
+                                  text: 'Your wallet balance is not sufficient to complete the transaction.',
+                                  showConfirmButton: true
+                              });
+                          }
+                      } else {
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'Error',
+                              text: 'Failed to fetch wallet balance. Please try again later.',
+                              showConfirmButton: true
+                          });
+                      }
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+              return false;
+          }
+        }
+      
+        document.getElementById("orderForm").addEventListener("submit", function (event) {
+       event.preventDefault();
+       validateForm();
+       // Additional logic if needed
+    });
+        
+      
+        function initiateRazorpayPayment() {
+          console.log("1");
+          const user = {
+            name: "<%= userData.name %>",
+            email: "<%= userData.email %>",
+            phone: "<%= userData.phone %>",
+          };
+         
+          const totalPriceInput = document.getElementById("subtotal");
+              const totalPrice = parseInt(totalPriceInput.value);
+      
+          console.log("dasdasdasd",totalPrice);
+      
+          var options = {
+            key: "rzp_test_GRK2fo2RAm4Wol",
+            amount: totalPrice * 100,
+            currency: "INR",
+            name: "Mobile Hub",
+            description: "Purchase Description",
+            image: "https://example.com/logo.png",
+            
+            handler: function (response) {
+              console.log(response);
+                console.log("Payment successful");
+                document.getElementById('paymentStatus').value = 'Paid';
+             
+              submitForm();
+            },
+      
+            prefill: {
+              name: user.name,
+              email: user.email,
+              contact: user.phone,
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+      
+          var rzp = new Razorpay(options);
+      
+        //   rzp.on('payment.failed', function (response) {
+        //     console.log("Payment failed:", response);
+        //     document.getElementById('paymentStatus').value = 'Failed';
+        //     submitForm();
+        //   });
+      
+          rzp.open();
+        }
+      
+        function submitForm() {
+          const form = document.getElementById("orderForm");
+          form.submit();
+        }
+    
+      </script>
 </body>
 
 

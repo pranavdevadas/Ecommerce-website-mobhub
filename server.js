@@ -10,6 +10,7 @@ const adminRouter = require('./routes/adminRoutes')
 const bodyParser = require('body-parser');
 const passport = require('passport')
 const MongoDBStore = require('connect-mongodb-session')(session);
+const Razorpay = require('razorpay')
 
 
 const PORT= process.env.PORT||3000
@@ -20,7 +21,6 @@ const store = new MongoDBStore({
     uri: process.env.MONGODB_STORE_URI,
     collection: process.env.MONGODB_STORE_COLLECTION
 });
-
 
 
 //middleware to handle sesssion
@@ -58,7 +58,7 @@ app.use(passport.session())
 app.use((err, req, res, next) => {
     console.error(err.stack); 
     res.status(500).send('Something went wrong!'); 
-  });
+});
   
 
 

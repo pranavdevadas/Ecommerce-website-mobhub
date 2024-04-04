@@ -159,7 +159,7 @@
                                     <li><a class="active" href="/">Home</i></a>
                                     <li><a href="/shop">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My Profile</i></a></li>
-                                    <li><a href="#">Brands</a></li>
+                                    <li><a href="/wallet">Wallet</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -378,10 +378,15 @@
                                                     <img class="hover-img" src="/static/<%= row.images[1] %>" alt="">
                                                 </a>
                                             </div>
+                                            <% if(row.stock > 0) { %>
                                             <div class="product-action-1">
-                                                <a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-eye"></i></a>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/addtowishlist"><i class="fi-rs-heart"></i></a>
+                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addwishlist('<%= row._id %>')" ><i class="fi-rs-heart"></i></a>
                                             </div>
+                                            <% } else { %>
+                                                <div class="product-action-1">
+                                                    <span style="display: none;"></span>
+                                                </div>
+                                            <% } %>
                                         </div>
                                         <div class="product-content-wrap">
                                             <div class="product-category">
@@ -538,61 +543,63 @@
 
     <script>
         function addcart(_id) {
-           event.preventDefault();
-           $.ajax({
-               url: `/checkstock/${_id}`,
-               type: "GET",
-               success: function(response) {
-                   console.log(response);
-                   if (response.success) {
-                       Swal.fire({
-                           icon: "success",
-                           title: "Added to cart successfully!",
-                           showConfirmButton: true,
-                       }).then((result) => {
-                           if (result.isConfirmed) {
-                               $.ajax({
-                                   url: `/addtocart/${_id}`,
-                                   type: "GET",
-                                   success: function(response) {
-                                       console.log("Item added to cart:", response);
-                                   },
-                                   error: function() {
-                                       console.error("Failed to add item to cart");
-                                   },
-                               });
-                           }
-                       });
-                   } else {
-                       if (response.message === "Please log in to add items to your cart.") {
-                           Swal.fire({
-                               icon: "error",
-                               title: "Login Required",
-                               text: "Please login to add items to your cart.",
-                               showConfirmButton: true,
-                           })
-                       } else {
-                           Swal.fire({
-                               icon: "error",
-                               title: "Product is out of stock",
-                               showConfirmButton: true,
-                           });
-                       }
-                   }
-               },
-               error: function() {
-                   Swal.fire({
-                       icon: "error",
-                       title: "Error occurred",
-                       text: "Failed to check stock availability",
-                       showConfirmButton: true,
-                   });
-               },
-           });
-       }
+        event.preventDefault();
+        $.ajax({
+            url: `/check-stock/${_id}`,
+            type: "GET",
+            success: function(response) {
+                console.log("Check stock response:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to cart successfully!",
+                        showConfirmButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/addtocart/${_id}`,
+                                type: "GET",
+                                success: function(response) {
+                                    console.log("Item added to cart:", response);
+                                },
+                                error: function() {
+                                    console.error("Failed to add item to cart");
+                                },
+                            });
+                        }
+                    });
+                } else {
+                    if (response.message === "Please log in to add items to your cart.") {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Required",
+                            text: "Please login to add items to your cart.",
+                            showConfirmButton: true,
+                        })
+                    } else {
+                        console.error("Error:", response.message);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Product is out of stock",
+                            showConfirmButton: true,
+                        });
+                    }
+                }
+            },
+            error: function(err) {
+                console.log('error');
+                Swal.fire({
+                    icon: "error",
+                    title: "Error occurred",
+                    text: "Failed to check stock availability",
+                    showConfirmButton: true,
+                });
+            },
+        });
+    }
+ </script>
+
        
-       
-       </script>
     <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="/static/assets/js/vendor/jquery-3.6.0.min.js"></script>
     <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
@@ -620,8 +627,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
  
-       <script>
-             function addcart(_id) {
+       <!-- <script>
+             function addwishlist(_id) {
              event.preventDefault();
              $.ajax({
                  url: `/check-stock/${_id}`,
@@ -631,28 +638,28 @@
                      if (response.success) {
                          Swal.fire({
                              icon: "success",
-                             title: "Added to cart successfully!",
+                             title: "Added to wishlist successfully!",
                              showConfirmButton: true,
                          }).then((result) => {
                              if (result.isConfirmed) {
                                  $.ajax({
-                                     url: `/addtocart/${_id}`,
+                                     url: `/addtowishlist/${_id}`,
                                      type: "GET",
                                      success: function(response) {
-                                         console.log("Item added to cart:", response);
+                                         console.log("Item added to wishllist:", response);
                                      },
                                      error: function() {
-                                         console.error("Failed to add item to cart");
+                                         console.error("Failed to add item to wishlist");
                                      },
                                  });
                              }
                          });
                      } else {
-                         if (response.message === "Please log in to add items to your cart.") {
+                         if (response.message === "Please log in to add items to your wishlist.") {
                              Swal.fire({
                                  icon: "error",
                                  title: "Login Required",
-                                 text: "Please login to add items to your cart.",
+                                 text: "Please login to add items to your wishlist.",
                                  showConfirmButton: true,
                              })
                          } else {
@@ -676,10 +683,37 @@
                  },
              });
          }
-      </script>
+      </script> -->
+
+      <script>
+        function addwishlist(_id) {
+            event.preventDefault();
+            $.ajax({
+                url: `/addtowishlist/${_id}`,
+                type: "GET",
+                success: function(response) {
+                    console.log("Item added to wishlist:", response);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to wishlist successfully!",
+                        showConfirmButton: true,
+                    });
+                },
+                error: function() {
+                    console.error("Failed to add item to wishlist");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error occurred",
+                        text: "Failed to add item to wishlist",
+                        showConfirmButton: true,
+                    });
+                },
+            });
+        }
+    </script>
+    
    
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:25:49 GMT -->
 </html>

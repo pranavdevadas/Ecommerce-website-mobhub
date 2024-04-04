@@ -155,85 +155,69 @@
             </div>
         </div>
     </div>
-
-    <section class="mt-50 mb-50">
-        <% if(userCart  && userCart.items.length > 0){ %>            
-        <div class="container">
+    <section>
+        <div class="container mt-5">
             <div class="row">
-                <div class="col-12">
-                    <div class="table-responsive">
-                            <table class="table shopping-summery text-center clean">
-                                <thead>
-                                    <tr class="main-heading">
-                                        <th scope="col">Image</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Subtotal</th>
-                                        <th scope="col">Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% userCart.items.forEach((row)=>{ %>
-                                        <tr>
-                                            <td class="image"><img src="static/<%= row.product.images[0] %>" alt="#"></td>
-                                            <td class="product-des">
-                                                <h5 class="product-name"><a href="/productdetials/<%= row.product._id %>"><%= row.product.productname %></a></h5>
-                                            </td>
-                                            <td class="price" data-title="Price"><span>₹ <%= row.product.newprice %></span></td>
-                                            <td class="text-center" data-title="Stock">
-                                                <div class="detail-qty border radius  m-auto">
-                                                    <a class="qty-down" data-id="<%= row.product._id %>" ><i class="fi-rs-angle-small-down"></i></a>
-                                                    <span class="qty-val" data-id="<%= row.product._id %>" ><%= row.quantity %></span>  
-                                                    <a class="qty-up" action="increment" data-id="<%= row.product._id %>" ><i class="fi-rs-angle-small-up" action="increment"></i></a>
-                                                </div>
-                                            </td>
-                                            <td class="text-right" data-title="Cart">
-                                                <span class="cart__price" data-id="<%= row.product._id %>">₹ <%= row.product.newprice * row.quantity %> </span>
-                                            </td>
-                                            <td class="action"  >
-                                                <form>
-                                                    <a type="button"  class="text-muted" data-id="<%= row.product._id %>" onclick="remove('<%= row.product._id %>')" ><i class="fi-rs-trash"></i></a></td>
-                                                </form>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>
-                            </table>
-                    </div>
-                    <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
-                    <div class="row mb-50">
-                        <div class="col-lg-6 col-md-12">
-                            <div class="border p-md-4 p-30 border-radius cart-totals">
-                                <div class="heading_s1 mb-3">
-                                    <h4>Cart Totals</h4>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h1 class="text-center">My Wallet</h1>
+                        </div><br>
+                        <div class="card-body">
+                                <h2 class="text-center">Balance: <span id="balance">Rs. <%= userWallet.balance %>.00</span></h2> <br><br>
+                            <!-- <form id="depositForm">
+                                <div class="form-group">
+                                    <label for="deposit-amount">Deposit Amount:</label>
+                                    <input type="text" class="form-control" id="deposit-amount" name="amount" placeholder="Enter amount">
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        
-                                        <tbody>
-                                            <tr>
-                                                <td class="cart_total_label">Shipping</td>
-                                                <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free shipping </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="cart_total_label">Total</td>
-
-                                                <td class="cart_total"><strong><span class="font-xl fw-900 text-brand " id="totalPrice" >₹ <%= userCart.totalprice %> </span></strong></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <br><br>
+                                <button type="button" class="btn btn-primary btn-block" onclick="initiateRazorpayPayment()">Deposit</button>
+                                <br><br>
+                            </form> -->
+                            <form id="depositForm">
+                                <div class="form-group">
+                                    <label for="deposit-amount">Deposit Amount:</label>
+                                    <input type="text" class="form-control" id="deposit-amount" name="amount" placeholder="Enter amount">
+                                    <div id="amount-validation" style="color: green;"></div>
                                 </div>
-                                <div><a href="/checkout" class="btn"> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a></div>
-                                
-                            </div>
+                                <br><br>
+                                <button type="button" class="btn btn-primary btn-block" onclick="validateAndProceed()">Deposit</button>
+                                <br><br>
+                            </form>
+                            
                         </div>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="text-center">Transaction History</h2>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Credit/Debit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% transactions.forEach(transaction => { %>
+                                    <tr>
+                                        <td><%= transaction.date %></td>
+                                        <td><%= transaction.status %></td>
+                                        <td><%= transaction.amount %></td>
+                                        <td><%= transaction.type %></td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
             </div>
         </div>
-        <% } else { %>
-            <span style="color: grey;">Please add Items to your cart. </span>
-            <% } %>`
     </section>
     <footer class="main">
         <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
@@ -329,145 +313,118 @@
             </div>
         </div>
     </footer>
-        <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js' "></script>
-        <script src="/static/assets/js/vendor/jquery-3.6.0.min.js' "></script>
-        <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js'"></script>
-        <script src="/static/assets/js/vendor/bootstrap.bundle.min.js'"></script>
-        <script src="/static/assets/js/plugins/slick.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.syotimer.min.js'"></script>
-        <script src="/static/assets/js/plugins/wow.js'"></script>
-        <script src="/static/assets/js/plugins/jquery-ui.js'"></script>
-        <script src="/static/assets/js/plugins/perfect-scrollbar.js'"></script>
-        <script src="/static/assets/js/plugins/magnific-popup.js'"></script>
-        <script src="/static/assets/js/plugins/select2.min.js'"></script>
-        <script src="/static/assets/js/plugins/waypoints.js'"></script>
-        <script src="/static/assets/js/plugins/counterup.js'"></script>
-
-        <script src="/static/assets/js/plugins/images-loaded.js'"></script>
-        <script src="/static/assets/js/plugins/isotope.js'"></script>
-        <script src="/static/assets/js/plugins/scrollup.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.vticker-min.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.theia.sticky.js'"></script>
-        <script src="/static/assets/js/plugins/jquery.elevatezoom.js' "></script>
 
         <script src="/static/assets/js/main.js'"></script>
         <script src="/static/assets/js/shop.js'"></script>
           
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+
+function validateAmount(amount) {
+        return !isNaN(amount) && amount >= 100 && amount <= 35000;
+    }
+
+    function initiateRazorpayPayment(amount) {
+        // Implement your Razorpay payment initiation logic here
+        console.log("Razorpay payment initiated for amount: " + amount);
+    }
+
+    function validateAndProceed() {
+        var amountInput = document.getElementById("deposit-amount").value;
+        var amount = parseFloat(amountInput);
+        var validationMessage = document.getElementById("amount-validation");
+
+        if (validateAmount(amount)) {
+            validationMessage.innerText = "Valid";
+            validationMessage.style.color = "green";
+            initiateRazorpayPayment(amount); // Call the Razorpay function if amount is valid
+        } else {
+            validationMessage.innerText = "Amount must be between Rs. 100 and Rs. 35000.";
+            validationMessage.style.color = "red";
+        }
+    }
+            function initiateRazorpayPayment() {
+                const user = {
+                    name: "<%= userData.name %>",
+                    email: "<%= userData.email %>",
+                    phone: "<%= userData.phone %>",
+                };
+                
+                var amount = document.getElementById('deposit-amount')
+                const walletAmount = parseInt(amount.value);
+        
+                var options = {
+                    key: "rzp_test_GRK2fo2RAm4Wol",
+                    amount: walletAmount * 100,
+                    currency: "INR",
+                    name: "Mobile Hub",
+                    description: "Purchase Description",
+                    image: "https://example.com/logo.png",
+                    
+                    handler: function (response) {
+                        console.log(response);
+                        if (response.razorpay_payment_id) {
+                            // Payment successful
+                            updateWalletBalance(walletAmount, 'Success');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                        } else {
+                            // Payment failed
+                            updateWalletBalance(walletAmount, 'Fail');
+                        }
+                    },
+        
+                    prefill: {
+                        name: user.name,
+                        email: user.email,
+                        contact: user.phone,
+                    },
+                    theme: {
+                        color: "#3399cc",
+                    },
+                };
+        
+                var rzp = new Razorpay(options);
+                rzp.open();
+                
+                // Prevent default form submission
+                return false;
+            }
+        
+            function updateWalletBalance(amount) {
+                fetch('/walletdeposite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        amount: amount,
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Wallet balance updated successfully");
+                    } else {
+                        console.error("Failed to update wallet balance");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating wallet balance:", error);
+                });
+            }
+        </script>
+        
+        
+
+
       
         
-        <script>
-            function remove(productId) {
-            Swal.fire({
-                title: "Are you sure?",
-                text: "You are about to remove this item from your cart.",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, remove it!",
-                cancelButtonText: "Cancel",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: `/remove-from-cart/${productId}`,
-                        type: "DELETE",
-                        success: function (data) {
-                            if (data.success) {
-                                Swal.fire({
-                                    title: "Removed!",
-                                    text: "The item has been successfully removed from your cart.",
-                                    icon: "success",
-                                    showConfirmButton: false,
-                                    
-                                });
-                                setTimeout(() => {
-                                    location.reload() 
-                                    }, 2000);
-                                $(".cart-item[data-id='" + productId + "']").remove();
-                                $(".cart_total span").text("Rs " + data.totalPrice);
-                            } else {
-                                Swal.fire({
-                                    title: "Error!",
-                                    text: "Failed to remove the item. Please try again later.",
-                                    icon: "error"
-                                });
-                            }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                title: "Error!",
-                                text: "An unexpected error occurred. Please try again later.",
-                                icon: "error"
-                            });
-                        }
-                    });
-                }
-            });
-        }
-
         
-
-            
-        $(document).ready(function () {
-            $(".qty-down, .qty-up").on("click", function (e) {
-                e.preventDefault();
-                var $button = $(this);
-                var productId = $button.data("id");
-                var action = $button.hasClass("qty-down") ? "decrement" : "increment";
-
-                var currentQuantity = parseInt($(".qty-val[data-id='" + productId + "']").text());
-
-                if (action === "increment" && currentQuantity === 4) {
-                    Swal.fire({
-                        title: "Maximum Quantity Reached",
-                        icon: "warning"
-                    });
-                    return;
-                }
-                
-                else if(action === 'decrement' && currentQuantity === 1){
-                    return
-                }
-
-                $.ajax({
-                    url: "/update-cart",
-                    type: "POST",
-                    data: { productId: productId, action: action },
-                    success: function (data) {
-                        console.log("Server response:", data);
-                        if (data.success) {
-                            var cartItem = data.cartItem;
-                            var $quantitySpan = $(".qty-val[data-id='" + productId + "']");
-                            var $cartPriceSpan = $(".cart__price[data-id='" + productId + "']");
-                            var $totalPriceSpan = $(".cart_total span");
-
-                            $quantitySpan.text(cartItem.quantity);
-
-                            $cartPriceSpan.text("Rs " + (cartItem.price * cartItem.quantity));
-                            $totalPriceSpan.text("Rs " + (data.totalprice));
-                            
-
-                        } else {
-                            if (data.message === "Maximum quantity reached for this product") {
-                                Swal.fire({
-                                    title: "Maximum Quantity Reached",
-                                    icon: "warning"
-                                });
-                            }
-                        }
-                    },
-                    error: function () {
-                        alert("Error in AJAX request.");
-                    },
-                });
-            });
-        });
-
-
-
-    </script>
 
     </body>
         

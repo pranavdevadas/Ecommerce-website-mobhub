@@ -57,6 +57,11 @@ const orderScema = mongoose.Schema({
     type: String,
     required: true,
     },
+    paymentStatus: {
+        type: String,
+        required: true,
+        default: 'pending'
+    },
     orderDate: {
         type: Date,
         default: Date.now,

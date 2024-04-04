@@ -184,8 +184,6 @@ const cartController = {
             , 0)
 
             await userCart.save();
-
-            console.log(123333,userCart.totalprice);
             return res.json({
                 success: true,
                 cartItem: cartItem,
