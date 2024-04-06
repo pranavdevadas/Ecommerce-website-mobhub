@@ -34,7 +34,9 @@ router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
 
 router.get('/shop',isUser,userController.getshop)
-router.get('/priceFilter/:category?', userController.getshop);
+router.get('/priceFilter/:category', userController.getshop);
+router.get('/categoryFilter/:category?', userController.getshop);
+
 
 router.get('/check-stock/:Id',isUser,cartController.checkstock)
 router.get('/addtocart/:Id',isUser,cartController.addtocart)
@@ -75,7 +77,10 @@ router.get('/account-info',isUser,userController.getaccontdetials)
 
 router.get('/wallet',isUser,userController.wallet)
 router.post('/walletdeposite',isUser,userController.postAddAmount)    
-router.get('/transaction-history', isUser, userController.getTransactionHistory);
+router.get('/transaction-history', isUser, userController.getTransactionHistory)
+router.post('/check-wallet-balance',isUser,userController.checkWalletBalance)
+
+router.post('/couponcheck',userController.checkCoupon)
 
 
 

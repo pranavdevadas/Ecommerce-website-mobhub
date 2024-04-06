@@ -62,6 +62,10 @@ const orderScema = mongoose.Schema({
         required: true,
         default: 'pending'
     },
+    discountAmount: {
+        type: Number,
+        default: 0
+    },
     orderDate: {
         type: Date,
         default: Date.now,

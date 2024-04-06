@@ -3,6 +3,7 @@ const User  = require('../model/users')
 const isAdmin = require('../middlewares/isAdmin')
 require('dotenv').config()
 const AdminCridentials = require('../model/admincridentials')
+const Coupon = require('../model/coupon')
 
 
 
@@ -71,9 +72,83 @@ getlogout: (req, res, next) => {
     
     error:(req,res)=>{
         res.render('error404')
-    }
+    },
+// get coupon
+    getCoupon: async (req,res,next) => {
+        try{
+            const coupon = await Coupon.find()
 
+            res.render('admin/coupon',{
+                title:'Brands',
+                coupon: coupon
+            })
 
+        }
+        catch(err){
+            next(err)
+        }
+    },
+//get add coupon
+    getAddCoupon: (req,res,next) => {
+        try{
+            
+            res.render('admin/addcoupon',{
+                title: 'Add Coupon'
+            })
+
+        }
+        catch(err){
+            next(err)
+        }
+    },
+// add coupon post
+    postaddcoupon: async (req,res,next)=>{
+        try{
+            const existingcoupon = await Coupon.findOne({coupon:req.body.coupon})
+            if(existingcoupon){
+                res.render('admin/addcoupon',{
+                    title:'Add Coupon',
+                    alert: 'Coupon is alredy exist, try with other Coupon'
+                })
+            }
+            else{
+                const coupon = new Coupon({
+                    coupon: req.body.coupon,
+                    description: req.body.description,
+                    percentage: req.body.percentage,
+                    minimumamount: req.body.minimumamount,
+                    maximumamount: req.body.maximumamount,
+                    expiryDate: req.body.expiryDate
+                })
+                await coupon.save()
+                res.redirect('/admin/coupon')
+            }
+        }
+        catch(err){
+            next(err)
+        }
+    },
+//publish and unpublish brand
+    unpublishcoupon: async (req,res,next)=>{
+        try{
+            const Id = req.params.Id
+            await Coupon.findByIdAndUpdate(Id, { isListed: false })
+            res.redirect('/admin/coupon')
+        }
+        catch(err){
+            next(err)
+        }
+    },
+    publishcoupon: async (req,res,next)=>{
+        try{
+            const Id = req.params.Id
+            await Coupon.findByIdAndUpdate(Id, { isListed: true })
+            res.redirect('/admin/coupon')
+        }
+        catch(err){
+            next(err)
+        }
+    },
 
 
 

@@ -148,9 +148,9 @@
                             <nav>
                                 <ul>
                                     <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
+                                    <li><a class="active"  href="/shop">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My Profile</i></a></li>
-                                    <li><a href="#">Brands</a></li>
+                                    <li><a href="/wallet">Wallet</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -262,8 +262,8 @@
                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Ram : <%= row.ram %>GB </li>
                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Storage : <%= row.storage %>GB</li>
                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Color: <%= row.colour %></li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Category: <%= row.category.category %></li>
-                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Brand: <%= row.brand.brand %></li>
+                                        <!-- <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Category: <%= row.category.category %></li>
+                                        <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Brand: <%= row.brand.brand %></li> -->
                                         <% if(row.stock==0){ %>
                                         <div class="product_sort_info font-xs mb-30">
                                                 <span class="mb-10 ml-20 text-danger text-center"><b>Out of Stock</b></span>
@@ -281,27 +281,23 @@
                         </div>
                         <div class="col-lg-3 primary-sidebar sticky-sidebar">
                             <!-- Product sidebar Widget -->
+                            
                             <div class="sidebar-widget product-sidebar  mb-30 p-30 bg-grey border-radius-10">
-                                <div class="widget-header position-relative mb-20 pb-10">
-                                    <h5 class="widget-title mb-10">New products</h5>
-                                    <div class="bt-1 border-color-1"></div>
-                                </div>
-                                <% products.forEach((row,index)=>{ %>
-                                <div class="single-post clearfix">
-                                    <!-- <a  href="/productdetials/<%= row._id %>"> -->
-                                        <div class="image">
-                                            <img src="/static/<%= row.images[2] %>" alt="#">
-                                        </div>
-                                    <!-- </a> -->
-                                    <div class="content pt-10">
-                                        <h5><a href="/productdetials/<%= row._id %>"><%= row.productname %></a></h5>
-                                        <p class="price mb-0 mt-5"> ₹ <%= row.newprice%></p>
-                                        <div class="product-rate">
-                                            <div class="product-rating" style="width:90%"></div>
-                                        </div>
+                                <div class="col-lg-3 primary-sidebar sticky-sidebar">
+                                    <div class="widget-category mb-30" style="border: 1px solid white;">
+                                        <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
+                                        <ul class="categories">
+                                            <li>
+                                                <a href="/categoryFilter/">All</a>
+                                            </li>
+                                        <% cate.forEach(row => { %>
+                                            <li>
+                                                <a href="/categoryFilter/<%= row._id %>"><%= row.category %></a>
+                                            </li>
+                                         <% }) %>
+                                        </ul>
                                     </div>
                                 </div>
-                                <% }) %>
                             </div>
                         </div>
                     </div>

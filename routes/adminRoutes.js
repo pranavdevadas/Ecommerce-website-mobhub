@@ -50,6 +50,13 @@ const orderController = require('../controller/orderController')
     router.get('/admin/orderdetails/:Id',isAdmin,orderController.orderdetails)
     router.patch('/updatestatus',isAdmin,orderController.updatestatus)
 
+    router.get('/admin/coupon',adminController.getCoupon)
+    router.get('/admin/coupon/add',adminController.getAddCoupon)
+    router.post('/couponsubmit',adminController.postaddcoupon)
+    router.get('/couponpublishedd/:Id',isAdmin,adminController.publishcoupon)
+    router.get('/couponunpublishedd/:Id',adminController.unpublishcoupon)
+
+
     router.get('*',adminController.error)
 
 

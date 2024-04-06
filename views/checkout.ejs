@@ -103,7 +103,7 @@
                                     <li><a href="/">Home</i></a>
                                     <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My Profile</i></a></li>
-                                    <li><a href="#">Brands</a></li>
+                                    <li><a href="/wallet">Wallet</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -151,7 +151,7 @@
         <div class="page-header breadcrumb-wrap">
             <div class="container">
                 <div class="breadcrumb">
-                    <a href="/dashboard" rel="nofollow">Home</a>
+                    <a href="/cart" rel="nofollow">Home</a>
                     <span></span> YourCart
                     <span></span> Checkout
                 </div>
@@ -166,19 +166,32 @@
                         </div>
                         <div class="panel-collapse collapse coupon_form " id="coupon">
                             <div class="panel-body">
-                                <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
-                                <form method="post">
+                                <% if (coupon.length > 0) { %>
+                                <p class="mb-30 font-sm">Available Coupons. Please Copy and Paste in the mentioned Box. </p>
+                                <% coupon.forEach(row => { %>
+                                    <ul><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                        <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                      </svg> <%= row.coupon %> <br>*<%= row.description%> </ul><br><br>
+                                    <% }) %> <hr>
+                                    <% } else { %>
+                                        <p class="text-danger" >*Coupons not available right now.</p>
+                                    <% } %>
+                                    <p class="mb-30 font-sm">If you have a coupon code, Please apply it below.</p>
+                                <form onsubmit="applycoupon(event)" >
                                     <div class="form-group">
-                                        <input type="text" placeholder="Enter Coupon Code...">
+                                        <input type="text" name="coupon" id="couponInput" placeholder="Enter Coupon Code...">
                                     </div>
+                                    <p id="couponApplied"></p>
                                     <div class="form-group">
-                                        <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                        <button class="btn btn-md"  type="submit" >Apply Coupon</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="row">
                     <div class="col-12">
                         <div class="divider mt-50 mb-50"></div>
@@ -245,7 +258,11 @@
                                                 <% }) %>
                                                 <tr>
                                                     <th>SubTotal</th>
-                                                    <td class="product-subtotal" colspan="2" >₹ <%= userCart.totalprice %> </td>
+                                                    <td class="product-subtotal" colspan="2"  >₹ <%= userCart.totalprice %> </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Discount</th>
+                                                    <td class="product-subtotal" colspan="2" id="couponId"  >₹ 0 </td>
                                                 </tr>
                                                 <tr>
                                                     <th>Shipping</th>
@@ -253,23 +270,25 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal"   ><span class="font-xl text-brand fw-900" >₹ <%= userCart.totalprice %> </span></td>
-                                                    <input type="hidden" name="totalprice" id="subtotal" value="<%= userCart.totalprice %>">
+                                                    <td colspan="2" class="product-subtotal" id="subtotal"   ><span class="font-xl text-brand fw-900"  >₹ <%= userCart.totalprice %> </span></td>
+                                                    <input type="hidden" name="totalprice" id="subtotalInp" value="<%= userCart.totalprice %>"  >
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
+                                    <p id="coupondetails"></p>
+                                    <p id="CancelBtn"></p>
+
                                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                     <div class="payment_method">
                                         <div class="mb-25"> 
                                             <h5>Payment</h5>
                                         </div>
-                                        <div class="payment_option">
-                                    
+                                        <div class="payment_option">                                    
                                             <div class="checkout_input_checkbox">
                                                 <label for="payment-cod">
                                                   COD
-                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-cod" name="paymentMethod" value="COD" />
+                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-cod" name="paymentMethod" value="COD" checked />
                                                   <span class="checkmark"></span>
                                                 </label>
                                               </div>
@@ -280,8 +299,7 @@
                                                   <span class="checkmark"></span>
                                                   <span id="check-error" style="font-size: 14px; margin-top: -5px"></span>
                                                 </label>
-                                              </div>
-                              
+                                              </div>                      
                                               <div class="checkout_input_checkbox">
                                                 <label for="payment-wallet">
                                                   Wallet
@@ -290,26 +308,15 @@
                                                 </label>
                                               </div>
                                         </div>
-                                        <!-- <div class="payment_option">
-                                            <div class="custome-radio">
-                                                <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios3" value="CashOnDelevery" checked>
-                                                <label class="form-check-label" for="exampleRadios3" data-bs-toggle="collapse" data-target="#bankTranfer" aria-controls="bankTranfer" value="CashoffDelevery">Cash On Delivery</label>
-                                                <div class="form-group collapse in" id="bankTranfer">
-                                                </div>
-                                            </div>
-                                            <div class="custome-radio">
-                                                <input class="form-check-input" required="" type="radio" name="paymentMethod" id="exampleRadios5" value="paypal">
-                                                <label class="form-check-label" for="exampleRadios5" data-bs-toggle="collapse" data-target="#paypal" value="paypal" aria-controls="paypal">Razorpay</label>
-                                            </div>
-                                        </div> -->
-
                                     </div>
                                     <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
                                 </div>
                             </div>
                         </div>
                         <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
-                        <input type="hidden" id="paymentStatus">
+                        <input type="hidden" id="paymentStatus" name="paymentStatus">
+                        <input type="hidden" id="totalPriceInput">
+                        <input type="hidden" id="discountId" name="discount" >
                 </form> 
                 </div>
             </section>
@@ -424,24 +431,10 @@
         </div>
     </div>
     <!-- Vendor JS-->
-    <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="/static/assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="/static/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
     <script src="/static/assets/js/vendor/bootstrap.bundle.min.js"></script>
-    <script src="/static/assets/js/plugins/slick.js"></script>
-    <script src="/static/assets/js/plugins/jquery.syotimer.min.js"></script>
-    <script src="/static/assets/js/plugins/wow.js"></script>
-    <script src="/static/assets/js/plugins/jquery-ui.js"></script>
-    <script src="/static/assets/js/plugins/perfect-scrollbar.js"></script>
-    <script src="/static/assets/js/plugins/magnific-popup.js"></script>
-    <script src="/static/assets/js/plugins/select2.min.js"></script>
-    <script src="/static/assets/js/plugins/waypoints.js"></script>
-    <script src="/static/assets/js/plugins/counterup.js"></script>
-    <script src="/static/assets/js/plugins/jquery.countdown.min.js"></script>
-    <script src="/static/assets/js/plugins/images-loaded.js"></script>
-    <script src="/static/assets/js/plugins/isotope.js"></script>
-    <script src="/static/assets/js/plugins/scrollup.js"></script>
-    <script src="/static/assets/js/plugins/jquery.vticker-min.js"></script>
+
+
     <!-- Template  JS -->
     <script src="/static/assets/js/main.js"></script>
     <script src="/static/assets/js/shop.js"></script>
@@ -461,9 +454,9 @@
         const paymentStatusInput = document.getElementById("paymentStatus");
         const checkedCount = [paymentCODCheckbox, paymentRazorpayCheckbox, paymentWalletCheckbox].filter(checkbox => checkbox.checked).length;
       
-        const totalPriceInput = document.getElementById("subtotal");
-              const totalPrice = parseInt(totalPriceInput.innerText);
-        console.log(totalPrice);
+        const totalPriceInput = document.getElementById("subtotalInp");
+        const totalPrice = parseFloat(totalPriceInput.value)
+
         if (checkedCount !== 1) {
           checkError.style.display = "block";
           checkError.innerHTML = "Please select only one payment method";
@@ -473,10 +466,10 @@
           }, 3000);
           return false;
         }
-        else if (totalPrice > 1000 && paymentCODCheckbox.checked) {
+        else if (totalPrice > 30000 && paymentCODCheckbox.checked) {
           paymentStatusInput.value = "Pending";
           checkError.style.display = "block";
-          checkError.innerHTML = "COD is not available for orders above Rs 1000.";
+          checkError.innerHTML = "COD is not available for orders above Rs 30000.";
           checkError.style.color = "red";
           setTimeout(function () {
             checkError.style.display = "none";
@@ -494,6 +487,7 @@
         }  else if (paymentRazorpayCheckbox.checked) {
           initiateRazorpayPayment();
           return false;
+
           } else if (paymentCODCheckbox.checked) {
             paymentStatusInput.value = "Pending";
             Swal.fire({
@@ -511,49 +505,60 @@
               }
             });
             return false;
-          }else  if (paymentWalletCheckbox.checked) {
-              fetch('/check-wallet-balance')
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          const walletBalance = data.balance;
-                          if (totalPrice <= walletBalance) {
-                              document.getElementById('paymentStatus').value = 'Paid';
-                              Swal.fire({
-                              title: "Are you sure?",
-                              text: "Do you want to place the order?",
-                              icon: "question",
-                              showCancelButton: true,
-                              confirmButtonColor: "#3085d6",
-                              cancelButtonColor: "#d33",
-                              confirmButtonText: "Yes, place order",
-                            }).then((result) => {
-                              if (result.isConfirmed) {
+
+          }else if (paymentWalletCheckbox.checked) {
+            fetch('/check-wallet-balance', {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ totalPrice: totalPrice })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const walletBalance = data.balance;
+                    console.log('Wallet Balance:', walletBalance);
+
+                    if (totalPrice <= walletBalance) {
+                        Swal.fire({
+                            title: "Are you sure?",
+                            text: "Do you want to place the order?",
+                            icon: "question",
+                            showCancelButton: true,
+                            confirmButtonColor: "#3085d6",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Yes, place order",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
                                 console.log("Order placed");
+                                // Submit the order form
+                                document.getElementById('paymentStatus').value = 'Paid';
                                 document.getElementById("orderForm").submit();
-                              }
-                            });
-                          } else {
-                              Swal.fire({
-                                  icon: 'error',
-                                  title: 'Insufficient Wallet Balance',
-                                  text: 'Your wallet balance is not sufficient to complete the transaction.',
-                                  showConfirmButton: true
-                              });
-                          }
-                      } else {
-                          Swal.fire({
-                              icon: 'error',
-                              title: 'Error',
-                              text: 'Failed to fetch wallet balance. Please try again later.',
-                              showConfirmButton: true
-                          });
-                      }
-                  })
-                  .catch(error => {
-                      console.error('Error:', error);
-                  });
-              return false;
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Wallet Balance',
+                            text: 'Your wallet balance is not sufficient to complete the transaction.',
+                            showConfirmButton: true
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch wallet balance. Please try again later.',
+                        showConfirmButton: true
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+            return false; // Prevent form submission
           }
         }
       
@@ -565,17 +570,14 @@
         
       
         function initiateRazorpayPayment() {
-          console.log("1");
           const user = {
             name: "<%= userData.name %>",
             email: "<%= userData.email %>",
             phone: "<%= userData.phone %>",
           };
          
-          const totalPriceInput = document.getElementById("subtotal");
-              const totalPrice = parseInt(totalPriceInput.value);
-      
-          console.log("dasdasdasd",totalPrice);
+          const totalPriceInput = document.getElementById("subtotalInp");
+          const totalPrice = parseFloat (totalPriceInput.value )
       
           var options = {
             key: "rzp_test_GRK2fo2RAm4Wol",
@@ -619,6 +621,40 @@
           form.submit();
         }
     
+      </script>
+
+      <script>
+        async function applycoupon(event) {
+            event.preventDefault();
+            const couponCode = document.getElementById("couponInput").value;
+            const response = await fetch('/couponcheck',{
+                method: 'post',
+                headers: { 'content-type' : 'application/json' },
+                body: JSON.stringify({ couponCode })
+            })
+            
+            const data = await response.json();
+
+            if (response.ok) {
+                const newTotalPrice = data.totalAmount;
+
+                document.getElementById('subtotal').innerText = `₹ ${newTotalPrice}` ;
+                document.getElementById('totalPriceInput').value = newTotalPrice;
+                document.getElementById('coupondetails').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
+                document.getElementById('couponId').innerHTML = `₹ ${data.discountAmount}`;
+                document.getElementById('discountId').value = data.discountAmount;
+                document.getElementById('couponApplied').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
+                document.getElementById('CancelBtn').innerHTML = `<a onclick="cancelCoupon()" href="#" class="text-danger" id="CancelBtn" >Cancel Coupon</a>`;
+            } else {
+                
+                document.getElementById('couponApplied').innerHTML = `<p class=" text-danger">*${data.message}</p>`
+                window.location.reload()
+            }
+
+                }
+                function cancelCoupon(){
+                    window.location.reload()
+                }
       </script>
 </body>
 

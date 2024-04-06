@@ -5,7 +5,7 @@
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-reviews.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:34 GMT -->
 <head>
     <meta charset="utf-8">
-    <title><%= locals.title || 'Brand' %></title>
+    <title><%= 'Coupon' %></title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -48,16 +48,16 @@
                         <span class="text">Category</span>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item ">
                     <a class="menu-link" href="/admin/brand"> <i class="icon material-icons md-stars"></i>
                         <span class="text">Brands</span> </a>
                 </li>
-                <li class="menu-item active">
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item active">
                     <a class="menu-link" href="/admin/coupon"> <i class="icon material-icons md-monetization_on"></i>
                         <span class="text">Coupon</span>
                     </a>
@@ -138,20 +138,19 @@
         <section class="content-main">
             <div class="content-header">
                 <div>
-                    <h2 class="content-title card-title">Order List </h2>
-                    <p>Lorem ipsum dolor sit amet.</p>
+                    <h2 class="content-title card-title">Coupon</h2>
                 </div>
                 <div>
-                    <input type="text" placeholder="Search order ID" class="form-control bg-white">
+                    <a href="/admin/coupon/add" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Add New Coupon</a>
                 </div>
             </div>
             <div class="card mb-4">
                 <header class="card-header">
                     <div class="row gx-3">
                         <div class="col-lg-4 col-md-6 me-auto">
-                            <input type="text" placeholder="Search..." class="form-control">
+                            <input type="text" placeholder="Search..." class="form-control" />
                         </div>
-                        <div class="col-lg-2 col-6 col-md-3">
+                        <div class="col-lg-2 col-md-3 col-6">
                             <select class="form-select">
                                 <option>Status</option>
                                 <option>Active</option>
@@ -159,7 +158,7 @@
                                 <option>Show all</option>
                             </select>
                         </div>
-                        <div class="col-lg-2 col-6 col-md-3">
+                        <div class="col-lg-2 col-md-3 col-6">
                             <select class="form-select">
                                 <option>Show 20</option>
                                 <option>Show 30</option>
@@ -167,42 +166,49 @@
                             </select>
                         </div>
                     </div>
-                </header> <!-- card-header end// -->
+                </header>
+                <!-- card-header end// -->
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>SI No.</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Total</th>
-                                    <!-- <th scope="col">Status</th> -->
-                                    <th scope="col">Date</th>
-                                    <th scope="col" class="text-end"> Action </th>
+                                    <th>Sl No.</th>
+                                    <th>Coupon</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th class="text-end">List/Unlist</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% order.forEach((row,index) => { %>
-
+                                <% coupon.forEach((row,index)=>{ %>
                                 <tr>
                                     <td><%= index+1 %></td>
-                                    <td><b><%= row.billingdetails.name %></b></td>
-                                    <td><%= row.billingdetails.email %></td>
-                                    <td>Rs. <%= row.totalprice %></td>
-                                    <!-- <td><span class="badge rounded-pill alert-success"><%= row.items.status %></span></td> -->
-                                    <td><%= row.orderDate %></td>
+                                    <td><b><%= row.coupon%></b></td>
+                                    <td><%= row.description %></td>
+                                    <td>
+                                        <% if (row.isListed==true) { %>
+                                            <span class="badge badge-pill badge-soft-success">isListed</span>
+                                        <% } else { %>
+                                            <span class="badge badge-pill badge-soft-danger">Unlisted</span>
+                                        <% } %>
+                                    </td>
                                     <td class="text-end">
-                                        <a href="/admin/orderdetails/<%= row._id %>" class="btn btn-md rounded font-sm">Detail</a>
+                                        <% if (row.isListed==false) { %>
+                                            <a href="/couponpublishedd/<%= row._id %>" class="btn btn-md rounded font-sm">List</a>
+                                        <% } else { %>
+                                            <a href="/couponunpublishedd/<%= row._id %>" class="btn btn-danger rounded font-sm">Unlist</a>
+                                        <% } %>
                                     </td>
                                 </tr>
                                 <% }) %>
                             </tbody>
                         </table>
-                    </div> <!-- table-responsive //end -->
-                </div> <!-- card-body end// -->
-            </div> <!-- card end// -->
-            <div class="pagination-area mt-15 mb-50">
+                    </div> <!-- table-responsive//end -->
+                </div>
+                <!-- card-body end// -->
+            </div>
+            <div class="pagination-area mt-30 mb-50">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-start">
                         <li class="page-item active"><a class="page-link" href="#">01</a></li>
@@ -214,7 +220,7 @@
                     </ul>
                 </nav>
             </div>
-        </section> 
+        </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
                 <div class="col-sm-6">
@@ -241,5 +247,4 @@
 </body>
 
 
-<!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-reviews.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:34 GMT -->
 </html>
