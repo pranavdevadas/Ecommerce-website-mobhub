@@ -103,9 +103,9 @@
                             <nav>
                                 <ul>
                                     <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="/">Shop</i></a></li>
+                                    <li><a  href="/">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My profile</i></a></li>
-                                    <li><a href="/wallet">Wallet</a></li>
+                                    <li><a class="active"  href="/wallet">Wallet</a></li>
                                 </ul>
                             </nav>
                         </div>
@@ -151,12 +151,13 @@
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
-                <a href="/cart" rel="nofollow">Your Cart</a>
+                <a href="/wallet" rel="nofollow">My Wallet</a>
             </div>
         </div>
     </div>
     <section>
         <div class="container mt-5">
+            <br><br><div><h4 class="text-center">Your ReferalCode : <%= userData.referalcode %> </h4><br><h5 class="text-center" >*Refer and earn Rs.1000! You'll receive Rs.1000, and the person who uses your referral code will also receive Rs.1000 </h5> </div><br><br>
             <div class="row">
                 <div class="col-md-6">
                     <div class="card mb-3">
@@ -164,16 +165,11 @@
                             <h1 class="text-center">My Wallet</h1>
                         </div><br>
                         <div class="card-body">
-                                <h2 class="text-center">Balance: <span id="balance">Rs. <%= userWallet.balance %>.00</span></h2> <br><br>
-                            <!-- <form id="depositForm">
-                                <div class="form-group">
-                                    <label for="deposit-amount">Deposit Amount:</label>
-                                    <input type="text" class="form-control" id="deposit-amount" name="amount" placeholder="Enter amount">
-                                </div>
-                                <br><br>
-                                <button type="button" class="btn btn-primary btn-block" onclick="initiateRazorpayPayment()">Deposit</button>
-                                <br><br>
-                            </form> -->
+                            <% if (userWallet) { %>
+                                <h2 class="text-center">Balance: <span id="balance">Rs. <%= userWallet.balance ?? '0' %>.00</span></h2>
+                            <% } else { %>
+                                <h2 class="text-center">Balance: <span id="balance">Rs. 0.00</span></h2>
+                            <% } %>
                             <form id="depositForm">
                                 <div class="form-group">
                                     <label for="deposit-amount">Deposit Amount:</label>
@@ -184,7 +180,6 @@
                                 <button type="button" class="btn btn-primary btn-block" onclick="validateAndProceed()">Deposit</button>
                                 <br><br>
                             </form>
-                            
                         </div>
                     </div>
                 </div>

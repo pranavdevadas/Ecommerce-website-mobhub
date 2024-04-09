@@ -154,12 +154,10 @@
                 </ul>
             </div>
         </header>
-
         <section class="content-main">
         </form>
     </div>
   </header>
-
   <section class="content-main">
     <form action="/productedit/<%= product._id %>" method="post" enctype="multipart/form-data">
         <div class="row">
@@ -227,14 +225,14 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="mb-4">
-                                    <label class="form-label">Offer Price</label>
-                                    <input type="text" placeholder="₹0.00" class="form-control" value="<%= product.oldprice %>" name="oldprice" id="product_oldprice" onkeyup="validateOldPrice()">
-                                    <span id="oldprice-error" style="font-size: 14px; margin-top: -20px"></span>
+                                    <label class="form-label">Max Retail Price</label>
+                                    <input type="text" placeholder="₹0.00" class="form-control" value="<%= product.oldprice %>" name="oldprice" id="product_price" onkeyup="validatePrice()">
+                                    <span id="price-error" style="font-size: 14px; margin-top: -20px"></span>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label">Price</label>
-                                    <input type="text" placeholder="₹0.00" class="form-control" value="<%= product.newprice %>" name="newprice" id="product_price" onkeyup="validatePrice()">
-                                    <span id="price-error" style="font-size: 14px; margin-top: -20px"></span>
+                                    <label class="form-label">Offer Price</label>
+                                    <input type="text" placeholder="₹0.00" class="form-control" value="<%= product.newprice %>" name="newprice" id="product_oldprice" onkeyup="validateOldPrice()">
+                                    <span id="oldprice-error" style="font-size: 14px; margin-top: -20px"></span>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->
@@ -276,7 +274,7 @@
                                 <div class="mb-4">
                                     <label class="form-label">Images</label><br>
                                     <div class="mb-4">
-                                        <label class="form-label">Existing Images</label>
+                                        <label class="form-label">Replace the Images ( minimum 3 Images )</label>
                                         <div class="existing-images">
                                             <% if (product.images && product.images.length > 0) { %>
                                             <div class="image-container">
@@ -293,11 +291,11 @@
                                             <% } %>
                                         </div>
                                     </div>
-                                    <div class="mb-4">
+                                    <!-- <div class="mb-4">
                                         <label class="form-label">New Images</label>
                                         <input class="form-control" name="images" type="file" id="product_image" multiple />
                                         <span id="image-error" style="font-size: 14px; margin-top: -20px"></span>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -360,7 +358,7 @@
             fileInput.click();
           });
         });
-      
+
         function updateFileInput(file, index) {
           const fileInput = document.getElementById('product_image');
           const fileList = new DataTransfer();
@@ -388,14 +386,14 @@
          });
      });
      
-     document.querySelectorAll('.delete-image-btn').forEach(button => {
-         button.addEventListener('click', function () {
-             const index = this.dataset.index;
-             const parentDiv = this.parentElement;
-             parentDiv.remove(); 
-             updateFileInput(); 
-         });
-     });
+    //  document.querySelectorAll('.delete-image-btn').forEach(button => {
+    //      button.addEventListener('click', function () {
+    //          const index = this.dataset.index;
+    //          const parentDiv = this.parentElement;
+    //          parentDiv.remove(); 
+    //          updateFileInput(); 
+    //      });
+    //  });
      
      function updateFileInput() {
          const fileInput = document.getElementById('product_image');

@@ -103,7 +103,7 @@
                             <nav>
                                 <ul>
                                     <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="/">Shop</i></a></li>
+                                    <li><a href="/">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My profile</i></a></li>
                                     <li><a href="/wallet">Wallet</a></li>
                                 </ul>
@@ -159,7 +159,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <% if (userWishlist.items.length === 0) { %>
+                    <% if (!userWishlist || userWishlist.items.length === 0) { %>
                         <p>No items found in your wishlist.</p>
                     <% } else { %>
                         <div class="table-responsive">
@@ -208,7 +208,7 @@
                             </table>
                         </div>
                     <% } %>
-                </div>
+                </div>                
             </div>            
         </div>
     </section>

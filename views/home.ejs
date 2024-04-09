@@ -399,8 +399,8 @@
                                                 </span>
                                             </div>
                                             <div class="product-price">
-                                                <span>₹ <%= row.newprice %> </span>
-                                                <span class="old-price"> ₹ <%= row.oldprice %></span>
+                                                <span>Rs. <%= row.newprice %> </span>
+                                                <span class="old-price"> Rs. <%= row.oldprice %></span>
                                             </div>
                                         </div>
                                         <% if(row.stock==0){ %>
@@ -625,65 +625,6 @@
     <script src="/static/assets/js/shop.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
- 
-       <!-- <script>
-             function addwishlist(_id) {
-             event.preventDefault();
-             $.ajax({
-                 url: `/check-stock/${_id}`,
-                 type: "GET",
-                 success: function(response) {
-                     console.log("Check stock response:", response);
-                     if (response.success) {
-                         Swal.fire({
-                             icon: "success",
-                             title: "Added to wishlist successfully!",
-                             showConfirmButton: true,
-                         }).then((result) => {
-                             if (result.isConfirmed) {
-                                 $.ajax({
-                                     url: `/addtowishlist/${_id}`,
-                                     type: "GET",
-                                     success: function(response) {
-                                         console.log("Item added to wishllist:", response);
-                                     },
-                                     error: function() {
-                                         console.error("Failed to add item to wishlist");
-                                     },
-                                 });
-                             }
-                         });
-                     } else {
-                         if (response.message === "Please log in to add items to your wishlist.") {
-                             Swal.fire({
-                                 icon: "error",
-                                 title: "Login Required",
-                                 text: "Please login to add items to your wishlist.",
-                                 showConfirmButton: true,
-                             })
-                         } else {
-                             console.error("Error:", response.message);
-                             Swal.fire({
-                                 icon: "error",
-                                 title: "Product is out of stock",
-                                 showConfirmButton: true,
-                             });
-                         }
-                     }
-                 },
-                 error: function(err) {
-                     console.log('error');
-                     Swal.fire({
-                         icon: "error",
-                         title: "Error occurred",
-                         text: "Failed to check stock availability",
-                         showConfirmButton: true,
-                     });
-                 },
-             });
-         }
-      </script> -->
 
       <script>
         function addwishlist(_id) {

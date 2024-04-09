@@ -260,19 +260,16 @@
                                                             </thead>
                                                             <tbody>
                                                                 <% order.forEach(order => { %>
-                                                                    <% order.items.forEach(item => { %>
                                                                         <tr>
                                                                             <td><%= order.orderDate %></td>
                                                                             <td><%= order.trackingId %></td>
-                                                                            <td><%= item.product.productname %></td>
-                                                                            <td>Rs. <%= item.price %></td>
-                                                                            <th><a href="/orders/detais/<%= order._id %>" class="btn-small d-block" style="color: darkgreen;">More Info</a></th>
+                                                                            <td><%= order.paymentMethod %></td>
+                                                                            <td>Rs. <%= order.totalprice %></td>
+                                                                            <th><a href="/orders/detais/<%= order._id %>" class="btn btn-small d-block" >More Info</a></th>
                                                                         </tr>
-                                                                    <% }) %>
                                                                 <% }) %>
                                                             </tbody>
                                                         </table>
-                                                        
                                                     </div>
                                                 </div>
                                             </div>

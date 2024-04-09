@@ -142,8 +142,6 @@ const userController = {
 
                 const otp = Math.floor(100000 + Math.random() * 900000)
 
-                
-
                 const user = new User ({
                     name: req.body.name,
                     email: req.body.email,
@@ -154,6 +152,74 @@ const userController = {
                 
                 await user.save()
 
+                const referalcode = req.body.referalcode
+
+                if (referalcode) {
+
+                    const referrer = await User.findOne({ referalcode });
+        
+                    if (referrer) {
+                        const newUser = await User.findOne({ email: req.body.email })
+                        await Wallet.findOneAndUpdate({ userId: referrer._id }, { $inc: { balance: 1000 } });
+                        
+                    const referrerTransaction = new Transaction({
+                        userId: referrer ? referrer._id : null,
+                        amount: 1000,
+                        status: 'Success',
+                        type: 'Credit'
+                    });
+                    await referrerTransaction.save();
+
+                    await Wallet.create({ userId: newUser._id, balance: 1000 });
+
+                    const referredUserTransaction = new Transaction({
+                        userId: newUser._id,
+                        amount: 1000,
+                        status: 'Success',
+                        type: 'Credit'
+                    });
+                    await referredUserTransaction.save();
+
+        
+                    } else {
+                        const mailOptions = {
+                            from: 'pranavdevadas2@gmail.com',
+                            to: req.body.email,
+                            subject: 'OTP Verification',
+                            text: `Your OTP is: ${otp}`,
+                          }
+        
+                        await transporter.sendMail(mailOptions)
+        
+                        req.session.tempEmail = req.body.email
+                        res.render('otp',{
+                            title: "OTP",   
+                            email: req.session.tempEmail,
+                            alert: 'Invalid referral code'
+                          })
+
+                        // return res.status(400).json({ message: 'Invalid referral code' });
+                    }
+
+                } else {
+
+                    const mailOptions = {
+                        from: 'pranavdevadas2@gmail.com',
+                        to: req.body.email,
+                        subject: 'OTP Verification',
+                        text: `Your OTP is: ${otp}`,
+                      }
+    
+                    await transporter.sendMail(mailOptions)
+    
+                    req.session.tempEmail = req.body.email
+                    res.render('otp',{
+                        title: "OTP",   
+                        email: req.session.tempEmail,
+                      })
+                    // return res.status(200).json({ message: 'User registered successfully' });
+                }
+    
                 const mailOptions = {
                     from: 'pranavdevadas2@gmail.com',
                     to: req.body.email,
@@ -170,10 +236,20 @@ const userController = {
                   })
             }
 
+            const mailOptions = {
+                from: 'pranavdevadas2@gmail.com',
+                to: req.body.email,
+                subject: 'OTP Verification',
+                text: `Your OTP is: ${otp}`,
+              }
+
+            await transporter.sendMail(mailOptions)
+
             res.render('otp',{
                 title:'OTP',
                 email:req.session.tempEmail
             })
+
         }
         catch(err){
             next(err)
@@ -397,7 +473,8 @@ const userController = {
             const addressDocument = await Address.findOne({ userId: userId });
             const coupon = await Coupon.find({
                 isListed: true,
-                expiryDate: { $gt: new Date() } 
+                expiryDate: { $gt: new Date() },
+                userId: { $ne: userId } 
             });
             let addresses = []
 
@@ -421,7 +498,9 @@ const userController = {
 // check out post
     postcheckout: async(req,res,next) => {
         try{
-            const { addressId, paymentMethod, totalprice, paymentStatus, discount } = req.body
+            const { addressId, paymentMethod, totalprice, paymentStatus, discount, coupon } = req.body
+            console.log('dff', totalprice);
+            const totalprice1 = parseFloat(totalprice)
             const user = await User.findById(req.session.userID)
             const cartItems = JSON.parse(req.body.cartItem);
             let userAddress = await Address.findOne({ 'addresses._id': addressId });
@@ -455,7 +534,7 @@ const userController = {
             const order = new Order ({
                 userId : user._id,
                 items: items,
-                totalprice : totalprice - NumDiscount,
+                totalprice : totalprice1,
                 billingdetails: {
                     name: user.name,
                     buildingname: address.buildingname,
@@ -466,7 +545,7 @@ const userController = {
                     phone: user.phone,
                     email: user.email,
                 },
-                amount: totalprice,
+                amount: totalprice1 + NumDiscount ,
                 paymentMethod,
                 discountAmount: NumDiscount ,
                 paymentStatus: paymentStatus
@@ -487,6 +566,11 @@ const userController = {
                 )
             }
 
+            const cartUserId = await Coupon.findOneAndUpdate(
+                { coupon : coupon },
+                { $push:{ userId : req.session.userID } },
+                { new : true }
+                )
             res.render('thankyouorder')
 
         }
@@ -501,6 +585,9 @@ const userController = {
             if(!coupon) {
                 return res.status(404).json({ message: 'coupon not found'})
             } else {
+
+                const user = req.session.userID
+                const usedCoupon = await Coupon.findOne({userId: user })
                 const userId = req.session.userID
                 const userCart = await Cart.findOne({ userId : userId })
                 let totalAmount = userCart.totalprice
@@ -633,9 +720,7 @@ const userController = {
 
             await userAddress.save()
 
-            const previousPage = req.header('Referer') || '/'
-
-            res.render(previousPage,{
+            res.render('myAddress',{
                 title: 'My Address',
                 message: 'Successfully Address Updated',
                 user: req.session.userID,
@@ -662,7 +747,7 @@ const userController = {
                 { new: true }
             )
 
-            res.render('myprofile', {
+            res.render('myAddress', {
                 message: 'Address Deleted Successfully',
                 user: req.session.userId,
                 addresses: address.addresses
@@ -895,12 +980,21 @@ const userController = {
             cancelProduct.status = 'Cancelled';
             await order.save();
 
+            let finalAmount
+
+            if (order.discountAmount > 0) {
+                let divededAmount = order.discountAmount / order.items.length
+                finalAmount = cancelProduct.price - divededAmount
+            } else {
+                finalAmount = cancelProduct.price
+            }
+
             userWallet.balance += cancelProduct.price;
             await userWallet.save();
 
             const transaction = new Transaction({
                 userId: userId,
-                amount: cancelProduct.price,
+                amount: finalAmount,
                 type: 'Credit', 
                 status: 'Refunded',
                 date: new Date() 
@@ -942,12 +1036,21 @@ const userController = {
             cancelProduct.status = 'Returned';
             await order.save();
 
+            let finalAmount
+
+            if (order.discountAmount > 0) {
+                let divededAmount = order.discountAmount / order.items.length
+                finalAmount = cancelProduct.price - divededAmount
+            } else {
+                finalAmount = cancelProduct.price
+            }
+
             userWallet.balance += cancelProduct.price;
             await userWallet.save();
 
             const transaction = new Transaction({
                 userId: userId,
-                amount: cancelProduct.price,
+                amount: finalAmount,
                 type: 'Credit', 
                 status: 'Refunded',
                 date: new Date() 
@@ -1132,6 +1235,7 @@ const userController = {
 
             const userId = req.session.userID;
             const { totalPrice } = req.body;
+            console.log(9989,totalPrice);
     
             const userWallet = await Wallet.findOne({ userId: userId });
     
@@ -1141,19 +1245,19 @@ const userController = {
     
             if (userWallet.balance < totalPrice) {
                 return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
+            } else {
+                userWallet.balance -= totalPrice;
+                await userWallet.save();
+
+                const transaction = new Transaction({
+                    userId: userId,
+                    amount: '-' + totalPrice,
+                    type: 'Debit',
+                    status: 'Success',
+                    date: new Date()
+                });
+                await transaction.save();
             }
-            userWallet.balance -= totalPrice;
-            await userWallet.save();
-
-            const transaction = new Transaction({
-                userId: userId,
-                amount: '-' + totalPrice,
-                type: 'Debit',
-                status: 'Success',
-                date: new Date()
-            });
-            await transaction.save();
-
             res.json({ success: true, balance: userWallet.balance });
 
         } catch(err){

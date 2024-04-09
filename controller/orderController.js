@@ -1,6 +1,9 @@
 const Products  = require('../model/products')
 const Brand = require('../model/brand')
 const Order = require('../model/orders')
+const Wallet = require('../model/wallet')
+const Transaction = require('../model/transaction')
+
 
 
 const orderController = {
@@ -41,8 +44,8 @@ const orderController = {
 
             const { orderId, productId, selectedStatus } = req.body;
             const order = await Order.findById(orderId);
-            // const prodsProduct = order.items.find(item => item.product.toString() === productId)
-            // console.log(10,prodsProduct);
+            const userWallet = await Wallet.findOne({ userId : order.userId })
+            const cancelProduct = order.items.find(item => item.product.toString() === productId)            
 
 
             const updatedOrder = await Order.findOneAndUpdate(
@@ -51,14 +54,51 @@ const orderController = {
                 { new: true }
             );
 
+            if ( selectedStatus == 'Cancelled' || selectedStatus == 'Returned' ) {
+
+                const orderItem = updatedOrder.items.find(item => item.product.toString() === productId);
+                await Products.findByIdAndUpdate(productId, { $inc: { stock: orderItem.quantity } });
+                selectedStatus.disabled = true;
+                
+            }
+
+            if ( order.paymentStatus == 'Paid' && selectedStatus == 'Cancelled' || selectedStatus == 'Returned' ) {
+
+                let finalAmount
+                
+                if (order.discountAmount > 0) {
+                    let divededAmount = order.discountAmount / order.items.length
+                    finalAmount = cancelProduct.price - divededAmount
+                } else {
+                    finalAmount = cancelProduct.price
+                }
+
+
+                userWallet.balance += finalAmount
+                await userWallet.save();
+
+                const transaction = new Transaction({
+                    userId: order.userId ,
+                    amount: finalAmount,
+                    type: 'Credit', 
+                    status: 'Refunded',
+                    date: new Date() 
+                });
+
+                await transaction.save();
+
+                
+            }
+
+            
             if (updatedOrder) {
+
                 return res.json({ success: true, updatedOrder });
                 
             } else {
                 return res.status(404).json({ success: false, message: 'Order not found' });
             }
 
-            res.redirect('back')
 
         }
         catch(err){

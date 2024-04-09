@@ -8,11 +8,12 @@
     const isAdmin = require('../middlewares/isAdmin')
     const nocache = require('nocache')
     const userController = require('../controller/userController')
-const orderController = require('../controller/orderController')
+    const orderController = require('../controller/orderController')
 
 
 
     router.get('/admin',isAdmin,adminController.adminHome)
+    router.post('/generate-report',adminController.generateReport)
 
     router.get('/adminlogin',adminController.getadminLogin)
     router.post('/submit',adminController.postadminLogin)

@@ -101,7 +101,7 @@
                             <nav>
                                 <ul>
                                     <li><a href="/">Home</i></a>
-                                    <li><a class="active"  href="shop-grid-right.html">Shop</i></a></li>
+                                    <li><a href="/shop">Shop</i></a></li>
                                     <li class="position-static"><a href="/profile">My Profile</i></a></li>
                                     <li><a href="/wallet">Wallet</a></li>
                                 </ul>
@@ -158,263 +158,258 @@
             </div>
         </div>
         <section class="mt-50 mb-50">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="toggle_info">
-                            <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to enter your code</a></span>
-                        </div>
-                        <div class="panel-collapse collapse coupon_form " id="coupon">
-                            <div class="panel-body">
-                                <% if (coupon.length > 0) { %>
-                                <p class="mb-30 font-sm">Available Coupons. Please Copy and Paste in the mentioned Box. </p>
-                                <% coupon.forEach(row => { %>
-                                    <ul><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
-                                        <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
-                                      </svg> <%= row.coupon %> <br>*<%= row.description%> </ul><br><br>
-                                    <% }) %> <hr>
+            <form action="/placeorder" method="POST" id="orderForm" >    
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="toggle_info">
+                                <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to enter your code</a></span>
+                            </div>
+                            <div class="panel-collapse collapse coupon_form " id="coupon">
+                                <div class="panel-body">
+                                    <% if (coupon.length > 0) { %>
+                                    <p class="mb-30 font-sm">Available Coupons. Please Copy and Paste in the mentioned Box. </p>
+                                    <% coupon.forEach(row => { %>
+                                        <ul><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708"/>
+                                            <path fill-rule="evenodd" d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708"/>
+                                        </svg> <%= row.coupon %> <br>*<%= row.description%> </ul><br><br>
+                                        <% }) %> <hr>
+                                        
+                                        <p class="mb-30 font-sm">If you have a coupon code, Please apply it below.</p>
+                                        <div class="form-group">
+                                            <input type="text" name="coupon" id="couponInput" placeholder="Enter Coupon Code...">
+                                        </div>
+                                        <p id="couponApplied"></p>
+                                        <div class="form-group">
+                                            <button class="btn btn-md" id="applyCouponBtn" >Apply Coupon</button>
+                                        </div>
                                     <% } else { %>
                                         <p class="text-danger" >*Coupons not available right now.</p>
                                     <% } %>
-                                    <p class="mb-30 font-sm">If you have a coupon code, Please apply it below.</p>
-                                <form onsubmit="applycoupon(event)" >
-                                    <div class="form-group">
-                                        <input type="text" name="coupon" id="couponInput" placeholder="Enter Coupon Code...">
-                                    </div>
-                                    <p id="couponApplied"></p>
-                                    <div class="form-group">
-                                        <button class="btn btn-md"  type="submit" >Apply Coupon</button>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
+                        </div> 
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="divider mt-50 mb-50"></div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <div class="divider mt-50 mb-50"></div>
+                    <div class="col-md-12">
+                        <a href="/addaddress"  class="btn btn-fill-out" >Add New Address </a> <br><br>   
                     </div>
-                </div>
-                <div class="col-md-12">
-                    <a href="/addaddress"><button  class="btn btn-fill-out submit" >Add New Address</button></a> <br><br>   
-                </div>
-                <form action="/placeorder" method="POST" id="orderForm" >
                     <div class="row">
                         <div class="col">
-                            
-                        <div class="row">
-                            <% if (addresses && addresses.length > 0) { %>
-                                <% addresses.forEach((address, index) => { %>
-                                    <div class="col-lg-6">
-                                        <input class="form-check-input" required="" type="radio" name="addressId" value="<%= address._id %>" <% if (index === 0) { %>checked<% } %>>
-                                        <div class="card mb-3 mb-lg-0" style="width: 80%;">
-                                            <div class="card-header">
-                                                <h5 class="mb-0">Address <%= index+1 %> </h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <address>
-                                                    <%= address.buildingname %><br>
-                                                    <%= address.city %>,<br>
-                                                    <%= address.state %><br>
-                                                    <%= address.pincode %>, 
-                                                </address>
-                                                <p><%= address.country %></p>
-                                                <br>
-                                                <a href="/address/edit/<%= address._id %>" class="btn-small">Edit Address</a><br>
+                            <div class="row">                                    
+                                <% if (addresses && addresses.length > 0) { %>
+                                    <% addresses.forEach((address, index) => { %>
+                                        <div class="col-lg-6">
+                                            <input class="form-check-input" required="" type="radio" name="addressId" value="<%= address._id %>" <% if (index === 0) { %>checked<% } %>>
+                                            <div class="card mb-3 mb-lg-0" style="width: 80%;">
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">Address <%= index+1 %> </h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <address>
+                                                        <%= address.buildingname %><br>
+                                                        <%= address.city %>,<br>
+                                                        <%= address.state %><br>
+                                                        <%= address.pincode %>, 
+                                                    </address>
+                                                    <p><%= address.country %></p>
+                                                    <br>
+                                                    <a href="/address/edit/<%= address._id %>" class="btn-small">Edit Address</a><br>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <br>
-                                <% }); %>
-                            <% } else { %>
-                                <p>No addresses found.</p>
-                            <% } %>
-                        </div>
+                                        <br>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p>No addresses found.</p>
+                                <% } %>
+                            </div>
                         </div>    
-                            <div class="col-md-6">
-                                <div class="order_review">
-                                    <div class="mb-20">
-                                        <h4>Your Orders</h4>
-                                    </div>
-                                    <div class="table-responsive order_table text-center">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="2">Product</th>
-                                                    <th>Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% userCart.items.forEach((row)=>{ %>
-                                                <tr>
-                                                    <td class="image product-thumbnail"><img src="static/<%= row.product.images[0] %>" alt="#"></td>
-                                                    <td>
-                                                        <h5><a href="/productdetials/<%= row.product._id %>"><%= row.product.productname %></a></h5> <span class="product-qty">x <%= row.quantity %></span>
-                                                    </td>
-                                                    <td>₹ <%= row.product.newprice * row.quantity %> </td>
-                                                </tr>
-                                                <% }) %>
-                                                <tr>
-                                                    <th>SubTotal</th>
-                                                    <td class="product-subtotal" colspan="2"  >₹ <%= userCart.totalprice %> </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Discount</th>
-                                                    <td class="product-subtotal" colspan="2" id="couponId"  >₹ 0 </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Shipping</th>
-                                                    <td colspan="2"><em>Free Shipping</em></td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal" id="subtotal"   ><span class="font-xl text-brand fw-900"  >₹ <%= userCart.totalprice %> </span></td>
-                                                    <input type="hidden" name="totalprice" id="subtotalInp" value="<%= userCart.totalprice %>"  >
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <p id="coupondetails"></p>
-                                    <p id="CancelBtn"></p>
-
-                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
-                                    <div class="payment_method">
-                                        <div class="mb-25"> 
-                                            <h5>Payment</h5>
-                                        </div>
-                                        <div class="payment_option">                                    
-                                            <div class="checkout_input_checkbox">
-                                                <label for="payment-cod">
-                                                  COD
-                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-cod" name="paymentMethod" value="COD" checked />
-                                                  <span class="checkmark"></span>
-                                                </label>
-                                              </div>
-                                            <div class="checkout_input_checkbox">
-                                                <label for="payment-razorpay">
-                                                  Razorpay
-                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-razorpay" name="paymentMethod" value="Razorpay" />
-                                                  <span class="checkmark"></span>
-                                                  <span id="check-error" style="font-size: 14px; margin-top: -5px"></span>
-                                                </label>
-                                              </div>                      
-                                              <div class="checkout_input_checkbox">
-                                                <label for="payment-wallet">
-                                                  Wallet
-                                                  <input style="width: 16px; height: 14px;" type="checkbox" id="payment-wallet" name="paymentMethod" value="Wallet" />
-                                                  <span class="checkmark"></span>
-                                                </label>
-                                              </div>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                        <div class="col-md-6">
+                            <div class="order_review">
+                                <div class="mb-20">
+                                    <h4>Your Orders</h4>
                                 </div>
+                                <div class="table-responsive order_table text-center">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2">Product</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% userCart.items.forEach((row)=>{ %>
+                                            <tr>
+                                                <td class="image product-thumbnail"><img src="static/<%= row.product.images[0] %>" alt="#"></td>
+                                                <td>
+                                                    <h5><a href="/productdetials/<%= row.product._id %>"><%= row.product.productname %></a></h5> <span class="product-qty">x <%= row.quantity %></span>
+                                                </td>
+                                                <td>₹ <%= row.product.newprice * row.quantity %> </td>
+                                            </tr>
+                                            <% }) %>
+                                            <tr>
+                                                <th>SubTotal</th>
+                                                <td class="product-subtotal" colspan="2"  >₹ <%= userCart.totalprice %> </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Discount</th>
+                                                <td class="product-subtotal" colspan="2" id="couponId"  >₹ 0 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Shipping</th>
+                                                <td colspan="2"><em>Free Shipping</em></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total</th>
+                                                <td colspan="2" class="product-subtotal" id="subtotal"  ><span class="font-xl text-brand fw-900"  >₹ <%= userCart.totalprice %> </span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p id="coupondetails"></p>
+                                <p id="CancelBtn"></p>
+                                <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                <div class="payment_method">
+                                    <div class="mb-25"> 
+                                        <h5>Payment</h5>
+                                    </div>
+                                    <div class="payment_option">                                    
+                                        <div class="checkout_input_checkbox">
+                                            <label for="payment-cod">
+                                            COD
+                                            <input style="width: 16px; height: 14px;" type="checkbox" id="payment-cod" name="paymentMethod" value="COD" checked />
+                                            <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                        <div class="checkout_input_checkbox">
+                                            <label for="payment-razorpay">
+                                            Razorpay
+                                            <input style="width: 16px; height: 14px;" type="checkbox" id="payment-razorpay" name="paymentMethod" value="Razorpay" />
+                                            <span class="checkmark"></span>
+                                            <span id="check-error" style="font-size: 14px; margin-top: -5px"></span>
+                                            </label>
+                                        </div>                      
+                                        <div class="checkout_input_checkbox">
+                                            <label for="payment-wallet">
+                                            Wallet
+                                            <input style="width: 16px; height: 14px;" type="checkbox" id="payment-wallet" name="paymentMethod" value="Wallet" />
+                                            <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
                             </div>
                         </div>
-                        <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
-                        <input type="hidden" id="paymentStatus" name="paymentStatus">
-                        <input type="hidden" id="totalPriceInput">
-                        <input type="hidden" id="discountId" name="discount" >
-                </form> 
+                    </div>
+                    <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
+                    <input type="hidden" id="paymentStatus" name="paymentStatus">
+                    <input type="hidden" name="totalprice" id="subtotalInp" value="<%= userCart.totalprice %>" >
+                    <input type="hidden" id="discountId" name="discount" >
+                </div>
+            </form> 
+        </section>
+        </main>
+        <footer class="main">
+            <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7 mb-md-3 mb-lg-0" style="background-color: #39b4ac;">
+                        </div>
+                    </div>
                 </div>
             </section>
-        </main>
-    <footer class="main">
-        <section class="newsletter p-30 text-white wow fadeIn animated" style="background-color: #39b4ac;">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 mb-md-3 mb-lg-0" style="background-color: #39b4ac;">
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="section-padding footer-mid">
-            <div class="container pt-15 pb-20">
-                <div class="row">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="widget-about font-md mb-md-5 mb-lg-0">
-                            <div class="logo logo-width-1 wow fadeIn animated">
-                                <a href="/dashboard"><img src="/static/logo/mainlogo.png" alt="logo"></a>
-                            </div>
-                            <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
-                            <p class="wow fadeIn animated">
-                                <strong>Address: </strong>562 Wellington Road, Street 32, San Francisco
-                            </p>
-                            <p class="wow fadeIn animated">
-                                <strong>Phone: </strong>+01 2222 365 /(+91) 01 2345 6789
-                            </p>
-                            <p class="wow fadeIn animated">
-                                <strong>Hours: </strong>10:00 - 18:00, Mon - Sat
-                            </p>
-                            <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
-                            <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
-                                <a href="#"><img src="/static/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
-                                <a href="#"><img src="/static/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
-                                <a href="#"><img src="/static/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
-                                <a href="#"><img src="/static/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
-                                <a href="#"><img src="/static/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <h5 class="widget-title wow fadeIn animated">About</h5>
-                        <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0">
-                            <li><a href="#">About Us</a></li>
-                            <li><a href="#">Delivery Information</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                            <li><a href="#">Terms &amp; Conditions</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Support Center</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-2  col-md-3">
-                        <h5 class="widget-title wow fadeIn animated">My Account</h5>
-                        <ul class="footer-list wow fadeIn animated">
-                            <li><a href="#">Sign In</a></li>
-                            <li><a href="#">View Cart</a></li>
-                            <li><a href="#">My Wishlist</a></li>
-                            <li><a href="#">Track My Order</a></li>
-                            <li><a href="#">Help</a></li>
-                            <li><a href="#">Order</a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-4">
-                        <h5 class="widget-title wow fadeIn animated">Install App</h5>
-                        <div class="row">
-                            <div class="col-md-8 col-lg-12">
-                                <p class="wow fadeIn animated">From App Store or Google Play</p>
-                                <div class="download-app wow fadeIn animated">
-                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="/static/assets/imgs/theme/app-store.jpg" alt=""></a>
-                                    <a href="#" class="hover-up"><img src="/static/assets/imgs/theme/google-play.jpg" alt=""></a>
+            <section class="section-padding footer-mid">
+                <div class="container pt-15 pb-20">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="widget-about font-md mb-md-5 mb-lg-0">
+                                <div class="logo logo-width-1 wow fadeIn animated">
+                                    <a href="/dashboard"><img src="/static/logo/mainlogo.png" alt="logo"></a>
+                                </div>
+                                <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
+                                <p class="wow fadeIn animated">
+                                    <strong>Address: </strong>562 Wellington Road, Street 32, San Francisco
+                                </p>
+                                <p class="wow fadeIn animated">
+                                    <strong>Phone: </strong>+01 2222 365 /(+91) 01 2345 6789
+                                </p>
+                                <p class="wow fadeIn animated">
+                                    <strong>Hours: </strong>10:00 - 18:00, Mon - Sat
+                                </p>
+                                <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
+                                <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
+                                    <a href="#"><img src="/static/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                                    <a href="#"><img src="/static/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                                    <a href="#"><img src="/static/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                                    <a href="#"><img src="/static/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                                    <a href="#"><img src="/static/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
                                 </div>
                             </div>
-                            <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
-                                <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
-                                <img class="wow fadeIn animated" src="/static/assets/imgs/theme/payment-method.png" alt="">
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <h5 class="widget-title wow fadeIn animated">About</h5>
+                            <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0">
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Delivery Information</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms &amp; Conditions</a></li>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Support Center</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-2  col-md-3">
+                            <h5 class="widget-title wow fadeIn animated">My Account</h5>
+                            <ul class="footer-list wow fadeIn animated">
+                                <li><a href="#">Sign In</a></li>
+                                <li><a href="#">View Cart</a></li>
+                                <li><a href="#">My Wishlist</a></li>
+                                <li><a href="#">Track My Order</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">Order</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-4">
+                            <h5 class="widget-title wow fadeIn animated">Install App</h5>
+                            <div class="row">
+                                <div class="col-md-8 col-lg-12">
+                                    <p class="wow fadeIn animated">From App Store or Google Play</p>
+                                    <div class="download-app wow fadeIn animated">
+                                        <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="/static/assets/imgs/theme/app-store.jpg" alt=""></a>
+                                        <a href="#" class="hover-up"><img src="/static/assets/imgs/theme/google-play.jpg" alt=""></a>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
+                                    <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
+                                    <img class="wow fadeIn animated" src="/static/assets/imgs/theme/payment-method.png" alt="">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </section>
+            <div class="container pb-20 wow fadeIn animated">
+                <div class="row">
+                    <div class="col-12 mb-20">
+                        <div class="footer-bottom"></div>
+                    </div>
+                    <div class="col-lg-6">
+                        <p class="float-md-left font-sm text-muted mb-0">&copy; 2021, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <p class="text-lg-end text-start font-sm text-muted mb-0">
+                            Designed by <a href="http://alithemes.com/" target="_blank">Alithemes.com</a>. All rights reserved
+                        </p>
+                    </div>
+                </div>
             </div>
-        </section>
-        <div class="container pb-20 wow fadeIn animated">
-            <div class="row">
-                <div class="col-12 mb-20">
-                    <div class="footer-bottom"></div>
-                </div>
-                <div class="col-lg-6">
-                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2021, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
-                </div>
-                <div class="col-lg-6">
-                    <p class="text-lg-end text-start font-sm text-muted mb-0">
-                        Designed by <a href="http://alithemes.com/" target="_blank">Alithemes.com</a>. All rights reserved
-                    </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+        </footer>
     <!-- Preloader Start -->
     <div id="preloader-active">
         <div class="preloader d-flex align-items-center justify-content-center">
@@ -576,8 +571,10 @@
             phone: "<%= userData.phone %>",
           };
          
-          const totalPriceInput = document.getElementById("subtotalInp");
-          const totalPrice = parseFloat (totalPriceInput.value )
+          const totalPriceInput = document.getElementById("subtotalInp").value
+          const totalPrice = parseFloat (totalPriceInput)
+          console.log(44444, totalPriceInput);
+          console.log(3333,totalPrice);
       
           var options = {
             key: "rzp_test_GRK2fo2RAm4Wol",
@@ -624,34 +621,45 @@
       </script>
 
       <script>
-        async function applycoupon(event) {
-            event.preventDefault();
-            const couponCode = document.getElementById("couponInput").value;
-            const response = await fetch('/couponcheck',{
-                method: 'post',
-                headers: { 'content-type' : 'application/json' },
-                body: JSON.stringify({ couponCode })
-            })
-            
-            const data = await response.json();
+        document.addEventListener("DOMContentLoaded", function() {
+            const applyCouponBtn = document.getElementById("applyCouponBtn");
+        
 
-            if (response.ok) {
-                const newTotalPrice = data.totalAmount;
+            applyCouponBtn.addEventListener("click", function(event) {
+                event.preventDefault();
+                const couponCode = document.getElementById("couponInput").value;
+                applycoupon(couponCode);
 
-                document.getElementById('subtotal').innerText = `₹ ${newTotalPrice}` ;
-                document.getElementById('totalPriceInput').value = newTotalPrice;
-                document.getElementById('coupondetails').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
-                document.getElementById('couponId').innerHTML = `₹ ${data.discountAmount}`;
-                document.getElementById('discountId').value = data.discountAmount;
-                document.getElementById('couponApplied').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
-                document.getElementById('CancelBtn').innerHTML = `<a onclick="cancelCoupon()" href="#" class="text-danger" id="CancelBtn" >Cancel Coupon</a>`;
-            } else {
+        })
+            async function applycoupon(couponCode) {
+                const response = await fetch('/couponcheck',{
+                    method: 'post',
+                    headers: { 'content-type' : 'application/json' },
+                    body: JSON.stringify({ couponCode })
+                })
                 
-                document.getElementById('couponApplied').innerHTML = `<p class=" text-danger">*${data.message}</p>`
-                window.location.reload()
-            }
+                const data = await response.json();
 
+                if (response.ok) {
+                    const newTotalPrice = data.totalAmount;
+
+                    document.getElementById('subtotal').innerText = `₹ ${newTotalPrice}` ;
+                    document.getElementById('subtotalInp').value = newTotalPrice;
+                    document.getElementById('coupondetails').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
+                    document.getElementById('couponId').innerHTML = `₹ ${data.discountAmount}`;
+                    document.getElementById('discountId').value = data.discountAmount
+                    document.getElementById('couponApplied').innerHTML = `<p class="text-success">* Coupon Applied</p>`;
+                    document.getElementById('CancelBtn').innerHTML = `<a onclick="cancelCoupon()" href="#" class="text-danger" id="CancelBtn" >Cancel Coupon</a>`;
+                } else {
+                    
+                    document.getElementById('couponApplied').innerHTML = `<p class=" text-danger">*${data.message}</p>`
+                    window.location.reload()
                 }
+
+            
+
+            }
+        })
                 function cancelCoupon(){
                     window.location.reload()
                 }

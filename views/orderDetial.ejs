@@ -220,7 +220,7 @@
             <section class="pt-150 pb-150">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-10 m-auto">
+                        <div class="col-lg-14 m-auto">
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="dashboard-menu">
@@ -284,7 +284,7 @@
                                                                     <div class="text">
                                                                         <h6 class="mb-1">Order info</h6>
                                                                         <p class="mb-1">
-                                                                            Shipping: Fargo express <br> Pay method: <%= order.paymentMethod %>
+                                                                            Shipping: Fargo express <br> Pay Method: <%= order.paymentMethod %> <br> Pay Status:  <%= order.paymentStatus %>
                                                                         </p>
                                                                     </div>
                                                                 </article>
@@ -297,7 +297,7 @@
                                                                     <div class="text">
                                                                         <h6 class="mb-1">Deliver to</h6>
                                                                         <p class="mb-1">
-                                                                            City: <%= users.billingdetails.city %>  <br><%= users.billingdetails.buildingname %>,<br> <%= users.billingdetails.country %>, <br> <%= order.trackingId %>
+                                                                            City: <%= users.billingdetails.city %>  <br><%= users.billingdetails.buildingname %>,<br>Country: <%= users.billingdetails.country %>, <br>Postal: <%= order.trackingId %>
                                                                         </p>
                                                                     </div>
                                                                 </article>
@@ -350,11 +350,14 @@
                                                                         <br>
                                                                     </p>
                                                                 </div>
-
                                                                 <article style="width: 189px; margin-top: 19%;">
                                                                     <dl class="dlist">
                                                                         <dt>Subtotal:</dt>
-                                                                        <dd style="margin-left: 54%;">Rs. <%= order.totalprice %></dd>
+                                                                        <dd style="margin-left: 54%;">Rs. <%= order.discountAmount + order.totalprice %></dd>
+                                                                    </dl>
+                                                                    <dl class="dlist">
+                                                                        <dt>Discount :</dt>
+                                                                        <dd style="margin-left: 54%;" > Rs. <%= order.discountAmount %> </dd>
                                                                     </dl>
                                                                     <dl class="dlist">
                                                                         <dt>Shipping cost:</dt>
