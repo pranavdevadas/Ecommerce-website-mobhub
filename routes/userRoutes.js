@@ -34,7 +34,7 @@ router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
 
 router.get('/shop',isUser,userController.getshop)
-router.get('/priceFilter/:category', userController.getshop);
+router.get('/priceFilter/:category?', userController.getshop);
 router.get('/categoryFilter/:category?', userController.getshop);
 
 

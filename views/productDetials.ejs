@@ -296,8 +296,8 @@
                                         </div>
                                         <div class="clearfix product-price-cover">
                                             <div class="product-price primary-color float-left">
-                                                <ins><span class="text-brand">₹ <%= row.oldprice %></span></ins>
-                                                <ins><span class="old-price font-md ml-15">₹ <%= row.newprice %></span></ins>
+                                                <ins><span class="text-brand">₹ <%= row.newprice %>.00</span></ins>
+                                                <ins><span class="old-price font-md ml-15">₹ <%= row.oldprice %>.00</span></ins>
                                                 <span class="save-price  font-md color3 ml-15">25% Off</span>
                                             </div>
                                         </div>
@@ -320,7 +320,7 @@
                                             <strong class="mr-10">Color</strong>
                                             <p><%= row.colour%></p>
                                         </div>
-                                        <div class="attr-detail attr-size">
+                                        <!-- <div class="attr-detail attr-size">
                                             <strong class="mr-10">Varient(Ram & Storage) </strong>
                                             <ul class="list-filter size-filter font-small">
                                                 <li><a href="#">4GB 64GB</a></li>
@@ -328,7 +328,7 @@
                                                 <li><a href="#">8GB 256GB</a></li>
                                                 <li><a href="#">16GB 512GB</a></li>
                                             </ul>
-                                        </div>
+                                        </div> -->
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                         <% if(row.stock==0){ %>
                                         <div class="detail-extralink">

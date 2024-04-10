@@ -382,11 +382,14 @@ const userController = {
         try{
             const category = req.params.category || undefined;  
 
+            const listedCategories = await Category.find({ isListed: true });
+            const categoryIds = listedCategories.map(category => category._id);
+
             let prod =await Products.find({ispublished:true}).populate('brand').populate('category')
             const sort = req.query.sort
-            cate = await Category.find({});
+            cate = await Category.find({ isListed: true });
             
-            let query = { ispublished: true };
+            let query = { ispublished: true, category: { $in: categoryIds } };
 
             if (category) {
                 query.category = category;
@@ -394,9 +397,9 @@ const userController = {
 
 
             if (sort === 'lowToHigh') {
-                prod = await Products.find(query).sort({ oldprice : 1 });
+                prod = await Products.find(query).sort({ newprice : 1 });
             } else if (sort === 'highToLow') {
-                prod = await Products.find(query).sort({ oldprice : -1 });
+                prod = await Products.find(query).sort({ newprice : -1 });
             } else if (sort === 'A-Z') {
                 prod = await Products.find(query).sort({ productname : 1 });
             } else if (sort === 'Z-A') {
@@ -415,6 +418,42 @@ const userController = {
                 sort: sort,
                 text: category ,
             })
+
+            // const category = req.params.category || undefined;  
+
+            // let prod =await Products.find({ispublished:true}).populate('brand').populate('category')
+            // const sort = req.query.sort
+            // cate = await Category.find({});
+            
+            // let query = { ispublished: true };
+
+            // if (category) {
+            //     query.category = category;
+            // }
+
+
+            // if (sort === 'lowToHigh') {
+            //     prod = await Products.find(query).sort({ oldprice : 1 });
+            // } else if (sort === 'highToLow') {
+            //     prod = await Products.find(query).sort({ oldprice : -1 });
+            // } else if (sort === 'A-Z') {
+            //     prod = await Products.find(query).sort({ productname : 1 });
+            // } else if (sort === 'Z-A') {
+            //     prod = await Products.find(query).sort({ productname : -1 });
+            // } else if (sort === 'newarrivals') {
+            //     prod = await Products.find(query).sort({ created : -1 });
+            // } else {
+            //     prod = await Products.find(query);
+            // }
+
+            // res.render('shop',{
+            //     title:'Shop',
+            //     products: prod,
+            //     cate: cate,
+            //     user: req.session.user||req.user,
+            //     sort: sort,
+            //     text: category ,
+            // })
         }
         catch(err){
             next(err)

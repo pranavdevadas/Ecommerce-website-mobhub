@@ -282,7 +282,7 @@
                                                 <div class="image-preview">
                                                     <img src="/static/<%= imageUrl %>" alt="Existing Image" class="existing-image">
                                                     <i class="fa-solid fa-repeat replace-image-icon" data-index="<%= index %>"></i>
-                                                    <i class="fa-solid fa-trash delete-image-btn" data-index="<%= index %>"></i>
+                                                    <!-- <i class="fa-solid fa-trash delete-image-btn" data-index="<%= index %>"></i> -->
                                                 </div>
                                                 <% }) %>
                                             </div>
@@ -291,11 +291,11 @@
                                             <% } %>
                                         </div>
                                     </div>
-                                    <!-- <div class="mb-4">
-                                        <label class="form-label">New Images</label>
-                                        <input class="form-control" name="images" type="file" id="product_image" multiple />
+                                    <div class="mb-4">
+                                        <!-- <label class="form-label">New Images</label> -->
+                                        <input class="form-control" name="images" style="display: none;" type="file" id="product_image" multiple />
                                         <span id="image-error" style="font-size: 14px; margin-top: -20px"></span>
-                                    </div> -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -418,7 +418,7 @@
          }
      }
      
-         </script>
+</script>
 <script>
     var nameError = document.getElementById("name-error");
     var descriptionError = document.getElementById("description-error");
