@@ -193,8 +193,6 @@
             </div>
         </div>
     </header>
-
-
     <main class="main">
             <section class="mt-50 mb-50">
                 <div class="container">
@@ -204,6 +202,16 @@
                                 <div class="sort-by-product-wrap">
                                     <div class="sort-by">
                                         <span></i></span>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="dropdown-button"><i class="fi-rs-apps-sort"></i> Sort by:</button>
+                                        <div class="dropdown-content">
+                                            <a href="?q=<%= text %>&sort=lowToHigh">Price: Low to High</a>
+                                            <a href="?q=<%= text %>&sort=highToLow">Price: High to Low</a>
+                                            <a href="?q=<%= text %>&sort=A-Z">aA - zZ</a>
+                                            <a href="?q=<%= text %>&sort=Z-A">zZ - aA</a>
+                                            <a href="?q=<%= text %>&sort=newarrivals">New Arrivals</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

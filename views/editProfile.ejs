@@ -339,22 +339,24 @@
                     nameError.style.color = "red";
                     return false;
                 } else {
-                    nameError.innerHTML = "Valid";
-                    nameError.style.color = 'green';
+                    // nameError.innerHTML = "Valid";
+                    // nameError.style.color = 'green';
+                    console.log('done');
                 }
         
                 // Email validation
                 var emailInput = document.forms["registrationForm"]["email"];
                 var emailError = document.getElementById("email-error");
-                var emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+                var emailRegex = /^[a-zA-Z]{1}[a-zA-Z0-9._-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         
                 if (!emailRegex.test(emailInput.value.trim())) {
                     emailError.innerHTML = "Enter a valid Gmail address";
                     emailError.style.color = "red";
                     return false;
                 } else {
-                    emailError.innerHTML = "Valid";
-                    emailError.style.color = 'green';
+                    // emailError.innerHTML = "Valid";
+                    // emailError.style.color = 'green';
+                    console.log('email else');
                 }
         
                 // Phone validation
@@ -383,8 +385,9 @@
                     phoneError.style.color = "red";
                     return false;
                 } else {
-                    phoneError.innerHTML = "Valid";
-                    phoneError.style.color = 'green';
+                    // phoneError.innerHTML = "Valid";
+                    // phoneError.style.color = 'green';
+                    console.log('done');
                 }
         
                 // Password validation
@@ -397,8 +400,9 @@
                     passwordError.style.color = "red";
                     return false;
                 } else {
-                    passwordError.innerHTML = "Valid";
-                    passwordError.style.color = 'green';
+                    // passwordError.innerHTML = "Valid";
+                    // passwordError.style.color = 'green';
+                    console.log('done');
                 }
         
                 return true;

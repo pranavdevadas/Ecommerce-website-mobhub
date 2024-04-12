@@ -19,8 +19,13 @@ router.post('/login',userController.postuserLogin)
 router.get('/register',userController.getuserRegister)
 router.post('/register',userController.postuserRegister)
 router.get('/logout',userController.getlogout)
+router.get('/forgot-password',userController.forgotPass)
+router.post('/post-forgot',userController.PostforgotPass)
+router.get('/forgot-password-email/:email',userController.getforgotPassMail)
+router.post('/email-forgot/:email',userController.emailforgotPass)
 
-router.get('/search',userController.search)
+
+
 
 router.get('/productdetials/:Id',isUser,userController.getProductDetials)
 
@@ -32,6 +37,9 @@ router.post('/resendOtp',userController.resendotp)
 
 router.get('/auth/google',authController.googleAuth)
 router.get('/auth/google/callback',authController.googleAuthCallback)
+
+router.get('/search',userController.search)
+router.get('/priceFilterr/:category?',userController.search)
 
 router.get('/shop',isUser,userController.getshop)
 router.get('/priceFilter/:category?', userController.getshop);

@@ -116,6 +116,91 @@ const userController = {
             next(err)
         }
     },
+//forgot Password
+    forgotPass : (req,res,next) => {
+        try {
+            res.render('forgotPass',{
+                title:'Forgot Password'
+            })
+
+        } catch (err) {
+            next(err)
+        }
+    },
+//forgot Password
+    PostforgotPass : async (req,res,next) => {
+            try {
+                const { email } = req.body
+                const existingUser = await User.findOne({ email : email })
+                
+                if (existingUser) {
+
+                    const mailOptions = {
+                        from: 'pranavdevadas2@gmail.com',
+                        to: email,
+                        subject: 'Reset Your Password',
+                        text: `Click this link and Enter Your New Password http://localhost:3000/forgot-password-email/${email} `,
+                    };
+        
+                    await transporter.sendMail(mailOptions);
+    
+                    res.render('userLogin',{
+                        title:'Login',
+                        otpalert: 'Link Sended Successfully'
+                    }) 
+                } else {
+                    res.render('userLogin',{
+                        title:'Login',
+                        alert: 'No User Found'
+                    })
+                }
+
+            } catch (err) {
+                next(err)
+            }
+        },  
+//forgot Password Email
+    getforgotPassMail : async (req,res,next) => {
+        try {
+            const email = req.params.email
+            res.render('forgotpassEmail',{
+                title:'Forgot Password',
+                email: email
+            })
+            
+
+        } catch (err) {
+            next(err)
+        }
+    },  
+//Post forgot Password Email
+emailforgotPass : async (req,res,next) => {
+        try {
+            const email = req.params.email
+            const data = await User.findOne( { email : email })
+            const hashedpassword = await bcrypt.hash(req.body.password,saltpassword)
+
+            console.log('data', data);
+
+            if (!data) { 
+                res.status(404).render('error404')
+            } else {
+                await User.findOneAndUpdate({ email : email },{
+                    pass : hashedpassword
+                })
+
+                res.render('forgotpassEmail',{
+                    otpalert: 'Password Updated Successfully',
+                    email                    
+                })
+            }
+
+        } catch (err) {
+            next(err)
+        }
+    },  
+
+
 // register get
     getuserRegister:(req,res,next)=>{
         try{
@@ -126,81 +211,60 @@ const userController = {
         }
     },
     //register post
-    postuserRegister: async (req,res,next)=>{
-        try{
-            const existingEmail = await User.findOne({email:req.body.email})
 
-            if(existingEmail){
-                res.render('userLogin',{
-                    title:'Sign up',
-                    alert:'Email id already exist, Try with other email id'
-                })
-            }
-            else{
-                
-                const hashedpassword = await bcrypt.hash(req.body.password,saltpassword)
+    postuserRegister: async (req, res, next) => {
+        try {
+            const existingEmail = await User.findOne({ email: req.body.email });
 
-                const otp = Math.floor(100000 + Math.random() * 900000)
-
-                const user = new User ({
-                    name: req.body.name,
-                    email: req.body.email,
-                    phone: req.body.phone,
-                    pass: hashedpassword,
-                    otp: otp
+            if (existingEmail) {
+                return res.render('userLogin', {
+                    title: 'Sign up',
+                    alert: 'Email id already exists. Please try with another email id.'
                 });
-                
-                await user.save()
+            }
 
-                const referalcode = req.body.referalcode
+            const hashedPassword = await bcrypt.hash(req.body.password, saltpassword);
 
-                if (referalcode) {
+            const otp = Math.floor(100000 + Math.random() * 900000);
 
-                    const referrer = await User.findOne({ referalcode });
-        
-                    if (referrer) {
-                        const newUser = await User.findOne({ email: req.body.email })
-                        await Wallet.findOneAndUpdate({ userId: referrer._id }, { $inc: { balance: 1000 } });
-                        
+            const user = new User({
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                pass: hashedPassword,
+                otp: otp
+            });
+
+            await user.save();
+
+            const newUser = await User.findOne({ email: req.body.email });
+            await Wallet.create({ userId: newUser._id, balance: 0 });
+
+            const referalCode = req.body.referalcode;
+
+            if (referalCode) {
+                const referrer = await User.findOne({ referalcode: referalCode });
+
+                if (referrer) {
+
+                    await Wallet.findOneAndUpdate({ userId: referrer._id }, { $inc: { balance: 1000 } });
                     const referrerTransaction = new Transaction({
-                        userId: referrer ? referrer._id : null,
+                        userId: referrer._id,
                         amount: 1000,
                         status: 'Success',
                         type: 'Credit'
                     });
                     await referrerTransaction.save();
 
+                    // const newUser = await User.findOne({ email: req.body.email });
                     await Wallet.create({ userId: newUser._id, balance: 1000 });
-
                     const referredUserTransaction = new Transaction({
                         userId: newUser._id,
                         amount: 1000,
                         status: 'Success',
                         type: 'Credit'
-                    });
+                    })
                     await referredUserTransaction.save();
-
-        
-                    } else {
-                        const mailOptions = {
-                            from: 'pranavdevadas2@gmail.com',
-                            to: req.body.email,
-                            subject: 'OTP Verification',
-                            text: `Your OTP is: ${otp}`,
-                          }
-        
-                        await transporter.sendMail(mailOptions)
-        
-                        req.session.tempEmail = req.body.email
-                        res.render('otp',{
-                            title: "OTP",   
-                            email: req.session.tempEmail,
-                            alert: 'Invalid referral code'
-                          })
-
-                        // return res.status(400).json({ message: 'Invalid referral code' });
-                    }
-
                 } else {
 
                     const mailOptions = {
@@ -208,32 +272,17 @@ const userController = {
                         to: req.body.email,
                         subject: 'OTP Verification',
                         text: `Your OTP is: ${otp}`,
-                      }
-    
-                    await transporter.sendMail(mailOptions)
-    
-                    req.session.tempEmail = req.body.email
-                    res.render('otp',{
-                        title: "OTP",   
-                        email: req.session.tempEmail,
-                      })
-                    // return res.status(200).json({ message: 'User registered successfully' });
+                    };
+        
+                    await transporter.sendMail(mailOptions);
+
+                    res.render('otp', {
+                        title: 'OTP Verification',
+                        email: req.body.email,
+                        alert: 'Invalid referral code'
+                    });
+        
                 }
-    
-                const mailOptions = {
-                    from: 'pranavdevadas2@gmail.com',
-                    to: req.body.email,
-                    subject: 'OTP Verification',
-                    text: `Your OTP is: ${otp}`,
-                  }
-
-                await transporter.sendMail(mailOptions)
-
-                req.session.tempEmail = req.body.email
-                res.render('otp',{
-                    title: "OTP",   
-                    email: req.session.tempEmail,
-                  })
             }
 
             const mailOptions = {
@@ -241,20 +290,20 @@ const userController = {
                 to: req.body.email,
                 subject: 'OTP Verification',
                 text: `Your OTP is: ${otp}`,
-              }
+            };
 
-            await transporter.sendMail(mailOptions)
+            await transporter.sendMail(mailOptions);
 
-            res.render('otp',{
-                title:'OTP',
-                email:req.session.tempEmail
-            })
-
-        }
-        catch(err){
-            next(err)
+            req.session.tempEmail = req.body.email;
+            res.render('otp', {
+                title: 'OTP Verification',
+                email: req.body.email
+            });
+        } catch (err) {
+            next(err);
         }
     },
+    
 //get otp
     getotp:(req,res,next)=>{
         try{
@@ -274,12 +323,12 @@ const userController = {
             
             const otp = req.body.otp
 
-              transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                  return res.status(500).json({ error: 'Failed to send OTP' });
-                }
-                res.json({ success: 'OTP sent successfully' });
-              });
+            transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return res.status(500).json({ error: 'Failed to send OTP' });
+            }
+            res.json({ success: 'OTP sent successfully' });
+            });
         }
         catch(err){
             next(err)
@@ -287,40 +336,38 @@ const userController = {
     },
 //post verify otp
     postverifyotp: async (req,res,next)=>{
+        try {
+            const email = req.body.email;
+            const user = await User.findOne({ email });
 
-        const email = req.body.email
-        const user = await User.findOne({ email });
-        const userEnteredOtp = req.body.otp;
+            if (!user) {
+                return res.status(404).json({ message: 'User not found. Please check your email and try again.' });
+            }
 
-        if(!user) {
-            return res.render('otp',{
-                email,
-                alert:'User not found. Please check your email and try again.'
-            })
+            const userEnteredOtp = req.body.otp;
+
+            if (user.otp === userEnteredOtp) {
+                req.session.tempEmail = null;
+
+                user.isBlocked = false;
+                user.isVerified = true;
+                await user.save();
+
+                return res.status(200).json({ message: 'OTP verified successfully' });
+            } else {
+                return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+            }
+
+        } catch (err) {
+            next(err)
         }
 
-        if(user.otp === userEnteredOtp){
-            req.session.tempEmail = null
-
-            user.isBlocked = false
-            user.isVerified = true
-            await user.save()
-
-            res.redirect('/login',500,{
-                otpalert:'OTP verified successfully'
-            })
-        }
-        else{
-            res.render('otp',{
-                title:'OTP',
-                email,
-                alert:'Invalid OTP. Please try again'
-            })
-        }
+        
     },
 // resend otp
     resendotp: async (req,res,next)=>{
         try{
+
             req.session.tempEmail = req.body.email
             const userEmail = req.session.tempEmail
             
@@ -346,7 +393,7 @@ const userController = {
                 title: "OTP",   
                 email: req.session.tempEmail,
               })
-              res.redirect('/login')
+            
 
         }
         catch(err){
@@ -357,20 +404,42 @@ const userController = {
 //search
     search: async (req, res, next) => {
         try{
-            const searchTerm = req.query.q
+            const searchTerm = req.query.q;
+            const category = req.params.category || undefined;
+            const sort = req.query.sort;
 
-            const searchResult = await Products.find({ 
+            let query = {
                 $or: [
                     { productname: { $regex: searchTerm, $options: 'i' } },
                     { description: { $regex: searchTerm, $options: 'i' } },
                 ]
-            })
+            };
 
-            res.render('search',{
+            if (category) {
+                query.category = category;
+            }
+
+            let sortOptions = {};
+            if (sort === 'lowToHigh') {
+                sortOptions.newprice = 1;
+            } else if (sort === 'highToLow') {
+                sortOptions.newprice = -1;
+            } else if (sort === 'A-Z') {
+                sortOptions.productname = 1;
+            } else if (sort === 'Z-A') {
+                sortOptions.productname = -1;
+            } else if (sort === 'newarrivals') {
+                sortOptions.created = -1;
+            }
+
+            let searchResult = await Products.find(query).sort(sortOptions);
+
+            res.render('search', {
                 products: searchResult,
                 title: 'Dashboard',
-                user: req.session
-            })
+                user: req.session,
+                text: searchTerm
+            });
         }
         catch(err){
             next(err)
@@ -418,42 +487,7 @@ const userController = {
                 sort: sort,
                 text: category ,
             })
-
-            // const category = req.params.category || undefined;  
-
-            // let prod =await Products.find({ispublished:true}).populate('brand').populate('category')
-            // const sort = req.query.sort
-            // cate = await Category.find({});
-            
-            // let query = { ispublished: true };
-
-            // if (category) {
-            //     query.category = category;
-            // }
-
-
-            // if (sort === 'lowToHigh') {
-            //     prod = await Products.find(query).sort({ oldprice : 1 });
-            // } else if (sort === 'highToLow') {
-            //     prod = await Products.find(query).sort({ oldprice : -1 });
-            // } else if (sort === 'A-Z') {
-            //     prod = await Products.find(query).sort({ productname : 1 });
-            // } else if (sort === 'Z-A') {
-            //     prod = await Products.find(query).sort({ productname : -1 });
-            // } else if (sort === 'newarrivals') {
-            //     prod = await Products.find(query).sort({ created : -1 });
-            // } else {
-            //     prod = await Products.find(query);
-            // }
-
-            // res.render('shop',{
-            //     title:'Shop',
-            //     products: prod,
-            //     cate: cate,
-            //     user: req.session.user||req.user,
-            //     sort: sort,
-            //     text: category ,
-            // })
+ 
         }
         catch(err){
             next(err)
@@ -538,7 +572,6 @@ const userController = {
     postcheckout: async(req,res,next) => {
         try{
             const { addressId, paymentMethod, totalprice, paymentStatus, discount, coupon } = req.body
-            console.log('dff', totalprice);
             const totalprice1 = parseFloat(totalprice)
             const user = await User.findById(req.session.userID)
             const cartItems = JSON.parse(req.body.cartItem);
@@ -887,14 +920,12 @@ const userController = {
         try{
             const userId = req.params.Id
             const user = await User.findById(userId)
-            const addressDocument = await Address.findOne({ userId: userId });
 
 
             res.render('editProfile',{
                 title: 'Edit Profile',
                 users: user,
                 user: req.session.userID,
-                addresses: addressDocument.addresses,
 
             })
         }
@@ -927,7 +958,6 @@ const userController = {
             const data = await User.findById(userId)
             const passwordMatch = await bcrypt.compare(req.body.currentpassword,data.pass)
             const hashedpassword = await bcrypt.hash(req.body.newpassword,saltpassword)
-            // const users = await User.findById(userId)
 
             if(passwordMatch){
                 await User.findByIdAndUpdate(userId,{
