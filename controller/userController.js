@@ -16,7 +16,12 @@ const Wishlist = require('../model/wishlist')
 const Wallet = require('../model/wallet')
 const Transaction = require('../model/transaction')
 const Coupon = require('../model/coupon')
-
+// const pdf = require('html-pdf')
+const path = require('path');
+const ejs = require('ejs')
+var easyinvoice = require('easyinvoice');
+const puppeteer = require('puppeteer-core');
+const fs = require('fs');
 
 
 const bcrypt = require('bcrypt')
@@ -541,28 +546,57 @@ emailforgotPass : async (req,res,next) => {
     checkout: async (req,res,next)=>{
         try{
 
-            const userId = req.session.userID
-            const userCart = await Cart.findOne({userId : userId}).populate({path:'items.product', model: 'product' })
-            const addressDocument = await Address.findOne({ userId: userId });
-            const coupon = await Coupon.find({
-                isListed: true,
-                expiryDate: { $gt: new Date() },
-                userId: { $ne: userId } 
-            });
-            let addresses = []
+            const itemId = req.query.itemId
 
-            if (addressDocument) {
-                addresses = addressDocument.addresses || []
+            if(itemId) {
+                const userId = req.session.userID
+                const userCart = await Order.findById(itemId).populate({path:'items.product', model: 'product' })
+                const addressDocument = await Address.findOne({ userId: userId });
+
+
+                const coupon = []
+
+
+                let addresses = []
+    
+                if (addressDocument) {
+                    addresses = addressDocument.addresses || []
+                }
+
+                res.render('checkout', {
+                    title: 'Checkout',
+                    user: req.session ||req.user,
+                    userCart,
+                    addresses: addresses,
+                    userData : req.session.userData,
+                    coupon,
+                })
+            } else {
+                const userId = req.session.userID
+                const userCart = await Cart.findOne({userId : userId}).populate({path:'items.product', model: 'product' })
+                const addressDocument = await Address.findOne({ userId: userId });
+
+                const coupon = await Coupon.find({
+                    isListed: true,
+                    expiryDate: { $gt: new Date() },
+                    userId: { $ne: userId } 
+                });
+                let addresses = []
+    
+                if (addressDocument) {
+                    addresses = addressDocument.addresses || []
+                }
+    
+                res.render('checkout', {
+                    title: 'Checkout',
+                    user: req.session ||req.user,
+                    userCart,
+                    addresses: addresses,
+                    userData : req.session.userData,
+                    coupon
+                })
             }
-
-            res.render('checkout', {
-                title: 'Checkout',
-                user: req.session ||req.user,
-                userCart,
-                addresses: addresses,
-                userData : req.session.userData,
-                coupon
-            })
+            
         }
         catch(err){
             next(err)
@@ -571,79 +605,97 @@ emailforgotPass : async (req,res,next) => {
 // check out post
     postcheckout: async(req,res,next) => {
         try{
-            const { addressId, paymentMethod, totalprice, paymentStatus, discount, coupon } = req.body
-            const totalprice1 = parseFloat(totalprice)
-            const user = await User.findById(req.session.userID)
-            const cartItems = JSON.parse(req.body.cartItem);
-            let userAddress = await Address.findOne({ 'addresses._id': addressId });
+            const itemId = req.body.orderId
+            const userId = req.session.userID
+            const existingOrder = await Order.findOne({ _id : itemId })
 
-            const address = userAddress.addresses.find(
-                (addr) => addr._id.toString() === addressId
-            )
-            const items = [];
+            if(existingOrder) {  
+                await Order.findOneAndUpdate(
+                    { _id: itemId }, 
+                    { paymentStatus: 'Paid' }, 
+                    { new: true } 
+                );
 
+            } else {
+                const { addressId, paymentMethod, totalprice, paymentStatus, discount, coupon } = req.body
+                const totalprice1 = parseFloat(totalprice)
+                const user = await User.findById(req.session.userID)
+                const cartItems = JSON.parse(req.body.cartItem);
+                let userAddress = await Address.findOne({ 'addresses._id': addressId });
+                
+                const address = userAddress.addresses.find(
+                    (addr) => addr._id.toString() === addressId
+                )
+                const items = [];
 
-            for (const item of cartItems) { 
-                if (item.quantity) { 
-                    items.push({
-                        product: item.product,
-                        price: item.price,
-                        quantity: item.quantity,
-                    });
-                } else {
-                    console.error(`Quantity missing for item ${item._id}`)
+                for (const item of cartItems) { 
+                    if (item.quantity) { 
+                        items.push({
+                            product: item.product,
+                            price: item.price,
+                            quantity: item.quantity,
+                        });
+                    } else {
+                        console.error(`Quantity missing for item ${item._id}`)
+                    }
                 }
-            }
 
-            let NumDiscount 
+                let NumDiscount 
 
-            if (!discount) {
-                NumDiscount = 0
-            }
-            else {
-                NumDiscount = parseFloat(discount)
-            }
-            const order = new Order ({
-                userId : user._id,
-                items: items,
-                totalprice : totalprice1,
-                billingdetails: {
-                    name: user.name,
-                    buildingname: address.buildingname,
-                    city: address.city,
-                    state: address.state,
-                    country: address.country,
-                    postalCode: address.pincode,
-                    phone: user.phone,
-                    email: user.email,
-                },
-                amount: totalprice1 + NumDiscount ,
-                paymentMethod,
-                discountAmount: NumDiscount ,
-                paymentStatus: paymentStatus
-            })
+                if (!discount) {
+                    NumDiscount = 0
+                }
+                else {
+                    NumDiscount = parseFloat(discount)
+                }
+                const order = new Order ({
+                    userId : user._id,
+                    items: items,
+                    totalprice : totalprice1,
+                    billingdetails: {
+                        name: user.name,
+                        buildingname: address.buildingname,
+                        city: address.city,
+                        state: address.state,
+                        country: address.country,
+                        postalCode: address.pincode,
+                        phone: user.phone,
+                        email: user.email,
+                    },
+                    amount: totalprice1 + NumDiscount ,
+                    paymentMethod,
+                    discountAmount: NumDiscount ,
+                    paymentStatus: paymentStatus
+                })
 
-            await order.save()
+                await order.save()
 
-            await Cart.findOneAndUpdate(
-                { userId: user._id },
-                { $set:{ items: [],totalprice: 0 } }
-            )
-
-            for(const item of order.items){
-                await Products.findByIdAndUpdate(
-                    item.product,
-                    { $inc: { stock : -item.quantity } },
-                    { new: true }
+                await Cart.findOneAndUpdate(
+                    { userId: user._id },
+                    { $set:{ items: [],totalprice: 0 } }
                 )
-            }
 
-            const cartUserId = await Coupon.findOneAndUpdate(
-                { coupon : coupon },
-                { $push:{ userId : req.session.userID } },
-                { new : true }
+                for(const item of order.items){
+                    await Products.findByIdAndUpdate(
+                        item.product,
+                        { $inc: { stock : -item.quantity } },
+                        { new: true }
+                    )
+                }
+
+                const cartUserId = await Coupon.findOneAndUpdate(
+                    { coupon : coupon },
+                    { $push:{ userId : req.session.userID } },
+                    { new : true }
                 )
-            res.render('thankyouorder')
+
+                }
+                if(req.body.paymentStatus ==='Failed') {
+                    res.redirect('/orders')
+                } else {
+                    res.render('thankyouorder')
+                }
+            
 
         }
         catch(err){
@@ -665,6 +717,7 @@ emailforgotPass : async (req,res,next) => {
                 let totalAmount = userCart.totalprice
             
                 const amountDividedByPercentage = Math.ceil(totalAmount * coupon.percentage/100)
+                
                 if (amountDividedByPercentage > coupon.maximumamount) {
 
                     const amountToPay = totalAmount - coupon.maximumamount
@@ -1304,7 +1357,6 @@ emailforgotPass : async (req,res,next) => {
 
             const userId = req.session.userID;
             const { totalPrice } = req.body;
-            console.log(9989,totalPrice);
     
             const userWallet = await Wallet.findOne({ userId: userId });
     
@@ -1312,9 +1364,11 @@ emailforgotPass : async (req,res,next) => {
                 return res.status(404).json({ success: false, message: 'Wallet not found' });
             }
     
-            if (userWallet.balance < totalPrice) {
+            if (userWallet.balance+1 <= totalPrice) {
                 return res.status(400).json({ success: false, message: 'Insufficient wallet balance' });
+                
             } else {
+                res.json({ success: true, balance: userWallet.balance });
                 userWallet.balance -= totalPrice;
                 await userWallet.save();
 
@@ -1326,15 +1380,51 @@ emailforgotPass : async (req,res,next) => {
                     date: new Date()
                 });
                 await transaction.save();
+                
             }
-            res.json({ success: true, balance: userWallet.balance });
+            
 
         } catch(err){
             next(err)
         }
     },
+    //invoice
+    getOrderInvoice : async(req,res,next) => {
+        try{
+    
+            const categoryData = await Category.find({isListed : true})
+            const orderId = req.params.Id;
+            const userId = req.session.userID;
+            const order = await Order.findOne({ _id : orderId}).populate('items.product')
+            const user = await Order.findOne({ userId : userId })
 
+            const invoiceTemplatePath = path.join(__dirname, '..', 'views', 'invoice.ejs');
+            const invoiceHtml = await ejs.renderFile(invoiceTemplatePath, {  order, user });
 
+            const pdfPath = path.join(__dirname, '..', 'views', 'invoice.pdf');
+            const browser = await puppeteer.launch({
+                executablePath: '/usr/bin/google-chrome',
+                headless: true
+            });
+            const page = await browser.newPage();
+            await page.setContent(invoiceHtml);
+            await page.pdf({ path: pdfPath, format: 'A4' });
+            await browser.close();
+
+            res.download(pdfPath, 'invoice.pdf', (err) => {
+                if (err) {
+                    throw err;
+                }
+                fs.unlinkSync(pdfPath);
+            });
+            
+            
+    
+        } catch (err){
+            next(err)
+        }
+    },
+    
 
 
 

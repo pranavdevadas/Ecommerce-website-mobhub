@@ -87,14 +87,12 @@ const cartController = {
             }
     
             const usercart = await Cart.findOne({ userId: req.session.userID }).populate('items.product');
-            console.log(10,usercart);
             if (!usercart) {
                 return res.status(200).json({ success: true, message: 'Product is in stock' })
             }
             
     
             const cartitem = usercart.items.find(item => item.product && item.product._id && item.product._id.toString() === productId.toString());
-            console.log(`11 ${cartitem}`)
     
             if (!cartitem) {
                 return res.status(200).json({ success: true, message: 'Product is in of stock' })
@@ -102,8 +100,6 @@ const cartController = {
     
             const maxQuantity = product.stock;
             const currentQuantity = cartitem.quantity;
-            console.log(2,maxQuantity);
-            console.log(1,currentQuantity);
             if (currentQuantity >= maxQuantity) {
                 return res.status(200).json({ success: false, message: 'Maximum quantity reached for this product' })
             }

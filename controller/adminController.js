@@ -5,6 +5,7 @@ require('dotenv').config()
 const AdminCridentials = require('../model/admincridentials')
 const Coupon = require('../model/coupon')
 const Order = require('../model/orders')
+const Products = require('../model/products')
 
 
 
@@ -19,6 +20,23 @@ const adminController = {
 //admin home
     adminHome : async (req,res,next)=>{
         try{
+
+            const users = await User.find().exec();
+            const orders = await Order.find().exec();
+            const products = await Products.find().exec();
+            const ordersPie = await chart()
+            const ordersGraph = await monthgraph();
+            const ordersYearGraph = await yeargraph();
+            const paidOrders = orders.filter(order => order.paymentStatus === "Paid");
+            const filteredOrders = orders.filter(order => order.paymentStatus !== "Failed" && order.status !== "Cancelled")
+                  
+          
+            let revenue = 0;
+            paidOrders.forEach(order => {
+                revenue += order.totalPrice;
+            });
+
+
 
             const order = await Order.find().populate('items.product').sort({ orderDate : -1 })
 
@@ -64,8 +82,15 @@ const adminController = {
                 count,
                 orderAmount,
                 discountAmount,
-                order
+                order,
+                ordersPie:ordersPie,
+                ordersGraph: ordersGraph,
+                ordersYearGraph: ordersYearGraph,
+                revenue: revenue.toFixed(2),
+                orders:filteredOrders,products:products,
+                users: users,
             })
+            
         }
         catch(err){
             next(err)
@@ -254,6 +279,146 @@ getlogout: (req, res, next) => {
         catch(err){
             next(err)
         }
+    },
+// graphs
+
+    fetchdashboard:async (req, res, next) => {
+      
+        try {
+          const users = await User.find().exec();
+          const orders = await Order.find().exec();
+          const products = await Products.find()
+          const ordersPie = await chart();
+    
+          
+          res.json({
+            title: "Admin Home",
+            users: users,
+            orders: orders,
+            products: products,
+            ordersPie: ordersPie,
+          });
+        } catch (err) {
+          next(err);
+        }
+      },
+
+      bestselling: async (req,res,next) => {
+        try {
+            const bestSellingBrands = await Order.aggregate([
+                { $unwind: '$items' },
+                {
+                    $lookup: {
+                        from: 'products',
+                        localField: 'items.product',
+                        foreignField: '_id',
+                        as: 'product',
+                    },
+                },
+                { $unwind: '$product' },
+                {
+                    $group: {
+                        _id: '$product.brand',
+                        totalQuantity: { $sum: '$items.quantity' },
+                    },
+                },
+                { $sort: { totalQuantity: -1 } },
+                { $limit: 10 },
+                {
+                    $lookup: {
+                        from: 'brands',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'brand',
+                    },
+                },
+                { $unwind: '$brand' },
+                {
+                    $project: {
+                        _id: '$brand._id',
+                        brandName: '$brand.brand',
+                        totalQuantity: 1,
+                    },
+                },
+            ]);
+
+            const bestSellingCategories = await Order.aggregate([
+                { $unwind: '$items' },
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'items.product',
+                    foreignField: '_id',
+                    as: 'product',
+                  },
+                },
+                { $unwind: '$product' },
+                {
+                  $group: {
+                    _id: '$product.category',
+                    totalQuantity: { $sum: '$items.quantity' },
+                  },
+                },
+                {
+                  $sort: { totalQuantity: -1 },
+                },
+                {
+                  $limit: 10, 
+                },
+                {
+                  $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'category',
+                  },
+                },
+                { $unwind: '$category' },
+                {
+                  $project: {
+                    _id: '$category._id',
+                    category: '$category.category',
+                    totalQuantity: 1,
+                  },
+                },
+              ]);
+
+              const bestSellingProducts = await Order.aggregate([
+                { $unwind: '$items' },
+                {
+                  $group: {
+                    _id: '$items.product',
+                    totalQuantity: { $sum: '$items.quantity' },
+                  },
+                },
+                { $sort: { totalQuantity: -1 } },
+                { $limit: 10 }, 
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'product',
+                  },
+                },
+                { $unwind: '$product' },
+                {
+                  $project: {
+                    _id: '$product._id',
+                    productTitle: '$product.productname',
+                    totalQuantity: 1,
+                  },
+                },
+              ]);
+              
+            res.render('admin/bestSelling', { 
+                bestSellingBrands,
+                bestSellingCategories,
+                bestSellingProducts 
+            });
+        } catch(err) {
+            next(err)
+        }
     }
 
 
@@ -262,6 +427,112 @@ getlogout: (req, res, next) => {
 
 
 
-}
 
+
+}
+   
+    async function chart() {
+        try {
+            const orders = await Order.find();
+            const paymentMethods = {
+                cashOnDelivery: 'COD',
+                razorPay: 'Razorpay',
+                wallet: 'Wallet'
+            };
+            const ordersCount = {
+                cashOnDelivery: 0,
+                razorPay: 0,
+                wallet: 0
+            };
+
+            orders.forEach(order => {
+                if (order.paymentMethod === paymentMethods.cashOnDelivery) {
+                    ordersCount.cashOnDelivery++;
+                } else if (order.paymentMethod === paymentMethods.razorPay) {
+                    ordersCount.razorPay++;
+                } else if (order.paymentMethod === paymentMethods.wallet) {
+                    ordersCount.wallet++;
+                }
+            });
+
+            return ordersCount;
+        } catch (error) {
+            console.error("An error occurred in the chart function:", error.message);
+            throw error;
+        }
+    }
+
+
+
+    async function monthgraph() {
+        try {
+            const ordersCountByMonth = await Order.aggregate([
+                {
+                    $project: {
+                        yearMonth: {
+                            $dateToString: {
+                                format: "%Y-%m",
+                                date: "$orderDate"
+                            }
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$yearMonth",
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { _id: 1 }
+                }
+            ]);
+    
+            const labels = ordersCountByMonth.map(val => val._id);
+            const count = ordersCountByMonth.map(val => val.count);
+    
+            return {
+                labels: labels,
+                count: count
+            };
+        } catch (error) {
+            console.log('Error retrieving orders in monthgraph function:', error.message);
+            throw error;
+        }
+    }
+    
+
+
+    async function yeargraph() {
+        try {
+            const ordersCountByYear = await Order.aggregate([
+                {
+                    $project: {
+                        year: { $year: { date: '$orderDate' } },
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$year',
+                        count: { $sum: 1 },
+                    },
+                },
+                {
+                    $sort: { _id: 1 },
+                },
+            ]);
+    
+            const labels = ordersCountByYear.map((val) => val._id.toString());
+            const count = ordersCountByYear.map((val) => val.count);
+    
+            return {
+                labels: labels,
+                count: count
+            };
+        } catch (error) {
+            console.log('Error retrieving orders in yeargraph function:', error.message);
+            throw error;
+        }
+    }
+    
 module.exports= adminController

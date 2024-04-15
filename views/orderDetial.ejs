@@ -260,6 +260,7 @@
                                                                 <small class="text-muted">Tracking ID: <%= order.trackingId %></small>
                                                             </div>
                                                         </div>
+                                                        <div class="align-items-end " ><a href="/downloadinvoice/<%= order._id %>" class="btn btn-small d-block" >Download Invoice</a></div>
                                                     </header>
                                                     <div class="card-body">
                                                         <div class="row mb-50 mt-20 order-info-wrap">
@@ -548,7 +549,6 @@
     
                 const data = await response.json();
     
-                // Assuming successful response indicates order cancellation
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
@@ -557,7 +557,6 @@
                     timer: 1500
                     });
     
-                // Reload page after a brief delay
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -570,7 +569,6 @@
             }
         }
     </script>    
-    <!-- return order -->
     <script>
         async function returnOrderIndividually(orderId, productId) {
             try {
@@ -588,7 +586,6 @@
     
                 const data = await response.json();
     
-                // Assuming successful response indicates order cancellation
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
@@ -597,7 +594,6 @@
                     timer: 1500
                     });
     
-                // Reload page after a brief delay
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -614,7 +610,6 @@
 
         <script>
             function validateForm() {
-                // Name validation
                 var nameInput = document.forms["registrationForm"]["name"];
                 var nameError = document.getElementById("name-error");
                 var nameRegex = /^[a-zA-Z ]+$/;
@@ -628,7 +623,6 @@
                     nameError.style.color = 'green';
                 }
         
-                // Email validation
                 var emailInput = document.forms["registrationForm"]["email"];
                 var emailError = document.getElementById("email-error");
                 var emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
@@ -642,7 +636,6 @@
                     emailError.style.color = 'green';
                 }
         
-                // Phone validation
                 var phoneInput = document.forms["registrationForm"]["phone"];
                 var phoneError = document.getElementById("phone-error");
                 var phoneRegex = /^[0-9]{10}$/;
@@ -672,7 +665,6 @@
                     phoneError.style.color = 'green';
                 }
         
-                // Password validation
                 var passwordInput = document.forms["registrationForm"]["password"];
                 var passwordError = document.getElementById("password-error");
                 var passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,12}$/;

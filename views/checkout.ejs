@@ -304,11 +304,19 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                <% if (addresses && addresses.length > 0) { %>
+                                    <button type="submit" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                <% } else { %>
+                                    <button type="submit" class="btn btn-fill-out btn-block mt-30" disabled>Place Order</button>
+                                    <div>
+                                        <span style="color: red;">Add or select an address to place an order</span>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
                     <input type="hidden" name="cartItem" value='<%= JSON.stringify(userCart.items) %>'>
+                    <input type="hidden" name="orderId" value="<%= userCart._id%>">
                     <input type="hidden" id="paymentStatus" name="paymentStatus">
                     <input type="hidden" name="totalprice" id="subtotalInp" value="<%= userCart.totalprice %>" >
                     <input type="hidden" id="discountId" name="discount" >
@@ -484,6 +492,7 @@
           return false;
 
           } else if (paymentCODCheckbox.checked) {
+            document.getElementById('paymentStatus').value = 'Pending';
             paymentStatusInput.value = "Pending";
             Swal.fire({
               title: "Are you sure?",
@@ -513,8 +522,6 @@
             .then(data => {
                 if (data.success) {
                     const walletBalance = data.balance;
-                    console.log('Wallet Balance:', walletBalance);
-
                     if (totalPrice <= walletBalance) {
                         Swal.fire({
                             title: "Are you sure?",
@@ -526,6 +533,7 @@
                             confirmButtonText: "Yes, place order",
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                console.log('hjhh');
                                 console.log("Order placed");
                                 // Submit the order form
                                 document.getElementById('paymentStatus').value = 'Paid';
@@ -543,9 +551,9 @@
                 } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Error',
-                        text: 'Failed to fetch wallet balance. Please try again later.',
-                        showConfirmButton: true
+                            title: 'Insufficient Wallet Balance',
+                            text: 'Your wallet balance is not sufficient to complete the transaction.',
+                            showConfirmButton: true
                     });
                 }
             })
@@ -590,6 +598,8 @@
              
               submitForm();
             },
+
+
       
             prefill: {
               name: user.name,
@@ -602,13 +612,14 @@
           };
       
           var rzp = new Razorpay(options);
-      
-        //   rzp.on('payment.failed', function (response) {
-        //     console.log("Payment failed:", response);
-        //     document.getElementById('paymentStatus').value = 'Failed';
-        //     submitForm();
-        //   });
-      
+
+
+        rzp.on('payment.error', function(response) {
+            console.log("Payment failed");
+            document.getElementById('paymentStatus').value = 'Failed';
+            submitForm();
+        });
+        
           rzp.open();
         }
       

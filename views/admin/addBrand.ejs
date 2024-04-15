@@ -64,6 +64,11 @@
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a class="menu-link" href="/admin/bestselling"> <i class="icon material-icons md-store"></i>
+                        <span class="text">Best Selling</span>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/customer"> <i class="icon material-icons md-person"></i>
                         <span class="text">Customer</span>
                     </a>
@@ -137,52 +142,51 @@
             </div>
         </header>
         <section class="content-main">
-    <div class="row">
-        <div class="col-9">
-            <div class="content-header">
-                <h2 class="content-title">Add New Brand</h2>
-            </div>
-        </div>
-        <div class="col-9">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row gx-5">
-                        <div class="col-lg-9">
-                            <section class="content-body p-xl-4">
-                                <form action="/submited" method="post" name="brandForm" onsubmit="return validateForm()">
-                                    >
-                                    <% if (locals.alert) { %>
-                                        <div class="alert alert-danger text-center m-3" id="error">
-                                          <%= locals.alert %>
-                                        </div>
-                                        <% } %> 
-                                    <div class="row mb-4">
-                                        <label class="col-lg-3 col-form-label">Brand name*</label>
-                                        <div class="col-lg-9">
-                                            <input type="text" class="form-control" name="brand" placeholder="Type here">
-                                            <span id="brand-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
-                                        </div>
-                                    </div>
-                                        <div class="row mb-4">
-                                            <label class="col-lg-3 col-form-label">Description*</label>
-                                            <div class="col-lg-9">
-                                                <textarea name="description" class="form-control" placeholder="Type here" rows="4"></textarea>
-                                                <span id="description-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
+            <div class="row">
+                <div class="col-9">
+                    <div class="content-header">
+                        <h2 class="content-title">Add New Brand</h2>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row gx-5">
+                                <div class="col-lg-9">
+                                    <section class="content-body p-xl-4">
+                                        <form action="/submited" method="post" name="brandForm" onsubmit="return validateForm()">
+                                            >
+                                            <% if (locals.alert) { %>
+                                                <div class="alert alert-danger text-center m-3" id="error">
+                                                <%= locals.alert %>
+                                                </div>
+                                                <% } %> 
+                                            <div class="row mb-4">
+                                                <label class="col-lg-3 col-form-label">Brand name*</label>
+                                                <div class="col-lg-9">
+                                                    <input type="text" class="form-control" name="brand" placeholder="Type here">
+                                                    <span id="brand-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    <div>
-                                        <button type="submit" class="btn btn-md rounded font-sm hover-up">Submit</button>
-                                    </div>
-                                </form>
-                            </section>
+                                                <div class="row mb-4">
+                                                    <label class="col-lg-3 col-form-label">Description*</label>
+                                                    <div class="col-lg-9">
+                                                        <textarea name="description" class="form-control" placeholder="Type here" rows="4"></textarea>
+                                                        <span id="description-error" style="font-size: 14px; margin-top: -20px; color: red;"></span>
+                                                    </div>
+                                                </div>
+                                            <div>
+                                                <button type="submit" class="btn btn-md rounded font-sm hover-up">Submit</button>
+                                            </div>
+                                        </form>
+                                    </section>
+                                </div> 
+                            </div> 
                         </div> 
-                    </div> 
-                </div> 
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
-
+        </section>
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">
                 <div class="col-sm-6">

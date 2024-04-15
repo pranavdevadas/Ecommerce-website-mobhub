@@ -90,6 +90,9 @@ router.post('/check-wallet-balance',isUser,userController.checkWalletBalance)
 
 router.post('/couponcheck',userController.checkCoupon)
 
+router.get('/downloadinvoice/:Id',userController.getOrderInvoice)
+
+
 
 
 

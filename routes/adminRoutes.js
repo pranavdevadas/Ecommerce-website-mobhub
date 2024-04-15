@@ -14,6 +14,8 @@
 
     router.get('/admin',isAdmin,adminController.adminHome)
     router.post('/generate-report',adminController.generateReport)
+    router.get('/fetchdashboard',adminController.fetchdashboard)
+    router.get("/dashboard",adminController.adminHome)
 
     router.get('/adminlogin',adminController.getadminLogin)
     router.post('/submit',adminController.postadminLogin)
@@ -56,6 +58,8 @@
     router.post('/couponsubmit',adminController.postaddcoupon)
     router.get('/couponpublishedd/:Id',isAdmin,adminController.publishcoupon)
     router.get('/couponunpublishedd/:Id',adminController.unpublishcoupon)
+
+    router.get('/admin/bestselling',adminController.bestselling)
 
 
     router.get('*',adminController.error)

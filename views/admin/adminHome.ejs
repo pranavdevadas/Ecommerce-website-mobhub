@@ -66,6 +66,11 @@
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a class="menu-link" href="/admin/bestselling"> <i class="icon material-icons md-store"></i>
+                        <span class="text">Best Selling</span>
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a class="menu-link" href="/admin/customer"> <i class="icon material-icons md-person"></i>
                         <span class="text">Customers</span>
                     </a>
@@ -183,14 +188,32 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-xl-8 col-lg-12">
+                <div class="col-lg-8">
+                  <div class="card mb-4">
+                    <article class="card-body">
+                      <h5 class="card-title">Sale statistics</h5>
+                      <div>
+                        <a href="#" class="mx-2" id="monthGraphBtn">
+                          <i class="text-muted material-icons md-show_chart"></i>Month Graph
+                        </a>
+                        <a href="#" class="" id="yearGraphBtn">
+                          <i class="text-muted material-icons md-show_chart"></i>Year Graph
+                        </a>
+                      </div>
+                      <canvas id="lineChart" height="120px"></canvas>
+                    </article>
+                  </div>
+                </div>
+              <div class="col-lg-4">
+                <div class="container">
                     <div class="card mb-4">
                         <article class="card-body">
-                            <h5 class="card-title">Sale statistics</h5>
-                            <canvas id="myChart" height="120px"></canvas>
+                            <h5 class="card-title">Payment Statistics</h5>
+                            <canvas id="orderChart" height="120px"></canvas>
                         </article>
                     </div>
                 </div>
+              </div>
             </div>
             <div class="card mb-4">
                 <header class="card-header">
@@ -226,49 +249,6 @@
                         </div>
                     </div>
                 </header>
-                <!-- <div class="card-body"  >
-                    <div class="table-responsive" >
-                        <div class="table-responsive"  >
-                            <table class="table align-middle table-nowrap mb-0" id="reportContainer">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" class="text-center">#</th>
-                                        <th class="align-middle" scope="col">Order ID</th>
-                                        <th class="align-middle" scope="col">Customer Name</th>
-                                        <th class="align-middle" scope="col">Address</th>
-                                        <th class="align-middle" scope="col">Date</th>
-                                        <th class="align-middle" scope="col">Total</th>
-                                        <th class="align-middle" scope="col">Payment Status</th>
-                                        <th class="align-middle" scope="col">Payment Method</th>
-                                        <th class="align-middle" scope="col">Products</th>
-                                    </tr>
-                                </thead>
-                                <input type="hidden" id="createReportButton">
-                                <tbody id="reportTableBody">
-                                    <% order.forEach((row, index) => { %>
-                                        <tr>
-                                            <td class="text-center">
-                                                <span><%= index + 1 %></span>
-                                            </td>
-                                            <td>#<%= row._id %></td>
-                                            <td><%= row.billingdetails.name %></td>
-                                            <td><%= row.billingdetails.city %></td>
-                                            <td><%= row.orderDate %></td>
-                                            <td><%= row.totalprice %></td>
-                                            <td><%= row.paymentMethod %></td>
-                                            <td><%= row.totalprice %></td>
-                                            <td>
-                                                <% row.items.forEach(item => { %>
-                                                    <%= item.product.productname %><br>
-                                                <% }) %>
-                                            </td>
-                                        </tr>
-                                    <% }) %>
-                                </tbody>                                 
-                            </table>
-                        </div>
-                    </div>  
-                </div> -->
 
                 <div class="card-body"  >
                     <div class="table-responsive" >
@@ -365,10 +345,13 @@
         $(document).ready(function () {
             $('#yearlyReportButton').click(function () {
                 const currentDate = new Date();
-                const yearStart = new Date(currentDate.getFullYear(), 0, 1).toISOString().split('T')[0];
-                const yearEnd = new Date(currentDate.getFullYear(), 11, 31).toISOString().split('T')[0];
+                const previousMonthStart = new Date(currentDate.getFullYear()-1, currentDate.getMonth() - 1, 1);
+                const yearStart = new Date(currentDate.getFullYear()-1, currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 6).toISOString().split('T')[0];
+                const yearEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 6).toISOString().split('T')[0];
                 $('#startDate').val(yearStart);
                 $('#endDate').val(yearEnd);
+                console.log('end',yearEnd);
+                console.log('start',yearStart)
             });
             
             $('#weeklyReportButton').click(function () {
@@ -444,6 +427,228 @@
             const wb = XLSX.utils.table_to_book(element);
             XLSX.writeFile(wb, 'report.xlsx');
         }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const initialData = {
+            cod: 0,
+            razorPay: 0,
+            wallet: 0
+            };
+        
+            
+            const orderCtx = document.getElementById('orderChart').getContext('2d');
+            const orderChart = new Chart(orderCtx, {
+                type: 'doughnut',
+                data: {
+                labels: ['Cod', 'RazorPay', 'Wallet'],
+                datasets: [{
+                    data: Object.values(initialData),
+                    backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(255, 205, 86, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(255, 64, 64, 0.7)',
+                    ],
+                }],
+                },
+                options: {
+                title: {
+                    display: true,
+                    text: 'Order Statistics by Status',
+                },
+                plugins: {
+                    legend: {
+                    labels: {
+                        color: 'orange',
+                    },
+                    },
+                },
+                },
+            });
+        
+            function updateChartData(data) {
+                orderChart.data.datasets[0].data = Object.values(data);
+                orderChart.update();
+            }
+        
+            function fetchDataAndUpdateChart() {
+                fetch('/fetchdashboard')
+                .then(response => response.json())
+                .then(data => {
+                    updateChartData(data.ordersPie);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+            }
+        
+            fetchDataAndUpdateChart();
+        
+            function updateGraphWithMonthlyData() {
+                const existingChart = Chart.getChart('lineChart');
+        if (existingChart) {
+            existingChart.destroy();
+        }
+            const months = '<%- JSON.stringify(ordersGraph.labels) %>';
+            const counts = '<%- JSON.stringify(ordersGraph.count) %>';
+        
+        
+            const parsedMonths = JSON.parse(months);
+            const parsedCounts = JSON.parse(counts);
+        
+        
+            const countsWithNull = new Array(parsedMonths.length).fill(null);
+        
+        
+            parsedMonths.forEach((month, index) => {
+            const monthIndex = parsedMonths.indexOf(month);
+            if (monthIndex !== -1) {
+                countsWithNull[monthIndex] = parsedCounts[index];
+            }
+            });
+        
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: parsedMonths,
+                datasets: [{
+                label: 'Orders by Month',
+                data: countsWithNull,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                }],
+            },
+            options: {
+                title: {
+                display: true,
+                text: 'Orders by Month',
+                },
+                scales: {
+                x: {
+                    type: 'category', 
+                    position: 'bottom',
+                },
+                y: {
+                    type: 'linear', 
+                    ticks: {
+                    stepSize: 1, 
+                    beginAtZero: true, 
+                    },
+                },
+                },
+                plugins: {
+                legend: {
+                    labels: {
+                    color: 'orange', 
+                    },
+                },
+                },
+            },
+            });
+        }
+            function updateYearGraph() {
+            const existingChart = Chart.getChart('lineChart');
+        if (existingChart) {
+            existingChart.destroy();
+        }
+            const years = '<%- JSON.stringify(ordersYearGraph.labels) %>';
+            const counts = '<%- JSON.stringify(ordersYearGraph.count) %>';
+        
+        
+            const parsedYears = JSON.parse(years);
+            const parsedCounts = JSON.parse(counts);
+            const minYear = Math.min(...parsedYears);
+            const maxYear = Math.max(...parsedYears);
+        
+        const yearsToShow = [];
+        for (let i = minYear-3; i <= maxYear+3; i++) {
+        yearsToShow.push(i);
+        }
+        console.log('yearsToShow:', yearsToShow);
+            const countsWithNull = new Array(yearsToShow.length).fill(null);
+        
+            
+            parsedYears.forEach((year, index) => {
+        const yearIndex = yearsToShow.indexOf(parseInt(year));
+        if (yearIndex !== -1) {
+            countsWithNull[yearIndex] = parsedCounts[index];
+        }
+        });
+        console.log('countsWithNull:', countsWithNull);
+        
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            const lineChart = new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: yearsToShow,
+                datasets: [{
+                label: 'Orders by Years',
+                data: countsWithNull,
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                }],
+            },
+            options: {
+                title: {
+                display: true,
+                text: 'Orders by Years',
+                },
+                scales: {
+                x: {
+                    type: 'category', 
+                    position: 'bottom',
+                },
+                y: {
+                        type: 'linear',
+                        beginAtZero: true, 
+                        ticks: {
+                            stepSize: 1,
+                        },
+                    },
+                },
+                plugins: {
+                legend: {
+                    labels: {
+                    color: 'orange', 
+                    },
+                },
+                },
+            },
+            });
+        }
+        
+        const monthGraphBtn = document.getElementById('monthGraphBtn');
+        const yearGraphBtn = document.getElementById('yearGraphBtn');
+        
+        monthGraphBtn.addEventListener('click', function () {
+            
+            updateGraphWithMonthlyData();
+            
+            monthGraphBtn.classList.add('active');
+            yearGraphBtn.classList.remove('active');
+        });
+        
+        yearGraphBtn.addEventListener('click', function () {
+            
+            updateYearGraph();
+        
+            
+            yearGraphBtn.classList.add('active');
+            monthGraphBtn.classList.remove('active');
+        });
+        
+        updateGraphWithMonthlyData();
+        })   
     </script>
 
     

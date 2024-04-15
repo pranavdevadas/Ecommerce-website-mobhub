@@ -252,7 +252,7 @@
                                                                 <tr>
                                                                     <th>Date</th>
                                                                     <th>Tracking ID</th>
-                                                                    <th>Product</th>
+                                                                    <th>Payment Status </th>
                                                                     <th>Total</th>
                                                                     <th>Actions</th>
                                                                     <th></th>
@@ -263,9 +263,13 @@
                                                                         <tr>
                                                                             <td><%= order.orderDate %></td>
                                                                             <td><%= order.trackingId %></td>
-                                                                            <td><%= order.paymentMethod %></td>
+                                                                            <td><%= order.paymentStatus %></td>
                                                                             <td>Rs. <%= order.totalprice %></td>
+                                                                            <% if (order.paymentStatus== 'Failed') { %>
+                                                                                <th><a href="/checkOut?itemId=<%= order._id  %>" class="btn btn-small d-block" style="background-color: orange;">Retry Payment</a></th>                                                                                
+                                                                            <% } else { %>
                                                                             <th><a href="/orders/detais/<%= order._id %>" class="btn btn-small d-block" >More Info</a></th>
+                                                                            <% } %> 
                                                                         </tr>
                                                                 <% }) %>
                                                             </tbody>
