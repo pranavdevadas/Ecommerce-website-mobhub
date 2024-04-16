@@ -194,10 +194,7 @@ emailforgotPass : async (req,res,next) => {
                     pass : hashedpassword
                 })
 
-                res.render('forgotpassEmail',{
-                    otpalert: 'Password Updated Successfully',
-                    email                    
-                })
+                res.redirect('/login')
             }
 
         } catch (err) {

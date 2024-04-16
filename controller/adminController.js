@@ -110,7 +110,7 @@ const adminController = {
     postadminLogin:async (req,res,next)=>{
         try{
 
-            
+
 
             if(req.body.email===cridentials.email && cridentials.password){
                 const admin = true

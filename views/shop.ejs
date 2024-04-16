@@ -245,19 +245,14 @@
                                             </a>
                                         </div>
                                         <div class="product-action-1">
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="/addtowishlist/:Id"><i class="fi-rs-heart"></i></a>
+                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addwishlist('<%= row._id %>')" ><i class="fi-rs-heart"></i></a>
                                         </div>
                                     </div>
                                     <div class="product-content-wrap">
                                         <h2><a href="/productdetials/<%= row._id %>"><%= row.productname%></a></h2>
-                                        <div class="rating-result" title="90%">
-                                            <span>
-                                                <span>90%</span>
-                                            </span>
-                                        </div>
                                         <div class="product-price">
-                                            <span> Rs. <%= row.newprice %></span>
-                                            <span class="old-price"> Rs.  <%= row.oldprice %></span>
+                                            <span> Rs. <%= row.newprice %>.00</span>
+                                            <span class="old-price"> Rs.  <%= row.oldprice %>.00</span>
                                         </div>
                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Ram : <%= row.ram %>GB </li>
                                         <li class="mb-10"><i class="fi-rs-crown mr-5"></i>Storage : <%= row.storage %>GB</li>
@@ -484,6 +479,32 @@
             });
         }
      </script>
+     <script>
+        function addwishlist(_id) {
+            event.preventDefault();
+            $.ajax({
+                url: `/addtowishlist/${_id}`,
+                type: "GET",
+                success: function(response) {
+                    console.log("Item added to wishlist:", response);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to wishlist successfully!",
+                        showConfirmButton: true,
+                    });
+                },
+                error: function() {
+                    console.error("Failed to add item to wishlist");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error occurred",
+                        text: "Failed to add item to wishlist",
+                        showConfirmButton: true,
+                    });
+                },
+            });
+        }
+    </script>
 
 
 </body>

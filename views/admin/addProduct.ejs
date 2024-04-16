@@ -315,8 +315,8 @@
                 scalable: false,
                 ready() {
                     const canvas = cropper.getCroppedCanvas({
-                        width: 300, // Set the width of the cropped image
-                        height: 300, // Set the height of the cropped image
+                        width: 300, 
+                        height: 300, 
                     });
                     canvas.toBlob((blob) => {
                         const file = new File([blob], `cropped_${index}.png`, { type: 'image/png' });
