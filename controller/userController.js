@@ -249,7 +249,8 @@ emailforgotPass : async (req,res,next) => {
 
                 if (referrer) {
 
-                    await Wallet.findOneAndUpdate({ userId: referrer._id }, { $inc: { balance: 1000 } });
+                    await Wallet.findOneAndUpdate({ userId: referrer._id }, { $inc: { balance: 1000 } })
+                    
                     const referrerTransaction = new Transaction({
                         userId: referrer._id,
                         amount: 1000,
@@ -1038,8 +1039,8 @@ emailforgotPass : async (req,res,next) => {
 // get orders
     getorders: async (req,res,next) =>{
         try{
-            
-            const orders = await Order.find().populate('items.product').sort({ orderDate : -1 })
+            const userId = req.session.userID 
+            const orders = await Order.find({userId : userId}).populate('items.product').sort({ orderDate : -1 })
 
             
             res.render('myorders', {
