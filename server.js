@@ -9,18 +9,15 @@ const nocache = require('nocache')
 const adminRouter = require('./routes/adminRoutes')
 const bodyParser = require('body-parser');
 const passport = require('passport')
-const MongoDBStore = require('connect-mongodb-session')(session);
+// const MongoDBStore = require('connect-mongodb-session')(session);
 const Razorpay = require('razorpay')
 
 
-const PORT= process.env.PORT||3000
+const PORT= process.env.PORT 
 
 app.use(nocache())
 
-const store = new MongoDBStore({
-    uri: process.env.MONGODB_STORE_URI,
-    collection: process.env.MONGODB_STORE_COLLECTION
-});
+
 
 
 //middleware to handle sesssion
@@ -28,7 +25,6 @@ app.use(session({
     secret: uuidv4(),
     resave: false,
     saveUninitialized: false,
-    store: store,
 }));
 
 app.use((req, res, next) => {
@@ -38,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 //connecting database 
-const db= mongoose.connect(process.env.DB_URI)
+const db= mongoose.connect("mongodb+srv://pranavdevadas2:%40Pranav1@ecom.ea2upla.mongodb.net/")
 db.then(()=>console.log('Database connected'))
 db.catch(()=>console.log('Error in connecting Database'))
 
