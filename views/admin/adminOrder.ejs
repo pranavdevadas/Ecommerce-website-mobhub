@@ -76,7 +76,7 @@
             <hr>
             <ul class="menu-aside">
                 <li class="menu-item">
-                    <a class="menu-link" href="/admim/logout"> <i class="icon material-icons md-local_offer"></i>
+                    <a class="menu-link" href="/adminlogout"> <i class="icon material-icons md-local_offer"></i>
                         <span class="text">Logout</span>
                     </a>
                 </li>
@@ -153,7 +153,6 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>SI No.</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Total</th>
@@ -163,10 +162,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% order.forEach((row,index) => { %>
+                                <% order.forEach((row) => { %>
 
                                 <tr>
-                                    <td><%= index+1 %></td>
                                     <td><b><%= row.billingdetails.name %></b></td>
                                     <td><%= row.billingdetails.email %></td>
                                     <td>Rs. <%= row.totalprice %></td>
@@ -185,12 +183,11 @@
             <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                            </li>
+                        <% } %>
                     </ul>
                 </nav>
             </div>

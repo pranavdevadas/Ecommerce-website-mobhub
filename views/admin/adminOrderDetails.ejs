@@ -77,7 +77,7 @@
             <hr>
             <ul class="menu-aside">
                 <li class="menu-item">
-                    <a class="menu-link" href="/admim/logout"> <i class="icon material-icons md-local_offer"></i>
+                    <a class="menu-link" href="/adminlogout"> <i class="icon material-icons md-local_offer"></i>
                         <span class="text">Logout</span>
                     </a>
                 </li>
@@ -219,11 +219,29 @@
                                             <td>
                                                 <div class="col-lg-6 col-md-6 ms-auto ">
                                                     <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200 statusSelect" style="padding-left: 8px; margin-left: -95px;" onchange="handleStatusChange('<%= order._id %>','<%= row.product._id %>', this)" id="statusSelect-<%= row.product._id %>">
-                                                        <option value="Pending" <%= row.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                                                        <option value="Shipped" <%= row.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                                                        <option value="Delivered" <%= row.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                                        <option value="Cancelled" <%= row.status === 'Cancelled' ? 'selected' : '' %> >Cancelled</option>
-                                                        <option value="Returned" <%= row.status === 'Returned' ? 'selected' : '' %>  >Returned</option>
+                                                        <% if (row.status === 'Pending') { %>
+                                                            <option value="Pending" <%= row.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                                            <option value="Shipped" <%= row.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                            <option value="Delivered" disabled >Delivered</option>
+                                                            <option value="Cancelled" <%= row.status === 'Cancelled' ? 'selected' : '' %> >Cancelled</option>
+                                                        <% } else if(row.status === 'Shipped') { %>
+                                                            <option value="Pending" disabled >Pending</option>
+                                                            <option value="Shipped" <%= row.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                                            <option value="Delivered" <%= row.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                                            <option value="Cancelled" <%= row.status === 'Cancelled' ? 'selected' : '' %> >Cancelled</option>
+                                                        <% } else if(row.status === 'Delivered') { %>
+                                                            <option value="Pending" disabled >Pending</option>
+                                                            <option value="Shipped" disabled >Shipped</option>
+                                                            <option value="Delivered" >Delivered</option>
+                                                            <option value="Cancelled" disabled >Cancelled</option>
+                                                        <% } else if(row.status === 'Cancelled') { %>
+                                                            <option value="Pending" disabled >Pending</option>
+                                                            <option value="Shipped" disabled >Shipped</option>
+                                                            <option value="Delivered" >Delivered</option>
+                                                            <option value="Cancelled" <%= row.status === 'Cancelled' ? 'selected' : '' %> >Cancelled</option>
+                                                        <% } else if(row.status == 'Returned') { %>
+                                                            <option value="Returned" >Returned</option>
+                                                        <% } %>
                                                     </select>
                                                 </div>
                                             </td>
@@ -282,61 +300,12 @@
     <script src="/static/assets1/js/vendors/select2.min.js"></script>
     <script src="/static/assets1/js/vendors/perfect-scrollbar.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Main Script -->
     <script src="/static/assets1/js/main.js" type="text/javascript"></script>
 
-
-<!-- 
-    <script>
-        function handleStatusChange(orderId, productId) {
-            const selectedStatus = document.getElementById('statusSelect-' + productId).value;
-            console.log('Selected status:', selectedStatus);
-            console.log('Product ID:', productId);
-            console.log('Order ID:', orderId);
-
-            if (selectedStatus === 'Cancelled' || selectedStatus === 'Returned') {
-                document.getElementById('selectstat2').disabled = true;
-            }
-
-            fetch('/updateStatus', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ orderId, productId, selectedStatus })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to update status');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Status updated successfully:', data);
-                if (data && data.updatedOrder) {
-                    const orderStatusElement = document.getElementById('status-' + productId);
-                    if (orderStatusElement) {
-                        orderStatusElement.textContent = data.updatedOrder.status;
-                        // Simulate a click on a hidden reload button
-                        document.getElementById('reloadButton').click();
-                    }
-                } else {
-                    console.error('Error: Updated order data is missing or invalid');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating status:', error);
-            });
-        }
-    </script>
-     -->
     
      <script>
         function handleStatusChange(orderId, productId, selectElement) {
             const selectedStatus = selectElement.value;
-            console.log('Selected status:', selectedStatus);
-            console.log('Product ID:', productId);
-            console.log('Order ID:', orderId);
     
             if (selectedStatus === 'Cancelled' || selectedStatus === 'Returned') {
                 selectElement.disabled = true;
@@ -359,9 +328,9 @@
                 console.log('Status updated successfully:', data);
                 if (data && data.updatedOrder) {
                     const orderStatusElement = document.getElementById('status-' + productId);
+                    window.location.reload()
                     if (orderStatusElement) {
                         orderStatusElement.textContent = data.updatedOrder.status;
-                        // Simulate a click on a hidden reload button
                         document.getElementById('reloadButton').click();
                     }
                 } else {

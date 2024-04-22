@@ -26,10 +26,19 @@ const productController ={
 //get products
     getproducts:async(req,res,next)=>{
         try{
-            const products = await Products.find().populate('category').populate('brand')
+
+            const currentPage = parseInt(req.query.page) || 1; 
+            const limit = 7; 
+            const skip = (currentPage - 1) * limit;
+
+            const totalItems = await Products.countDocuments()
+            const totalPages = Math.ceil(totalItems / limit);
+            const products = await Products.find().skip(skip).limit(limit).populate('category').populate('brand').sort({ created : -1 })
             res.render('admin/products',{
                 title :'Product Lists',
                 products : products,
+                totalPages,
+                currentPage
             })
         }
         catch(err){

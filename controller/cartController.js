@@ -17,7 +17,7 @@ const cartController = {
             const quantity = 1
 
             const product = await Products.findById(productId)
-            
+
             if (!product || product.stock === 0) {
                 return res.status(400).json({ success: false, message: "Product is out of stock." });
             }
@@ -25,7 +25,6 @@ const cartController = {
             let usercart = await Cart.findOne({ userId: userId })
 
             if (!usercart) {
-
                 const newcart = new Cart({
                     userId: userId,
                     items: [{
@@ -39,7 +38,6 @@ const cartController = {
                 await newcart.save();
                 
             } else {
-
                 const existingProduct = usercart.items.find(
                     (item) => item.product.toString() === productId.toString()
                 )
@@ -62,7 +60,7 @@ const cartController = {
             }
 
             // return res.status(200).json({ success: true, message: "Item added to cart successfully" });
-            return res.redirect('back')
+            // return res.redirect('back')
     }
         catch(err){
             console.error(err);

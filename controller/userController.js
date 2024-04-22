@@ -22,8 +22,6 @@ const ejs = require('ejs')
 var easyinvoice = require('easyinvoice');
 const puppeteer = require('puppeteer-core');
 const fs = require('fs');
-
-
 const bcrypt = require('bcrypt')
 const address = require('../model/address')
 const coupon = require('../model/coupon')
@@ -48,7 +46,7 @@ const userController = {
 //home
     userHome: async(req,res,next)=>{
         try{
-            const products = await Products.find({ispublished:true}).populate('category').populate('brand')
+            const products = await Products.find({ispublished:true}).populate('category').populate('brand').limit(8)
             res.render('home',{
                 title : 'Dashboard',
                 products : products,
@@ -259,7 +257,6 @@ emailforgotPass : async (req,res,next) => {
                     });
                     await referrerTransaction.save();
 
-                    // const newUser = await User.findOne({ email: req.body.email });
                     await Wallet.create({ userId: newUser._id, balance: 1000 });
                     const referredUserTransaction = new Transaction({
                         userId: newUser._id,
@@ -452,50 +449,65 @@ emailforgotPass : async (req,res,next) => {
 //shop 
     getshop:async(req,res,next)=>{
         try{
-            const category = req.params.category || undefined;  
+            
+            const category = req.params.category || undefined; 
+            const page = parseInt(req.query.page) || 1; 
+            const limit = 7; 
+            const skip = (page - 1) * limit;
 
             const listedCategories = await Category.find({ isListed: true });
             const categoryIds = listedCategories.map(category => category._id);
-
-            let prod =await Products.find({ispublished:true}).populate('brand').populate('category')
-            const sort = req.query.sort
-            cate = await Category.find({ isListed: true });
             
-            let query = { ispublished: true, category: { $in: categoryIds } };
+            let query = { ispublished: true };
 
             if (category) {
                 query.category = category;
             }
 
+            const totalItems = await Products.countDocuments(query);
+            const totalPages = Math.ceil(totalItems / limit);
 
+            const sort = req.query.sort || 'default';
+
+            let sortOptions = {};
             if (sort === 'lowToHigh') {
-                prod = await Products.find(query).sort({ newprice : 1 });
+                sortOptions = { newprice: 1 };
             } else if (sort === 'highToLow') {
-                prod = await Products.find(query).sort({ newprice : -1 });
+                sortOptions = { newprice: -1 };
             } else if (sort === 'A-Z') {
-                prod = await Products.find(query).sort({ productname : 1 });
+                sortOptions = { productname: 1 };
             } else if (sort === 'Z-A') {
-                prod = await Products.find(query).sort({ productname : -1 });
+                sortOptions = { productname: -1 };
             } else if (sort === 'newarrivals') {
-                prod = await Products.find(query).sort({ created : -1 });
-            } else {
-                prod = await Products.find(query);
+                sortOptions = { created: -1 };
             }
 
-            res.render('shop',{
-                title:'Shop',
-                products: prod,
+            const products = await Products.find(query)
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limit)
+                .populate('brand')
+                .populate('category');
+
+            const cate = await Category.find({ isListed: true });
+
+            res.render('shop', {
+                title: 'Shop',
+                products: products,
                 cate: cate,
-                user: req.session.user||req.user,
+                user: req.session.user || req.user,
                 sort: sort,
-                text: category ,
-            })
+                text: category,
+                totalPages: totalPages,
+                currentPage: page
+            });
  
         }
         catch(err){
             next(err)
         }
     },
+    
 // 404  error
     error:(req,res)=>{
         res.render('error404')
@@ -1040,13 +1052,22 @@ emailforgotPass : async (req,res,next) => {
     getorders: async (req,res,next) =>{
         try{
             const userId = req.session.userID 
-            const orders = await Order.find({userId : userId}).populate('items.product').sort({ orderDate : -1 })
+            const page = parseInt(req.query.page) || 1; 
+            const limit = 10; 
+            const skip = (page - 1) * limit;
+
+            const totalItems = await Order.countDocuments({userId : userId});
+            const totalPages = Math.ceil(totalItems / limit);
+
+            const orders = await Order.find({userId : userId}).skip(skip).limit(limit).populate('items.product').sort({ orderDate : -1 })
 
             
             res.render('myorders', {
                 title: 'My orders',
                 user: req.session,
                 order: orders,
+                totalPages: totalPages,
+                currentPage: page
             });
         }
         catch(err){
@@ -1191,6 +1212,7 @@ emailforgotPass : async (req,res,next) => {
 
             const userId = req.session.userID 
             const userWishlist = await Wishlist.findOne({ userId : userId }).populate({ path : 'items.product', model : 'product' })
+            userWishlist.items.sort((a, b) =>b.wishlistDate - a.wishlistDate  );
 
 
             res.render('wishlist',{
@@ -1290,14 +1312,24 @@ emailforgotPass : async (req,res,next) => {
         try {
             const userId = req.session.userID 
             const userWallet = await Wallet.findOne({userId : userId})
-            const transactions = await Transaction.find({ userId: req.session.userID }).sort({ date: -1 });
+
+            const currentPage = parseInt(req.query.page) || 1; 
+            const limit = 10; 
+            const skip = (currentPage - 1) * limit;
+
+            const totalItems = await Transaction.countDocuments({userId : userId});
+            const totalPages = Math.ceil(totalItems / limit);
+
+            const transactions = await Transaction.find({ userId: req.session.userID }).skip(skip).limit(limit).sort({ date: -1 });
 
             res.render('wallet',{
                 title: 'Wallet',
                 user: req.session,
                 userData : req.session.userData,
                 userWallet,
-                transactions
+                transactions,
+                totalPages,
+                currentPage
             })
         } catch (err) {
             next(err);
@@ -1415,7 +1447,6 @@ emailforgotPass : async (req,res,next) => {
                 }
                 fs.unlinkSync(pdfPath);
             });
-            
             
     
         } catch (err){

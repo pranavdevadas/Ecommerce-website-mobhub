@@ -20,9 +20,15 @@ const wishlist = new mongoose.Schema({
             quantity: {
                 type: Number,
                 required: true,
-            }
-        }
+            },
+            wishlistDate: {
+                type: Date,
+                default: Date.now
+            },
+        },
+        
     ],
+    
 
 })
 

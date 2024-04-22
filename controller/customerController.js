@@ -6,13 +6,22 @@ const customerController = {
 //get customer
     getcustomer:async (req,res,next)=>{
         try{
-            const order = await Order.findById().populate('items')
-            const users = await User.find()
-            console.log(order)
+
+            const currentPage = parseInt(req.query.page) || 1; 
+            const limit = 10 
+            const skip = (currentPage - 1) * limit;
+
+            const totalItems = await User.countDocuments()
+            const totalPages = Math.ceil(totalItems / limit)
+            
+            // const order = await Order.findById().populate('items')
+            const users = await User.find().skip(skip).limit(limit)
             res.render('admin/customer',{
                 title :'Customers List',
                 users : users,
-                order: order
+                totalPages,
+                currentPage
+                // order: order
             })
         }
         catch(err){

@@ -29,7 +29,6 @@ router.post('/email-forgot/:email',userController.emailforgotPass)
 
 router.get('/productdetials/:Id',isUser,userController.getProductDetials)
 
-// router.get('/sendOtp',userController.getotp)
 router.post('/sendOtp',userController.postsendotp)
 router.post('/verifyOtp',userController.postverifyotp)
 router.post('/resendOtp',userController.resendotp)
@@ -41,9 +40,9 @@ router.get('/auth/google/callback',authController.googleAuthCallback)
 router.get('/search',userController.search)
 router.get('/priceFilterr/:category?',userController.search)
 
-router.get('/shop',isUser,userController.getshop)
-router.get('/priceFilter/:category?', userController.getshop);
-router.get('/categoryFilter/:category?', userController.getshop);
+router.get('/shop',userController.getshop)
+router.get('/priceFilter/:category?',isUser,userController.getshop);
+router.get('/categoryFilter/:category?',isUser, userController.getshop);
 
 
 router.get('/check-stock/:Id',isUser,cartController.checkstock)
@@ -90,7 +89,7 @@ router.post('/check-wallet-balance',isUser,userController.checkWalletBalance)
 
 router.post('/couponcheck',userController.checkCoupon)
 
-router.get('/downloadinvoice/:Id',userController.getOrderInvoice)
+router.get('/downloadinvoice/:Id',isUser,userController.getOrderInvoice)
 
 
 

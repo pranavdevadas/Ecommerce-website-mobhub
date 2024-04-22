@@ -222,10 +222,14 @@
                                 <input type="date" id="startDate" class="form-control me-2">
                                 <label for="endDate" class="me-2">End Date:</label>
                                 <input type="date" id="endDate" class="form-control me-2">
-                            </div><br>
+                            </div>
+                            <span id="dateError" style="color: red;"></span>
+                            <br>
+                            <br>
                             <div class="d-flex align-items-center gap-3 mb-3">
                                 <button class="btn btn-primary" id="yearlyReportButton">Yearly Report</button>
                                 <button class="btn btn-primary" id="weeklyReportButton">Weekly Report</button>
+                                <button class="btn btn-primary" id="todayReportButton">Today's Report</button>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                                 <button class="btn btn-primary" id="createReportButton">Create Report</button>
@@ -246,7 +250,6 @@
                         </div>
                     </div>
                 </header>
-
                 <div class="card-body"  >
                     <div class="table-responsive" >
                         <div class="table-responsive"  >
@@ -357,6 +360,13 @@
                 const weekEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 6).toISOString().split('T')[0];
                 $('#startDate').val(weekStart);
                 $('#endDate').val(weekEnd);
+            });
+            $('#todayReportButton').click(function () {
+                const currentDate = new Date();
+                const dayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay()+ 5).toISOString().split('T')[0];
+                const dayEnd = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() - currentDate.getDay() + 5).toISOString().split('T')[0];
+                $('#startDate').val(dayStart);
+                $('#endDate').val(dayEnd);
             });
             
             $('#createReportButton').click(function () {
@@ -647,6 +657,34 @@
         updateGraphWithMonthlyData();
         })   
     </script>
+    <script>
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const dateErrorSpan = document.getElementById('dateError');
+    
+        startDateInput.addEventListener('change', validateDates);
+        endDateInput.addEventListener('change', validateDates);
+    
+        function validateDates() {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+    
+            // Reset error message
+            dateErrorSpan.textContent = '';
+    
+    
+            if (endDate < startDate || endDate > new Date() || startDate > new Date() || startDate > endDate)  {
+                dateErrorSpan.textContent = 'Invalid details. Choose correct date';
+                endDateInput.value = '';
+            } 
+    
+            // Hide error message after 3 seconds
+            setTimeout(() => {
+                dateErrorSpan.textContent = '';
+            }, 3000);
+        }
+    </script>
+    
 
     
 

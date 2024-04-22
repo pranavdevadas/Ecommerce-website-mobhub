@@ -11,11 +11,20 @@ const orderController = {
     getorder: async (req,res,next) => {
         try{
 
-            const orders = await Order.find().sort({ orderDate : -1 })
+            const currentPage = parseInt(req.query.page) || 1; 
+            const limit = 10 
+            const skip = (currentPage - 1) * limit;
+
+            const totalItems = await Order.countDocuments()
+            const totalPages = Math.ceil(totalItems / limit)
+
+            const orders = await Order.find().skip(skip).limit(limit).sort({ orderDate : -1 })
 
             res.render('admin/adminOrder',{
                 title: 'Order',
-                order: orders
+                order: orders,
+                totalPages,
+                currentPage
             })
         }
         catch(err){
@@ -30,7 +39,7 @@ const orderController = {
             
             res.render('admin/adminOrderDetails',{
                 title: 'Order Details',
-                order: orders
+                order: orders,
             })
 
         }
@@ -86,7 +95,6 @@ const orderController = {
                 });
 
                 await transaction.save();
-
                 
             }
 
@@ -98,6 +106,7 @@ const orderController = {
             } else {
                 return res.status(404).json({ success: false, message: 'Order not found' });
             }
+            
 
 
         }

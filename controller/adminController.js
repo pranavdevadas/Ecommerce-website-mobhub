@@ -6,6 +6,7 @@ const AdminCridentials = require('../model/admincridentials')
 const Coupon = require('../model/coupon')
 const Order = require('../model/orders')
 const Products = require('../model/products')
+const puppeteer = require('puppeteer-core');
 
 
 
@@ -21,9 +22,9 @@ const adminController = {
     adminHome : async (req,res,next)=>{
         try{
 
-            const users = await User.find().exec();
-            const orders = await Order.find().exec();
-            const products = await Products.find().exec();
+            const users = await User.find()
+            const orders = await Order.find()
+            const products = await Products.find()
             const ordersPie = await chart()
             const ordersGraph = await monthgraph();
             const ordersYearGraph = await yeargraph();
@@ -107,16 +108,13 @@ const adminController = {
         }
     },
 //admin login post
-    postadminLogin:async (req,res,next)=>{
+    postadminLogin : (req,res,next)=>{
         try{
 
-
-
-            if(req.body.email===cridentials.email && cridentials.password){
+            if(req.body.email === process.env.ADMIN_EMAIL &&  req.body.password === process.env.ADMIN_PASS){
                 const admin = true
                     req.session.admin = req.body.email,
                     req.session.isAdmin = true,
-                    // req.session.save()
                     res.redirect('/admin')
             }
             else{
@@ -146,6 +144,7 @@ getlogout: (req, res, next) => {
     error:(req,res)=>{
         res.render('error404')
     },
+    
 // get coupon
     getCoupon: async (req,res,next) => {
         try{
@@ -225,10 +224,13 @@ getlogout: (req, res, next) => {
 // generate report
     generateReport : async (req,res,next) => {
         try{
-            const { startDate, endDate } = req.body;
+            const { startDate, endDate } = req.body;   
+
+            const endDateObj = new Date(endDate);
+            endDateObj.setDate(endDateObj.getDate() +1);
 
             const orders = await Order.aggregate([
-                { $match: { orderDate: { $gte: new Date(startDate), $lte: new Date(endDate) } }},
+                { $match: { orderDate: { $gte: new Date(startDate), $lte: new Date(endDateObj) } }},
                 { $unwind: "$items" }, 
                 // { $match: { "items.status": "Delivered" }},
                 { $lookup: { 
@@ -251,13 +253,11 @@ getlogout: (req, res, next) => {
                 }}
             ]);
 
-            // Mapping the aggregated data to the desired report format
             const reportData = orders.map((order, index) => {
                 let totalPrice = 0;
                 order.items.forEach(product => {
                     totalPrice += product.price * product.quantity;
                 });
-
                 return {
                     orderId: order._id,
                     date: order.orderDate,
@@ -280,8 +280,8 @@ getlogout: (req, res, next) => {
             next(err)
         }
     },
+    
 // graphs
-
     fetchdashboard:async (req, res, next) => {
       
         try {
