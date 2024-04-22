@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 //connecting database 
-const db= mongoose.connect("mongodb+srv://pranavdevadas2:%40Pranav1@ecom.ea2upla.mongodb.net/")
+const db= mongoose.connect(process.env.DB_URI)
 db.then(()=>console.log('Database connected'))
 db.catch(()=>console.log('Error in connecting Database'))
 
