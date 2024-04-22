@@ -11,7 +11,6 @@ const Address = require('../model/address')
 const Order = require('../model/orders')
 const crypto = require('crypto');
 const moment = require('moment')
-const Razorpay = require('razorpay')
 const Wishlist = require('../model/wishlist')
 const Wallet = require('../model/wallet')
 const Transaction = require('../model/transaction')
@@ -36,10 +35,6 @@ const transporter = nodemailer.createTransport({
     },
   })
 
-  var instance = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
 
 const userController = {
 

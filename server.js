@@ -10,7 +10,7 @@ const adminRouter = require('./routes/adminRoutes')
 const bodyParser = require('body-parser');
 const passport = require('passport')
 // const MongoDBStore = require('connect-mongodb-session')(session);
-const Razorpay = require('razorpay')
+// const Razorpay = require('razorpay')
 
 
 const PORT= process.env.PORT 
@@ -40,7 +40,6 @@ db.catch(()=>console.log('Error in connecting Database'))
 
 //link static files
 app.use('/static',express.static(path.join(__dirname,'public')))
-
 
 
 //middleware
