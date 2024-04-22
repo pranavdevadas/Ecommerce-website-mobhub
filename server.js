@@ -62,8 +62,8 @@ app.set('view engine','ejs')
 
 
 //route prefix
-app.use('/',require('../Project/routes/userRoutes'))
-app.use('/',require('../Project/routes/adminRoutes'))
+app.use('/',require('./routes/userRoutes'))
+app.use('/',require('./routes/adminRoutes'))
 
 
 
