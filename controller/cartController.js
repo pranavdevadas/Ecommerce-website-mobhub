@@ -59,8 +59,7 @@ const cartController = {
                 await usercart.save();
             }
 
-            // return res.status(200).json({ success: true, message: "Item added to cart successfully" });
-            // return res.redirect('back')
+            return res.status(200).json({ success: true, message: "Item added to cart successfully" });
     }
         catch(err){
             console.error(err);
@@ -133,7 +132,6 @@ const cartController = {
             const productId = req.body.productId;
 
             const userCart = await Cart.findOne({ userId }).populate('items.product');
-            console.log(userCart);
 
             if (!userCart) {
                 return res.json({ success: false, message: "User cart not found" });

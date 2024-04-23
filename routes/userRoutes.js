@@ -53,7 +53,7 @@ router.delete('/remove-from-cart/:Id',isUser,cartController.deleteCart)
 
 router.get('/wishlist',isUser,userController.getwishlist)
 router.get('/addtowishlist/:Id',isUser,userController.addtowishlist)
-router.delete('/remove-from-wishlist/:Id',isUser,userController.deleteWishlist)
+router.delete('/remove-from-wishlist/:Id',userController.deleteWishlist)
 
 
 router.get('/checkout',isUser,userController.checkout)

@@ -137,7 +137,7 @@ const userController = {
                         from: 'pranavdevadas2@gmail.com',
                         to: email,
                         subject: 'Reset Your Password',
-                        text: `Click this link and Enter Your New Password http://localhost:3000/forgot-password-email/${email} `,
+                        text: `Click this link and Enter Your New Password https://mobile-hub.shop/forgot-password-email/${email} `,
                     };
         
                     await transporter.sendMail(mailOptions);
@@ -177,8 +177,6 @@ emailforgotPass : async (req,res,next) => {
             const email = req.params.email
             const data = await User.findOne( { email : email })
             const hashedpassword = await bcrypt.hash(req.body.password,saltpassword)
-
-            console.log('data', data);
 
             if (!data) { 
                 res.status(404).render('error404')
@@ -1207,14 +1205,21 @@ emailforgotPass : async (req,res,next) => {
 
             const userId = req.session.userID 
             const userWishlist = await Wishlist.findOne({ userId : userId }).populate({ path : 'items.product', model : 'product' })
-            userWishlist.items.sort((a, b) =>b.wishlistDate - a.wishlistDate  );
-
-
-            res.render('wishlist',{
+            if (!userWishlist || !userWishlist.items || userWishlist.items.length === 0) {
+                return res.render('wishlist', {
+                    title: 'Wishlist',
+                    user: req.session,
+                    userWishlist: null  
+                });
+            }
+    
+            userWishlist.items.sort((a, b) => b.wishlistDate - a.wishlistDate);
+    
+            res.render('wishlist', {
                 title: 'Wishlist',
                 user: req.session,
-                userWishlist
-            })
+                userWishlist: userWishlist
+            });
         }
         catch(err){
             next(err)

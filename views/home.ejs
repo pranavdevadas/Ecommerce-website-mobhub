@@ -246,7 +246,7 @@
                                     <h2 class="animated fw-900">IQOO</h2>
                                     <h1 class="animated fw-900 text-danger">Neo 9 Pro</h1>
                                     <p class="animated">Snapdragon 8 Gen 2</p>
-                                    <a class="animated btn btn-brush btn-brush-3 text-danger" href="#"> Shop Now </a>
+                                    <a class="animated btn btn-brush btn-brush-3 text-danger" href="/shop"> Shop Now </a>
                                 </div>
                             </div>
                             <div class="col-lg-7 col-md-6">
@@ -266,7 +266,7 @@
                                     <h2 class="animated fw-900">Flagship</h2>
                                     <h1 class="animated fw-900 text-7">Sony IMX890</h1>
                                     <p class="animated">OIS Camera</p>
-                                    <a class="animated btn btn-brush btn-brush-2" href="shop-product-right.html"> Discover Now </a>
+                                    <a class="animated btn btn-brush btn-brush-2" href="/shop"> Discover Now </a>
                                 </div>
                             </div>
                             <div class="col-lg-7 col-md-6">
@@ -286,7 +286,7 @@
                                     <h2 class="animated fw-900">Xiaomi 14</h2>
                                     <h1 class="animated fw-900 text-8">With Leica</h1>
                                     <p class="animated">Next-Generation Leica Optics</p>
-                                    <a class="animated btn btn-brush btn-brush-1" href="shop-product-right.html"> Shop Now </a>
+                                    <a class="animated btn btn-brush btn-brush-1" href="/shop"> Shop Now </a>
                                 </div>
                             </div>
                             <div class="col-lg-7 col-md-6">
@@ -347,11 +347,6 @@
             <div class="bg-square"></div>
             <div class="container">
                 <div class="tab-header">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="nav-tab-one" data-bs-toggle="tab" data-bs-target="#tab-one" type="button" role="tab" aria-controls="tab-one" aria-selected="true">Featured</button>
-                        </li>
-                    </ul>
                     <a href="/shop" class="view-more d-none d-md-flex">View More<i class="fi-rs-angle-double-small-right"></i></a>
                 </div>
                 <div class="tab-content wow fadeIn animated" id="myTabContent">
@@ -362,7 +357,7 @@
                                     <div class="product-cart-wrap">
                                         <div class="product-img-action-wrap"> 
                                             <div class="product-img product-img-zoom">
-                                                <a href="/productdetials/<%= row._Id %>">
+                                                <a href="/productdetials/<%= row._id %>">
                                                     <img class="default-img" src="/static/<%= row.images[2] %>" alt="">
                                                     <img class="hover-img" src="/static/<%= row.images[1] %>" alt="">
                                                 </a>
@@ -492,21 +487,6 @@
                 </div>
             </div>
         </section>
-        <div class="container pb-20 wow fadeIn animated">
-            <div class="row">
-                <div class="col-12 mb-20">
-                    <div class="footer-bottom"></div>
-                </div>
-                <div class="col-lg-6">
-                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2021, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
-                </div>
-                <div class="col-lg-6">
-                    <p class="text-lg-end text-start font-sm text-muted mb-0">
-                        Designed by <a href="http://alithemes.com/" target="_blank">Alithemes.com</a>. All rights reserved
-                    </p>
-                </div>
-            </div>
-        </div>
     </footer>
     <!-- Preloader Start -->
     <div id="preloader-active">

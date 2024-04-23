@@ -150,9 +150,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <% if (!userWishlist || userWishlist.items.length === 0) { %>
-                        <p>No items found in your wishlist.</p>
-                    <% } else { %>
+                    <% if (userWishlist && userWishlist.items.length > 0) { %>
                         <div class="table-responsive">
                             <table class="table shopping-summery text-center">
                                 <thead>
@@ -198,6 +196,8 @@
                                 </tbody>
                             </table>
                         </div>
+                    <% } else { %>
+                        <p>No items found in your wishlist.</p>
                     <% } %>
                 </div>                
             </div>            
@@ -281,21 +281,6 @@
                 </div>
             </div>
         </section>
-        <div class="container pb-20 wow fadeIn animated">
-            <div class="row">
-                <div class="col-12 mb-20">
-                    <div class="footer-bottom"></div>
-                </div>
-                <div class="col-lg-6">
-                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2021, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
-                </div>
-                <div class="col-lg-6">
-                    <p class="text-lg-end text-start font-sm text-muted mb-0">
-                        Designed by <a href="http://alithemes.com/" target="_blank">Alithemes.com</a>. All rights reserved
-                    </p>
-                </div>
-            </div>
-        </div>
     </footer>
         <script src="/static/assets/js/vendor/modernizr-3.6.0.min.js' "></script>
         <script src="/static/assets/js/vendor/jquery-3.6.0.min.js' "></script>
@@ -324,87 +309,88 @@
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script>
-            function addcart(_id) {
-    event.preventDefault();
-    $.ajax({
-        url: `/check-stock/${_id}`,
-        type: "GET",
-        success: function(response) {
-            console.log("Check stock response:", response);
-            if (response.success) {
-                Swal.fire({
-                    icon: "success",
-                    title: "Added to cart successfully!",
-                    showConfirmButton: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/addtocart/${_id}`,
-                            type: "GET",
-                            success: function(response) {
-                                console.log("Item added to cart:", response);
-                                // Remove from wishlist
-                                $.ajax({
-                                    url: `/remove-from-wishlist/${_id}`,
-                                    type: "DELETE",
-                                    success: function(data) {
-                                        if (data.success) {
-                                            setTimeout(() => {
-                                                location.reload()
-                                            }, 1000);
-                                        } else {
+<script>
+    function addcart(_id) {
+        event.preventDefault();
+        $.ajax({
+            url: `/check-stock/${_id}`,
+            type: "GET",
+            success: function(response) {
+                console.log("Check stock response:", response);
+                if (response.success) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Added to cart successfully!",
+                        showConfirmButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/addtocart/${_id}`,
+                                type: "GET",
+                                success: function(response) {
+                                    console.log("Item added to cart:", response);
+                                    $.ajax({
+                                        url: `/remove-from-wishlist/${_id}`,
+                                        type: "DELETE",
+                                        success: function(data) {
+                                            console.log('ghghg');
+                                            if (data.success) {
+                                                setTimeout(() => {
+                                                    location.reload()
+                                                }, 1000);
+                                            } else {
+                                                Swal.fire({
+                                                    title: "Error!",
+                                                    text: "Failed to remove the item from the wishlist. Please try again later.",
+                                                    icon: "error"
+                                                });
+                                            }
+                                        },
+                                        error: function() {
+                                            console.log('eeeeee');
                                             Swal.fire({
                                                 title: "Error!",
-                                                text: "Failed to remove the item from the wishlist. Please try again later.",
+                                                text: "An unexpected error occurred while removing the item from the wishlist. Please try again later.",
                                                 icon: "error"
                                             });
                                         }
-                                    },
-                                    error: function() {
-                                        Swal.fire({
-                                            title: "Error!",
-                                            text: "An unexpected error occurred while removing the item from the wishlist. Please try again later.",
-                                            icon: "error"
-                                        });
-                                    }
-                                });
-                            },
-                            error: function() {
-                                console.error("Failed to add item to cart");
-                            },
+                                    });
+                                },
+                                error: function() {
+                                    console.error("Failed to add item to cart");
+                                },
+                            });
+                        }
+                    });
+                } else {
+                    if (response.message === "Please log in to add items to your cart.") {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Login Required",
+                            text: "Please login to add items to your cart.",
+                            showConfirmButton: true,
+                        })
+                    } else {
+                        console.error("Error:", response.message);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Product is out of stock",
+                            showConfirmButton: true,
                         });
                     }
-                });
-            } else {
-                if (response.message === "Please log in to add items to your cart.") {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Login Required",
-                        text: "Please login to add items to your cart.",
-                        showConfirmButton: true,
-                    })
-                } else {
-                    console.error("Error:", response.message);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Product is out of stock",
-                        showConfirmButton: true,
-                    });
                 }
-            }
-        },
-        error: function(err) {
-            console.log('error');
-            Swal.fire({
-                icon: "error",
-                title: "Error occurred",
-                text: "Failed to check stock availability",
-                showConfirmButton: true,
-            });
-        },
-    });
-}
+            },
+            error: function(err) {
+                console.log('error');
+                Swal.fire({
+                    icon: "error",
+                    title: "Error occurred",
+                    text: "Failed to check stock availability",
+                    showConfirmButton: true,
+                });
+            },
+        });
+    }
 
 
         function remove(productId) {
@@ -455,7 +441,7 @@
                 }
             });
         }
-     </script>
+</script>
 
       
         
