@@ -1433,7 +1433,7 @@ emailforgotPass : async (req,res,next) => {
 
             const pdfPath = path.join(__dirname, '..', 'views', 'invoice.pdf');
             const browser = await puppeteer.launch({
-                executablePath: '/path/to/google-chrome',
+                executablePath: '/usr/bin/google-chrome',
                 headless: true
             });
             const page = await browser.newPage();
