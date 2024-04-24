@@ -9,8 +9,7 @@ const nocache = require('nocache')
 const adminRouter = require('./routes/adminRoutes')
 const bodyParser = require('body-parser');
 const passport = require('passport')
-// const MongoDBStore = require('connect-mongodb-session')(session);
-// const Razorpay = require('razorpay')
+
 
 
 const PORT= process.env.PORT 
