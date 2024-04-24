@@ -1432,9 +1432,15 @@ emailforgotPass : async (req,res,next) => {
             const invoiceHtml = await ejs.renderFile(invoiceTemplatePath, {  order, user });
 
             const pdfPath = path.join(__dirname, '..', 'views', 'invoice.pdf');
+            // const browser = await puppeteer.launch({
+            //     executablePath: '/usr/bin/google-chrome',
+            //     headless: true
+            // });
             const browser = await puppeteer.launch({
-                executablePath: '/usr/bin/google-chrome',
-                headless: true
+                dumpio: true,
+                headless: true,
+                executablePath: "/usr/bin/chromium-browser",
+                args: ["--disable-setuid-sandbox", "--no-sandbox", "--disable-gpu"],
             });
             const page = await browser.newPage();
             await page.setContent(invoiceHtml);
